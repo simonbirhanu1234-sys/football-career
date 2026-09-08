@@ -920,9 +920,47 @@ function tactics(){
  </div>`);
 }
 
-function sellPlayer(i){const p=career.players[i];if(!p)return;if(ensureLineup(),(career.tactics.lineup||[]).includes(p.name)){alert('Move this player to the bench before selling.');return;}const price=Math.max(1,Math.round(p.value*(.82+Math.random()*.18)));if(!confirm(`Sell ${p.name} for $${price}m?`))return;career.cash+=price;career.players.splice(i,1);career.inbox.unshift(`${p.name} sold for $${price}m.`);ensureLineup();save();render();}
+function function sellPlayer(i){
+  const p=career.players[i];
+  if(!p)return;
 
-function trainPlayer(i){
+  ensureLineup();
+
+  if((career.tactics.lineup||[]).includes(p.name)){
+    alert('Move this player to the bench before selling.');
+    return;
+  }
+
+  const price=Math.max(1,Math.round(p.value*(.82+Math.random()*.18)));
+
+  if(!confirm(`Sell ${p.name} for $${price}m?`))return;
+
+  // Give the transfer money
+  career.cash+=price;
+
+  // Remove the player from the squad
+  career.players.splice(i,1);
+
+  // Remove the player from the lineup/bench references
+  if(career.tactics && Array.isArray(career.tactics.lineup)){
+    career.tactics.lineup=career.tactics.lineup.filter(name=>name!==p.name);
+  }
+
+  // Remove from the active match bench if necessary
+  if(match && Array.isArray(match.bench)){
+    match.bench=match.bench.filter(name=>name!==p.name);
+  }
+
+  career.inbox.unshift(`${p.name} sold for $${price}m.`);
+
+  // Rebuild the starting XI so the sold player cannot return
+  ensureLineup();
+
+  save();
+  render();
+}(i){const p=career.players[i];if(!p)return;if(ensureLineup(),(career.tactics.lineup||[]).includes(p.name)){alert('Move this player to the bench before selling.');return;}const price=Math.max(1,Math.round(p.value*(.82+Math.random()*.18)));if(!confirm(`Sell ${p.name} for $${price}m?`))return;career.cash+=price;career.players.splice(i,1);career.inbox.unshift(`${p.name} sold for $${price}m.`);ensureLineup();save();render();}
+
+
  const p=career.players[i]; if(!p)return;
  if(career.cash<2){alert('Not enough budget.');return;}
  if(p.ov>=95){alert('This player is already elite.');return;}
