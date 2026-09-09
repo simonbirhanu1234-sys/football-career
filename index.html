@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Football Career Mode — v5.16 Easier Champions League Draw</title>
+<title>Football Career Mode — v5.17</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07110c;color:#f2fff7;font-family:Arial,Helvetica,sans-serif}
 button,select{font:inherit}button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:800;background:#20c878;color:#03130b}
@@ -90,8 +90,11 @@ const PLAYER_POOL=[
 let career=null, page="home", match=null, keys={};
 
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
-function save(){try{localStorage.setItem("fc_new_career_v515",JSON.stringify(career))}catch(e){}}
-function load(){try{const fresh=localStorage.getItem("fc_new_career_v515"); if(fresh) return JSON.parse(fresh); return null}catch(e){return null}}
+function save(){try{localStorage.setItem("fc_new_career_v517",JSON.stringify(career))}catch(e){}}
+function load(){try{
+  const raw=localStorage.getItem("fc_new_career_v517")||localStorage.getItem("fc_new_career_v516")||localStorage.getItem("fc_new_career_v515");
+  return raw?JSON.parse(raw):null;
+}catch(e){return null}}
 function avg(){return career.players.length?Math.round(career.players.reduce((a,p)=>a+p.ov,0)/career.players.length):0}
 function strength(i){
  const c=CLUBS[i]; return Math.round((c.atk+c.mid+c.def)/3)
@@ -167,7 +170,7 @@ function nextSeason(){
  career.inbox.push(`Season ${career.season} begins. Prize money: $${prize}m. Your squad carries over.`);
  save();page="dashboard";render();
 }
-function newCareer(){career=null;match=null;page="home";try{localStorage.removeItem("fc_new_career_v515")}catch(e){}render()}
+function newCareer(){career=null;match=null;page="home";try{localStorage.removeItem("fc_new_career_v517");localStorage.removeItem("fc_new_career_v516");localStorage.removeItem("fc_new_career_v515")}catch(e){}render()}
 function nextFixture(){return career.fixtures.find(f=>!f.played)}
 function rows(){return DOMESTIC_CLUB_IDS.map(i=>({...career.table[i],i})).sort((a,b)=>b.pts-a.pts||((b.gf-b.ga)-(a.gf-a.ga))||b.gf-a.gf)}
 function nav(){return `<div class="nav">
@@ -920,47 +923,9 @@ function tactics(){
  </div>`);
 }
 
-function function sellPlayer(i){
-  const p=career.players[i];
-  if(!p)return;
+function sellPlayer(i){const p=career.players[i];if(!p)return;if(ensureLineup(),(career.tactics.lineup||[]).includes(p.name)){alert('Move this player to the bench before selling.');return;}const price=Math.max(1,Math.round(p.value*(.82+Math.random()*.18)));if(!confirm(`Sell ${p.name} for $${price}m?`))return;career.cash+=price;career.players.splice(i,1);career.inbox.unshift(`${p.name} sold for $${price}m.`);ensureLineup();save();render();}
 
-  ensureLineup();
-
-  if((career.tactics.lineup||[]).includes(p.name)){
-    alert('Move this player to the bench before selling.');
-    return;
-  }
-
-  const price=Math.max(1,Math.round(p.value*(.82+Math.random()*.18)));
-
-  if(!confirm(`Sell ${p.name} for $${price}m?`))return;
-
-  // Give the transfer money
-  career.cash+=price;
-
-  // Remove the player from the squad
-  career.players.splice(i,1);
-
-  // Remove the player from the lineup/bench references
-  if(career.tactics && Array.isArray(career.tactics.lineup)){
-    career.tactics.lineup=career.tactics.lineup.filter(name=>name!==p.name);
-  }
-
-  // Remove from the active match bench if necessary
-  if(match && Array.isArray(match.bench)){
-    match.bench=match.bench.filter(name=>name!==p.name);
-  }
-
-  career.inbox.unshift(`${p.name} sold for $${price}m.`);
-
-  // Rebuild the starting XI so the sold player cannot return
-  ensureLineup();
-
-  save();
-  render();
-}(i){const p=career.players[i];if(!p)return;if(ensureLineup(),(career.tactics.lineup||[]).includes(p.name)){alert('Move this player to the bench before selling.');return;}const price=Math.max(1,Math.round(p.value*(.82+Math.random()*.18)));if(!confirm(`Sell ${p.name} for $${price}m?`))return;career.cash+=price;career.players.splice(i,1);career.inbox.unshift(`${p.name} sold for $${price}m.`);ensureLineup();save();render();}
-
-
+function trainPlayer(i){
  const p=career.players[i]; if(!p)return;
  if(career.cash<2){alert('Not enough budget.');return;}
  if(p.ov>=95){alert('This player is already elite.');return;}
@@ -1105,20 +1070,29 @@ function bind(){
 }
 
 
-career=load();
-if(career && (!CLUBS[career.club] || !Array.isArray(career.players) || !Array.isArray(career.fixtures))) {
- career=null;
- try{localStorage.removeItem("fc_new_career_v515")}catch(e){}
+function bootGame(){
+  try{
+    career=load();
+    if(career && (!CLUBS[career.club] || !Array.isArray(career.players) || !Array.isArray(career.fixtures))){career=null;}
+    if(career){
+      if(!career.tactics || typeof career.tactics!=="object") career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};
+      try{ensureLineup()}catch(e){career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};ensureLineup();}
+      const validSchedule=Array.isArray(career.leagueSchedule)&&career.leagueSchedule.length===38&&Array.isArray(career.fixtures)&&career.fixtures.length===38&&Array.isArray(career.table)&&career.table.length===20;
+      if(!validSchedule){career.table=CLUBS.map(x=>({name:x.name,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}));makeFixtures();}
+      try{repairCareerSquad()}catch(e){console.warn("Squad repair skipped",e)}
+      save();
+    }
+  }catch(e){console.error("Career boot error",e);career=null;page="home";}
+  try{render()}catch(e){
+    console.error("Render error",e);
+    career=null;page="home";
+    try{render()}catch(_){
+      const root=document.getElementById("root");
+      if(root)root.innerHTML='<main class="wrap"><section class="hero"><h1>Football Career Mode</h1><p class="muted">The game could not start this time. Refresh the page to try again.</p></section></main>';
+    }
+  }
 }
-if(career){
- career.tactics=career.tactics||{formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};ensureLineup();
- // A domestic career must always use exactly 20 Premier League clubs and 38 fixtures.
- // Rebuild an invalid/old schedule before the user starts testing.
- const validSchedule=Array.isArray(career.leagueSchedule) && career.leagueSchedule.length===38 && Array.isArray(career.fixtures) && career.fixtures.length===38 && career.table?.length===20;
- if(!validSchedule){ career.table=CLUBS.map(x=>({name:x.name,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0})); makeFixtures(); }
- repairCareerSquad();
-}
-render();
+bootGame();
 </script>
 </body>
 </html>
