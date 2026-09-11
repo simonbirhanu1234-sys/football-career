@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Football Career Mode — v5.65 Seasonal Training & Realistic Transfers</title>
+<title>Football Career Mode — v11.9 Gameplay & Graphics Upgrade</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07110c;color:#f2fff7;font-family:Arial,Helvetica,sans-serif}
 button,select{font:inherit}button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:800;background:#20c878;color:#03130b}
@@ -15,8 +15,26 @@ button.secondary{background:#1d3227;color:#eafff2;border:1px solid #345443}butto
 @media(max-width:900px){.tacticsShell{grid-template-columns:1fr}.pitchCard{grid-row:auto}.tacticsHeader{align-items:flex-start;flex-direction:column}}
 
 
-.match3d{background:linear-gradient(#07140c,#0a1d12);padding:18px;border-radius:18px;overflow:hidden}.pitch3d{position:relative;width:100%;height:min(70vh,650px);min-height:430px;background:#06120b;border:2px solid #31513e;border-radius:14px;overflow:hidden;box-shadow:0 25px 45px #0009}.pitch3d canvas{display:block;width:100%;height:100%}.matchControls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.matchControls button{min-height:48px}.matchHint{text-align:center;color:#a8cdb7;margin:10px 0 0}.matchscore{font-size:40px}.playerLabel{font-weight:900;text-shadow:0 2px 4px #000}.benchGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.benchItem{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#08150e;border:1px solid #31513e;border-radius:9px;padding:9px}.benchItem b{font-size:13px}.subControls{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:10px}.subControls select{background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:9px;min-width:0}@media(max-width:600px){.benchGrid{grid-template-columns:1fr}.subControls{grid-template-columns:1fr 1fr}.subControls button{grid-column:1/-1}}
+.match3d{background:linear-gradient(#07140c,#0a1d12);padding:18px;border-radius:18px;overflow:hidden}.pitch3d{position:relative;width:100%;height:min(70vh,650px);min-height:430px;background:#06120b;border:2px solid #31513e;border-radius:14px;overflow:hidden;box-shadow:0 25px 45px #0009}.pitch3d canvas{display:block;width:100%;height:100%;image-rendering:auto;cursor:crosshair}.matchControls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.matchControls button{min-height:48px}.matchHint{text-align:center;color:#a8cdb7;margin:10px 0 0}.matchscore{font-size:40px}.playerLabel{font-weight:900;text-shadow:0 2px 4px #000}.benchGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.benchItem{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#08150e;border:1px solid #31513e;border-radius:9px;padding:9px}.benchItem b{font-size:13px}.subControls{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:10px}.subControls select{background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:9px;min-width:0}@media(max-width:600px){.benchGrid{grid-template-columns:1fr}.subControls{grid-template-columns:1fr 1fr}.subControls button{grid-column:1/-1}}
 .matchscore{font-size:40px}.matchTop{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.matchClock{font-weight:900;font-size:20px}@media(max-width:600px){.match3d{padding:10px}.pitch3d{height:58vh;min-height:360px}.matchControls{grid-template-columns:1fr 1fr}.matchscore{font-size:30px}}
+
+.match3d{background:linear-gradient(#dff4ff,#b8ddf1 32%,#6d8f62 33%,#294b35);box-shadow:inset 0 0 60px #ffffff18,0 25px 45px #0009}.matchTop{position:relative;z-index:2}.matchscore{letter-spacing:.04em;text-shadow:0 3px 12px #0008}.pitch3d{border:2px solid #d8eee0;box-shadow:0 10px 35px #0008,inset 0 0 35px #0005}.matchControls button{box-shadow:0 4px 10px #0003;transition:transform .12s ease,box-shadow .12s ease}.matchControls button:active{transform:translateY(2px);box-shadow:0 2px 5px #0004}.matchHint{font-size:13px}
+
+/* Mobile match controls */
+.mobileControls{display:none}
+@media(max-width:700px){
+  .mobileControls{display:block;position:fixed;inset:0;z-index:200;pointer-events:none;touch-action:none}
+  .mobileControls .joystickZone{position:absolute;left:16px;bottom:18px;width:150px;height:150px;pointer-events:auto;touch-action:none}
+  .mobileControls .joystickBase{position:absolute;left:0;bottom:0;width:120px;height:120px;border-radius:50%;background:rgba(12,25,18,.48);border:2px solid rgba(255,255,255,.28);box-shadow:0 8px 22px rgba(0,0,0,.3);backdrop-filter:blur(3px)}
+  .mobileControls .joystickKnob{position:absolute;left:36px;bottom:36px;width:48px;height:48px;border-radius:50%;background:rgba(32,200,120,.88);border:2px solid rgba(255,255,255,.7);box-shadow:0 5px 14px rgba(0,0,0,.35)}
+  .mobileControls .actionZone{position:absolute;right:14px;bottom:20px;display:flex;flex-direction:column;gap:12px;align-items:flex-end;pointer-events:auto}
+  .mobileControls button{width:88px;height:64px;border-radius:18px;color:#fff;font-weight:900;font-size:15px;border:2px solid rgba(255,255,255,.3);box-shadow:0 8px 20px rgba(0,0,0,.3);backdrop-filter:blur(3px);user-select:none;-webkit-user-select:none}
+  .mobileControls .mobilePass{background:rgba(26,126,255,.82)}
+  .mobileControls .mobileShoot{background:rgba(224,48,64,.86)}
+  .mobileControls .label{font-size:10px;opacity:.9;display:block;margin-top:2px}
+  .pitch3d canvas{touch-action:none}
+  .match3d{padding:8px}
+}
 </style>
 </head>
 <body>
@@ -65,6 +83,7 @@ const EURO_CLUBS=[
  {name:"Marseille",short:"OM",badge:"🔵",atk:75,mid:73,def:70}
 ];
 
+
 const DOMESTIC_CLUB_IDS=CLUBS.map((_,i)=>i);
 const DOMESTIC_LEAGUE_NAME="Premier League";
 
@@ -86,6 +105,87 @@ const PLAYER_POOL=[
 ["Theo Hernandez","LB",87,60,"AC Milan"],["Rafael Leao","LW",88,110,"AC Milan"],["Christian Pulisic","LW",84,55,"AC Milan"],["Mike Maignan","GK",87,45,"AC Milan"],
 ["Kenan Yildiz","LW",82,60,"Juventus"],["Dusan Vlahovic","FWD",84,55,"Juventus"],["Jadon Sancho","LW",81,30,"Free Agent"],["Raheem Sterling","RW",79,18,"Free Agent"]
 ];
+
+/* v5.66 FULL PREMIER LEAGUE SQUADS
+   The 2026/27 Premier League first-team lists are used as the squad-name source.
+   Existing player ratings/positions are preserved; newly added players receive
+   stable estimated game attributes so every club has a usable squad.
+*/
+const FULL_SQUADS={"Arsenal":["David Raya","Kepa Arrizabalaga","Illan Meslier","Jurrien Timber","Ben White","William Saliba","Cristhian Mosquera","Gabriel","Piero Hincapie","Riccardo Calafiori","Declan Rice","Bruno Guimaraes","Martin Zubimendi","Martin Odegaard","Eberechi Eze","Mikel Merino","Kai Havertz","Viktor Gyokeres","Bukayo Saka","Noni Madueke","Christos Tzolis","Myles Lewis-Skelly","Ethan Nwaneri","Gabriel Martinelli","Gabriel Jesus"],"Aston Villa":["Marco Bizot","Emiliano Martinez","Matty Cash","Victor Lindelof","Ezri Konsa","Tyrone Mings","Pau Torres","Ian Maatsen","Kosta Nedeljkovic","Modou Keba Cisse","Joao Gomes","John McGinn","Boubacar Kamara","Amadou Onana","Johan Manzambi","Emi Buendia","Ross Barkley","Lamare Bogarde","Ollie Watkins","Tammy Abraham","Alejandro Garnacho","Brian Madjo","Leon Bailey","Alysson","Taylor Harwood-Bellis"],"AFC Bournemouth":["Djorde Petrovic","Fraser Forster","Will Dennis","Maximillian Aarons","Adam Smith","Julian Araujo","James Hill","Antonio Silva","Adrien Truffert","Julio Soler","Bafode Diakite","Veljko Milosavljevic","Lewis Cook","Alex Toth","Alex Scott","Tyler Adams","Marcus Tavernier","David Brooks","Ryan Christie","Justin Kluivert","Evanilson","Junior Kroupi","Ben Gannon-Doak","Daniel Jebbison","Rayan"],"Brentford":["Caoimhin Kelleher","Hakon Valdimarsson","Ellery Balcombe","Sepp van den Berg","Kristoffer Ajer","Nathan Collins","Michael Kayode","Ethan Pinnock","Rico Henry","Aaron Hickey","Mamadou Sangare","Yehor Yarmoliuk","Mikkel Damsgaard","Mathias Jensen","Keane Lewis-Potter","Vitaly Janelt","Fabio Carvalho","Antoni Milambo","Igor Thiago","Kevin Schade","Dango Ouattara","Callum Wilson","Jaidon Anthony","Gustavo Nunes","Jayden Meghoma"],"Brighton & Hove Albion":["Bart Verbruggen","Jason Steele","Tom McGill","Pascal Struijk","Ferdi Kadioglu","Maxim De Cuyper","Luka Vuskovic","Lewis Dunk","Michael Svoboda","Olivier Boscagli","Mats Wieffer","Costinha","Igor Julio","Eiran Cashin","Yasin Ayari","Carlos Baleba","Jack Hinshelwood","Diego Gomez","Matt O'Riley","Georginio Rutter","Yankuba Minteh","Kaoru Mitoma","Charalampos Kostoulas","Evan Ferguson","Stefanos Tzimas"],"Chelsea":["Robert Sanchez","Teddy Sharman-Lowe","Mike Penders","Levi Colwill","Reece James","Maxence Lacroix","Marco Palestra","Malo Gusto","Wesley Fofana","Josh Acheampong","Tosin Adarabioyo","Jorrel Hato","Benoit Badiashile","Mamadou Sarr","Pep Chavarria","Moises Caicedo","Enzo Fernandez","Cole Palmer","Morgan Rogers","Jordan Henderson","Romeo Lavia","Valentin Barco","Dario Essugo","Joao Pedro","Danny Welbeck","Liam Delap","Nicolas Jackson","Estevao","Pedro Neto","Geovany Quenda"],"Coventry City":["Daniel Bentley","Carl Rushworth","Aurele Amenda","Taiwo Awoniyi","Jay Dasilva","Josh Eccles","Matt Grimes","Gustavo Hamer","Kaine Kesler-Hayden","Joel Latibeaudiere","Ephron Mason-Clark","Frank Onyeka","Dario Osorio","Victor Torp","Ethan Pinnock","Jack Rudoni","Tatsuhiro Sakamoto","Ellis Simms","Loum Tchaouna","Bobby Thomas","Solomon Asante","Milan van Ewijk","Ben Wilson","Luke Woolfenden","Haji Wright"],"Crystal Palace":["Walter Benitez","Dean Henderson","Remi Matthews","Benjamin Chilwell","Axel Disasi","Cheick Doucoure","Matheus Franca","Evann Guessand","William Hughes","Daichi Kamada","Anan Khalaili","Jorgen Strand Larsen","Jefferson Lerma","Jean-Philippe Mateta","Dwight McNeil","Oscar Mingueza","Tyrick Mitchell","Eddie Nketiah","Dario Esteban Osorio","Yeremy Pino","Chris Richards","Ismaila Sarr","Quinten Timber","Takehiro Tomiyasu","Adam Wharton"],"Everton":["Jordan Pickford","Mark Travers","Carlos Alcaraz","Fraser Barnsley","Thierno Barry","Christian Norgaard","Jarrad Branthwaite","Kiernan Dewsbury-Hall","James Garner","Jack Grealish","Hayden Hackney","Brennan Johnson","Michael Keane","Thomas King","Ainsley Maitland-Niles","Vitalii Mykolenko","Jake O'Brien","Merlin Rohl","James Tarkowski","Beto","Iliman Ndiaye","Tyrique George","Nathan Patterson","Tim Iroegbunam","Harrison Armstrong"],"Fulham":["Bernd Leno","Benjamin Lecomte","Joachim Andersen","Calvin Bassey","Kenny Tete","Jorge Cuenca","Antonee Robinson","Timothy Castagne","Sander Berge","Alex Iwobi","Shea Charles","Tom Cairney","Harrison Reed","Emile Smith Rowe","Cesar Palacios","Gonzalo Garcia","Rodrigo Muniz","Kevin","Oscar Bobb","Jonah Kusi-Asare","Michael Allen","Terrell Works","Hugo Larsson","Ryan Sessegnon"],"Hull City":["Konstantinos Tzolakis","Jack Butland","Dillon Phillips","Nobel Mendy","Lucas Herrington","Charlie Hughes","Semi Ajayi","Lewie Coyle","Ryan Giles","John Egan","Elliot Stroud","Matt Targett","Cody Drameh","Paddy McNair","Matty Jacob","Regan Slater","Jens Hjerto-Dahl","Matt Crooks","Hidemasa Morita","Kieran Dowell","Oscar Zambrano","Elliot Matazo","Darko Gyabi","Abdulkadir Omur","Lucas Gourna-Douath","Oli McBurnie","Mohammed Belloumi","Liam Millar","Joe Gelhardt","David Akintola"],"Ipswich Town":["Kjell Scherpen","Alex Palmer","Christian Walton","Dara O'Shea","Jacob Greaves","Issa Diop","Cedric Kipre","Leif Davis","Darnell Furlong","Ben Johnson","Sasa Lukic","Azor Matusiwa","Jack Taylor","Florentino Luis","Marcelino Nunez","Cameron Humphreys","Emersonn","Sindre Walle Egeli","Daizen Maeda","George Hirst","Jack Clarke","Jaden Philogene","Abdul Fatawu","Kasey McAteer","Chuba Akpom","Anis Mehmeti"],"Leeds United":["Alex Cairns","James Trafford","Melvin Bard","Jaka Bijol","Jayden Bogle","Ethan Ampadu","Nico Elvedi","Ilia Gruev","Gabriel Gudmundsson","Daniel James","Mateo Joseph","James Justin","Sean Longstaff","Tarik Muharemovic","Lukas Nmecha","Noah Okafor","Joe Rodon","Anton Stach","Ao Tanaka","Harry Wilson","Michael Zetterer","Dominic Calvert-Lewin","Brenden Aaronson","Gustavo Hamer","Joel Piroe"],"Liverpool":["Alisson","Giorgi Mamardashvili","Freddie Woodman","Virgil van Dijk","Ronald Araujo","Jeremy Jacquet","Milos Kerkez","Jeremie Frimpong","Joe Gomez","Giovanni Leoni","Conor Bradley","Konstantinos Tsimikas","Calvin Ramsay","Ryan Gravenberch","Dominik Szoboszlai","Florian Wirtz","Alexis Mac Allister","Curtis Jones","Harvey Elliott","Wataru Endo","Stefan Bajcetic","Trey Nyoni","Alexander Isak","Hugo Ekitike","Cody Gakpo","Federico Chiesa","Bradley Barcola"],"Manchester City":["Gianluigi Donnarumma","Geronimo Rulli","Marcus Bettinelli","Ruben Dias","Marc Guehi","Josko Gvardiol","Matheus Nunes","Nico O'Reilly","Abdukodir Khusanov","Rayan Ait-Nouri","Rico Lewis","Vitor Reis","Elliot Anderson","Rayan Cherki","Phil Foden","Tijjani Reijnders","Mateo Kovacic","Nico Gonzalez","Jack Grealish","Claudio Echeverri","Erling Haaland","Omar Marmoush","Antoine Semenyo","Jeremy Doku","Savinho","Jeremy Monga"],"Manchester United":["Karl Darlow","Thomas Heaton","Senne Lammens","Diogo Dalot","Matthijs de Ligt","Lisandro Martinez","Noussair Mazraoui","Harry Maguire","Patrick Dorgu","Luke Shaw","Bruno Fernandes","Amad Diallo","Mason Mount","Carlos Baleba","Bryan Mbeumo","Manuel Ugarte","Benjamin Sesko","Marcus Rashford","Matheus Cunha","Joshua Zirkzee","Andrey Santos","Youri Tielemans","Dermot Mee","Chido Obi"],"Newcastle United":["Nick Pope","Mark Gillespie","Lukas Hornicek","Sven Botman","Dan Burn","Amar Dedic","Anthony Elanga","Nicolas Gonzalez","Lewis Hall","Valentino Livramento","Jacob Murphy","William Osula","Kieran Trippier","Fabian Schar","Malick Thiaw","Joe Willock","Yoane Wissa","Joelinton","Harvey Barnes","Jacob Ramsey","Bruno Guimaraes","Sandro Tonali","Anthony Gordon","Alexander Isak","Tino Livramento"],"Nottingham Forest":["Matz Sels","Steven Benda","Aaron Bott","Murillo","Liam Delap","Ousmane Diomande","Nicolas Dominguez","Morgan Gibbs-White","Callum Hudson-Odoi","Arnaud Kalimuendo","Igor Jesus","John Victor","James McAtee","Nikola Milenkovic","Danilo","Dan Ndoye","Luca Netz","Felipe","Ibrahim Sangare","Nicolo Savona","Xaver Schlager","Neco Williams","Chris Wood","Ryan Yates","Taiwo Awoniyi"],"Sunderland":["Robin Roefs","Simon Moore","Melker Ellborg","Dan Ballard","Omar Alderete","Ajibola Alese","Trai Hume","Thomas Meunier","Nordi Mukiele","Kevin Danso","Reinildo","Abdoullah Ba","Noah Sadiki","Enzo Le Fee","Habib Diarra","Granit Xhaka","Luke O'Nien","Chris Rigg","Brian Brobbey","Wilson Isidor","Nilson Angulo","Romaine Mundle","Luis Semedo","Chemsdine Talbi","Jocelin Ta Bi"],"Tottenham Hotspur":["Antonin Kinsky","Guglielmo Vicario","Martin Dubravka","Brandon Austin","Micky van de Ven","Marcos Senesi","Jan Paul van Hecke","Pedro Porro","Djed Spence","Andy Robertson","Destiny Udogie","Kevin Danso","Ben Davies","Kota Takai","Souza","Sandro Tonali","Mateus Fernandes","Conor Gallagher","James Maddison","Xavi Simons","Dejan Kulusevski","Rodrigo Bentancur","Lucas Bergvall","Pape Sarr","Archie Gray","Dominic Solanke","Richarlison","Mohammed Kudus","Mathys Tel","Wilson Odobert"]};
+const _existingPlayerNames=new Set(PLAYER_POOL.map(p=>String(p[0]).toLowerCase()));
+const _posHints={
+  "David Raya":"GK","Kepa Arrizabalaga":"GK","Illan Meslier":"GK","Marco Bizot":"GK","Emiliano Martinez":"GK",
+  "Djorde Petrovic":"GK","Fraser Forster":"GK","Will Dennis":"GK","Caoimhin Kelleher":"GK","Hakon Valdimarsson":"GK","Ellery Balcombe":"GK",
+  "Bart Verbruggen":"GK","Jason Steele":"GK","Tom McGill":"GK","Robert Sanchez":"GK","Teddy Sharman-Lowe":"GK","Mike Penders":"GK",
+  "Daniel Bentley":"GK","Carl Rushworth":"GK","Walter Benitez":"GK","Dean Henderson":"GK","Remi Matthews":"GK","Jordan Pickford":"GK",
+  "Mark Travers":"GK","Bernd Leno":"GK","Benjamin Lecomte":"GK","Konstantinos Tzolakis":"GK","Jack Butland":"GK","Dillon Phillips":"GK",
+  "Kjell Scherpen":"GK","Alex Palmer":"GK","Christian Walton":"GK","Alex Cairns":"GK","James Trafford":"GK","Alisson":"GK",
+  "Giorgi Mamardashvili":"GK","Freddie Woodman":"GK","Gianluigi Donnarumma":"GK","Geronimo Rulli":"GK","Marcus Bettinelli":"GK",
+  "Karl Darlow":"GK","Thomas Heaton":"GK","Senne Lammens":"GK","Nick Pope":"GK","Mark Gillespie":"GK","Lukas Hornicek":"GK",
+  "Matz Sels":"GK","Steven Benda":"GK","Aaron Bott":"GK","Robin Roefs":"GK","Simon Moore":"GK","Melker Ellborg":"GK",
+  "Antonin Kinsky":"GK","Guglielmo Vicario":"GK","Martin Dubravka":"GK","Brandon Austin":"GK"
+};
+const _defWords=["Saliba","Mosquera","White","Hincapie","Gabriel","Timber","Konsa","Calafiori","Cash","Lindelof","Torres","Mings","Maatsen","Wan-Bissaka","Harwood-Bellis",
+"Diakite","Truffert","Soler","van den Berg","Ajer","Collins","Kayode","Pinnock","Henry","Hickey","Struijk","Dunk","Boscagli","Svoboda","Kadioglu",
+"Colwill","James","Lacroix","Gusto","Fofana","Acheampong","Adarabioyo","Chilwell","Disasi","Henderson","Hughes","Tomiyasu","Richards","Timber","Branthwaite",
+"Keane","Tarkowski","Mykolenko","O'Brien","Andersen","Bassey","Tete","Cuenca","Castagne","Robinson","Mendy","Herrington","Hughes","Ajayi","Coyle","Giles","Egan",
+"Diop","Greaves","Kipre","Davis","Furlong","Johnson","Bijol","Bard","Bogle","Elvedi","Gudmundsson","Rodon","Justin","Liverpool","Araujo","Frimpong","Gomez","Leoni","Bradley","Tsimikas",
+"Kerkez","van Dijk","Dias","Guehi","Gvardiol","Nunes","Khusanov","Ait-Nouri","Lewis","Reis","Dalot","de Ligt","Martinez","Mazraoui","Maguire","Dorgu","Shaw",
+"Botman","Burn","Dedic","Hall","Livramento","Schar","Thiaw","Aina","Murillo","Diomande","Milenkovic","Muñoz","Netz","Savona","Williams","Ballard","Alderete","Alese","Hume","Meunier","Mukiele","Danso","Reinildo","van de Ven","Senesi","van Hecke","Porro","Spence","Robertson","Udogie","Danso","Davies","Takai"];
+const _fwdWords=["Havertz","Gyokeres","Saka","Madueke","Tzolis","Watkins","Abraham","Garnacho","Bailey","Madjo","Alysson","Evanilson","Kroupi","Gannon-Doak","Jebbison","Rayan","Thiago","Schade","Ouattara","Wilson","Anthony","Nunes","Rutter","Minteh","Mitoma","Kostoulas","Ferguson","Tzimas",
+"Palmer","Rogers","Emegha","Pedro","Welbeck","Delap","Jackson","Estevao","Neto","Quenda","Simms","Tchaouna","Thomas-Asante","Wright","Mateta","Nketiah","Pino","Sarr","Alcaraz","Barry","Grealish","Johnson","Beto","Ndiaye","Muniz","Garcia","Kevin","Bobb","Kusi-Asare",
+"Akpom","Maeda","Hirst","Clarke","Philogene","Fatawu","McAteer","Mehmeti","Aaronson","Nmecha","Okafor","Calvert-Lewin","Isak","Ekitike","Gakpo","Chiesa","Barcola","Haaland","Marmoush","Semenyo","Doku","Savinho","Mbeumo","Sesko","Rashford","Cunha","Zirkzee","Elanga","Wissa","Osula","Barnes","Murphy","Wood","Delap","Hudson-Odoi","Kalimuendo","Igor Jesus","Ndoye","Brobbey","Isidor","Angulo","Mundle","Semedo","Solanke","Richarlison","Kudus","Tel","Odobert"];
+const _midWords=["Rice","Guimaraes","Zubimendi","Odegaard","Eze","Merino","McGinn","Gomes","Kamara","Onana","Buendia","Barkley","Manzambi","Cook","Scott","Adams","Christie","Tavernier","Jensen","Damsgaard","Janelt","Sangare","Yarmoliuk","Baleba","O'Riley","Gross","Ayari","Hinshelwood","Gomez","Caicedo","Fernandez","Henderson","Lavia","Barco","Essugo","Eccles","Grimes","Hamer","Onyeka","Torp","Rudoni","Slater","Morita","Dowell","Gourna-Douath","Lukic","Matusiwa","Taylor","Luis","Nunez","Ampadu","Gruev","Longstaff","Stach","Tanaka","Gravenberch","Szoboszlai","Wirtz","Mac Allister","Jones","Elliott","Endo","Bajcetic","Nyoni","Foden","Reijnders","Kovacic","Gonzalez","Echeverri","Fernandes","Mount","Ugarte","Tielemans","Willock","Joelinton","Ramsey","Bruno","Tonali","Sangare","Schlager","Xhaka","Le Fee","Diarra","Sadiki","Maddison","Simons","Kulusevski","Bentancur","Bergvall","Sarr","Gray","Tonali"];
+function _guessPos(name){
+  if(_posHints[name]) return _posHints[name];
+  const n=String(name).toLowerCase();
+  if(_defWords.some(x=>n.includes(x.toLowerCase()))) return "CB";
+  if(_fwdWords.some(x=>n.includes(x.toLowerCase()))) return "FWD";
+  if(_midWords.some(x=>n.includes(x.toLowerCase()))) return "CM";
+  return "CM";
+}
+function _stableNum(name,club){
+  let h=0,s=String(name)+"|"+club;
+  for(let i=0;i<s.length;i++) h=((h<<5)-h+s.charCodeAt(i))|0;
+  return Math.abs(h);
+}
+for(const [club,names] of Object.entries(FULL_SQUADS)){
+  const c=CLUBS.find(x=>x.name===club);
+  if(!c) continue;
+  const base=Math.round((c.atk+c.mid+c.def)/3);
+  for(const name of names){
+    const clean=String(name).trim();
+    if(!clean||_existingPlayerNames.has(clean.toLowerCase())) continue;
+    const h=_stableNum(clean,club);
+    const ov=Math.max(62,Math.min(88,base-7+(h%15)));
+    const age=18+(h%14);
+    const value=Math.max(2,Math.round((ov-55)*(ov-55)/7));
+    PLAYER_POOL.push([clean,_guessPos(clean),ov,value,club]);
+    _existingPlayerNames.add(clean.toLowerCase());
+  }
+}
+function _fullSquadRepair(){
+  if(!career)return;
+  const clubName=CLUBS[career.club]?.name;
+  const sold=new Set((career.soldPlayers||[]).map(n=>String(n).trim().toLowerCase()));
+  const base=PLAYER_POOL.filter(x=>x[4]===clubName);
+  const current=new Map((career.players||[]).filter(p=>p&&p.name).map(p=>[String(p.name).toLowerCase(),p]));
+  const merged=[];
+  for(const x of base){
+    const key=String(x[0]).toLowerCase();
+    if(sold.has(key)) continue;
+    if(current.has(key)) merged.push(current.get(key));
+    else {
+      const h=_stableNum(x[0],clubName);
+      merged.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:18+(h%14)});
+    }
+  }
+  for(const p of current.values()){
+    if(!base.some(x=>String(x[0]).toLowerCase()===String(p.name).toLowerCase())&&!sold.has(String(p.name).toLowerCase())) merged.push(p);
+  }
+  career.players=merged;
+}
+
 
 let career=null, page="home", match=null, keys={};
 
@@ -776,8 +876,8 @@ function aiMatchUpdate(dt){
   // lower-rated teams are deliberately slower, less accurate and less decisive.
   const opponentClub=CLUBS[match.op]||null;
   const opponentTeamOVR=opponentClub?(opponentClub.atk+opponentClub.mid+opponentClub.def)/3:80;
-  const aiTeamIQ=Math.max(.48,Math.min(1.20,.50+(opponentTeamOVR-70)*.030));
-  const aiPlayerIQ=(pl)=>Math.max(.38,Math.min(1.20,aiTeamIQ+(Number(pl?.ov||75)-75)*.007));
+  const aiTeamIQ=Math.max(.28,Math.min(.78,.30+(opponentTeamOVR-70)*.012));
+  const aiPlayerIQ=(pl)=>Math.max(.24,Math.min(.82,aiTeamIQ+(Number(pl?.ov||75)-75)*.003));
 
   // Helper: pick a useful outfield teammate with a preference for the attacking lane.
   const bestPassReceiver=(p)=>{
@@ -839,26 +939,26 @@ function aiMatchUpdate(dt){
       const canShoot=group==='ATT' && goalDist<30;
 
       if(p.team===1){
-        const shootDecision=Math.min(.94,dt*(.55+1.55*intelligence)+.07*intelligence);
-        const passDecision=Math.min(.92,.08+.70*intelligence);
-        const braveEnough=!crowded || intelligence>.82;
+        const shootDecision=Math.min(.42,dt*(.18+.55*intelligence)+.018*intelligence);
+        const passDecision=Math.min(.55,.04+.32*intelligence);
+        const braveEnough=!crowded || intelligence>.70;
         if(canShoot && braveEnough && match.aiPassCooldown<=0.15 && Math.random()<shootDecision){
           const power=Math.max(.30,Math.min(1.0,.46+(p.ov-75)*.010));
           match.ball.vx=0;match.ball.vy=side*(13.5+power*6.5);match.ball.flight=7;
           match.ball.passTeam=null;match.ball.passTarget=-1;match.ball.passPower=0;match.ball.passFrom=-1;
           match.ball.shotTeam=1;match.ball.shotPower=power;match.ball.shotSaveAttempted=false;
-          const chance=Math.max(.05,Math.min(.84,.10+(p.ov-70)*.022+(30-goalDist)*.013+(intelligence-.8)*.18));
+          const chance=Math.max(.03,Math.min(.58,.07+(p.ov-70)*.012+(30-goalDist)*.007+(intelligence-.5)*.10));
           match.ball.shotWillScore=Math.random()<chance;
           match.aiPassCooldown=Math.max(1.0,2.25-.75*intelligence);
           match.log.unshift(`Opposition SHOOTS!`);
         }else if(receiver && match.aiPassCooldown<=0 && Math.random()<passDecision && (crowded||receiver.score>1.8)){
           const ri=match.players.indexOf(receiver.q);
           const pd=Math.max(1,receiver.dist);
-          const lead=Math.min(6.8,pd*(.075+.075*intelligence));
-          const passError=(1-intelligence)*Math.min(7.0,pd*.16)*(Math.random()-.5);
+          const lead=Math.min(5.2,pd*(.04+.045*intelligence));
+          const passError=(1-intelligence)*Math.min(12.0,pd*.28)*(Math.random()-.5);
           const txp=Math.max(4,Math.min(96,receiver.q.x+passError));
           const typ=Math.max(5,Math.min(95,receiver.q.y+side*lead+passError*.45));
-          const speed=8.6+3.4*intelligence+Math.min(1,Math.max(0,(p.ov-70)/30))*1.2;
+          const speed=7.2+2.0*intelligence+Math.min(1,Math.max(0,(p.ov-70)/30))*.6;
           match.ball.x=p.x;match.ball.y=p.y;
           match.ball.vx=(txp-p.x)/pd*speed;match.ball.vy=(typ-p.y)/pd*speed;
           match.ball.flight=Math.min(4.2,pd/speed+.70);
@@ -927,12 +1027,12 @@ function aiMatchUpdate(dt){
     tx=Math.max(anchor.x-zone.x,Math.min(anchor.x+zone.x,tx));
     ty=Math.max(anchor.y-zone.y,Math.min(anchor.y+zone.y,ty));
     if(p.team===1 && holderP && holderP.team===0){
-      const reaction=.04+.28*intelligence;
+      const reaction=.02+.12*intelligence;
       tx += (holderP.x-tx)*reaction;
       ty += (holderP.y-ty)*reaction;
     }
-    const baseSpeed=10.8*Math.max(.76,Math.min(1.16,1+(p.ov-75)*.006));
-    const aiSpeed=p.team===1?baseSpeed*(.40+.60*intelligence):baseSpeed;
+    const baseSpeed=9.2*Math.max(.82,Math.min(1.08,1+(p.ov-75)*.004));
+    const aiSpeed=p.team===1?baseSpeed*(.28+.42*intelligence):baseSpeed;
     moveToward(p,tx,ty,aiSpeed,dt);
     p.stamina=Math.min(100,p.stamina+dt*4);
   }
@@ -986,6 +1086,7 @@ function tick(now){
  match.time+=dt*1.5;match.passCooldown=Math.max(0,match.passCooldown-dt);match.restartTimer=Math.max(0,(match.restartTimer||0)-dt);
  const p=match.players[match.control],ovBonus=Math.max(.78,Math.min(1.30,1+(p.ov-75)*.012)),speed=((keys[' ']||match.boostUntil>performance.now())?17:10.5)*ovBonus;let ax=0,ay=0;
  if(keys['w']||keys['arrowup'])ay--;if(keys['s']||keys['arrowdown'])ay++;if(keys['a']||keys['arrowleft'])ax--;if(keys['d']||keys['arrowright'])ax++;
+ if(window.mobileMatchInput&&window.mobileMatchInput.active){ax+=window.mobileMatchInput.x;ay+=window.mobileMatchInput.y;}
  const len=Math.hypot(ax,ay)||1;if(ax||ay){p.x=Math.max(4,Math.min(96,p.x+ax/len*speed*dt));p.y=Math.max(4,Math.min(96,p.y+ay/len*speed*dt));p.vx=ax/len*speed;p.vy=ay/len*speed;p.stamina=Math.max(0,p.stamina-dt*(keys[' ']?9:2));}else{p.vx*=.8;p.vy*=.8;p.stamina=Math.min(100,p.stamina+dt*5)}
  aiMatchUpdate(dt);
  if(match.kickoffTimer>0){
@@ -1161,14 +1262,59 @@ function drawPoly3D(points,fill,stroke,lw=1){const pts=points.map(p=>project3D(p
 function drawLine3D(a,b,color,lw=1){const p=project3D(...a),q=project3D(...b);if(!p||!q)return;const c=match3d.ctx;c.beginPath();c.moveTo(p.x,p.y);c.lineTo(q.x,q.y);c.strokeStyle=color;c.lineWidth=lw;c.stroke()}
 function drawStadium3D(){
  const c=match3d.ctx;
- drawPoly3D([[-78,0,-49],[78,0,-49],[78,0,-38],[-78,0,-38]],'#26332e','#45584f',1);
- drawPoly3D([[-78,0,38],[78,0,38],[78,0,49],[-78,0,49]],'#26332e','#45584f',1);
- drawPoly3D([[-72,0,-49],[-72,10,-45],[72,10,-45],[72,0,-49]],'#202a26',null);
- drawPoly3D([[-72,0,49],[72,0,49],[72,10,45],[-72,10,45]],'#202a26',null);
- for(let side of [-1,1]){const z=side*44;for(let x=-68;x<=68;x+=5.2){const p=project3D(x,3.2,z);if(!p)continue;const r=Math.max(2,Math.min(5,55/p.depth));c.fillStyle=(Math.round(x)%2===0)?'#e8b64d':'#e85d72';c.beginPath();c.arc(p.x,p.y,r,0,Math.PI*2);c.fill();c.fillStyle='#18231e';c.fillRect(p.x-r*.7,p.y+r*.7,r*1.4,r*.9);}}
- for(let side of [-1,1]){const x=side*70;for(let z=-34;z<=34;z+=5.5){const p=project3D(x,3.2,z);if(!p)continue;const r=Math.max(2,Math.min(5,55/p.depth));c.fillStyle=(Math.round(z)%2===0)?'#6fc8ff':'#f0c35a';c.beginPath();c.arc(p.x,p.y,r,0,Math.PI*2);c.fill();c.fillStyle='#18231e';c.fillRect(p.x-r*.7,p.y+r*.7,r*1.4,r*.9);}}
- for(const x of [-68,68])for(const z of [-44,44]){drawLine3D([x,0,z],[x,20,z],'#87958f',2);const p=project3D(x,20,z);if(p){c.fillStyle='#fff5b0';c.shadowBlur=12;c.shadowColor='#fff1a8';c.fillRect(p.x-5,p.y-3,10,6);c.shadowBlur=0;}}
+ // Lower bowl, upper tier, roof trim and pitch-side details.
+ drawPoly3D([[-86,0,-58],[86,0,-58],[86,0,-37],[-86,0,-37]],'#8b949e','#e2e8ec',1);
+ drawPoly3D([[-86,0,37],[86,0,37],[86,0,58],[-86,0,58]],'#8b949e','#e2e8ec',1);
+ drawPoly3D([[-78,0,-54],[-78,16,-49],[78,16,-49],[78,0,-54]],'#59656d','#c2cbd1',1);
+ drawPoly3D([[-78,0,54],[78,0,54],[78,16,49],[-78,16,49]],'#59656d','#c2cbd1',1);
+ drawPoly3D([[-76,13,-49],[76,13,-49],[72,18,-44],[-72,18,-44]],'#707b82','#aeb8bf',1);
+ drawPoly3D([[-72,18,44],[72,18,44],[76,13,49],[-76,13,49]],'#707b82','#aeb8bf',1);
+ const crowd=['#e53935','#1e88e5','#fdd835','#43a047','#8e24aa','#fb8c00','#eeeeee','#212121','#00acc1','#6d4c41','#ef5350','#5c6bc0'];
+ for(const side of [-1,1]){
+   for(let row=0;row<7;row++){
+     const yy=2.0+row*2.35;
+     const z=side*(49-row*.8);
+     for(let x=-76;x<=76;x+=2.5){
+       const p=project3D(x,yy,z);if(!p)continue;
+       const r=Math.max(1.25,Math.min(4.1,65/p.depth));
+       const idx=Math.abs(Math.round(x/2.5)+row*7+(side<0?3:0));
+       c.fillStyle=crowd[idx%crowd.length];c.beginPath();c.arc(p.x,p.y,r*.62,0,Math.PI*2);c.fill();
+       c.fillStyle='#d6a27d';c.beginPath();c.arc(p.x,p.y-r*.52,r*.31,0,Math.PI*2);c.fill();
+       c.fillStyle='rgba(33,43,51,.38)';c.fillRect(p.x-r*.7,p.y+r*.38,r*1.4,r*.28);
+     }
+   }
+ }
+ // End stands
+ for(const side of [-1,1]){
+   const x=side*76;
+   for(let row=0;row<5;row++) for(let z=-43;z<=43;z+=2.8){
+     const p=project3D(x+side*row*.85,2.1+row*2.3,z);if(!p)continue;
+     const r=Math.max(1.2,Math.min(4,60/p.depth));
+     c.fillStyle=crowd[(Math.round(z/2.8)+row+(side<0?4:0))%crowd.length];c.beginPath();c.arc(p.x,p.y,r*.6,0,Math.PI*2);c.fill();
+     c.fillStyle='#d6a27d';c.beginPath();c.arc(p.x,p.y-r*.5,r*.30,0,Math.PI*2);c.fill();
+   }
+ }
+ // Advertising boards and railings around the pitch.
+ for(const z of [-58,58]) drawPoly3D([[-64,.2,z],[64,.2,z],[64,1.9,z],[-64,1.9,z]],'#dbe4e7','#ffffff',.7);
+ for(const side of [-1,1]){
+   drawLine3D([-79,18,side*45],[79,18,side*45],'rgba(255,255,255,.85)',1.5);
+   drawLine3D([-76,2,side*47],[76,2,side*47],'#d7dde0',1);
+ }
+ // Corner flags and benches
+ for(const x of [-58,58]){
+   for(const z of [-53,53]){
+     drawLine3D([x,0,z],[x,4,z],'#f3f4f6',1.5);
+     drawPoly3D([[x,3.7,z],[x+(x<0?4:-4),3.7,z],[x+(x<0?4:-4),2.7,z],[x,2.7,z]],'#f2c94c',null);
+   }
+ }
+ // Floodlight towers
+ for(const x of [-74,74])for(const z of [-48,48]){
+   drawLine3D([x,0,z],[x,23,z],'#737e85',2.4);
+   drawLine3D([x,20,z],[x+(x<0?4:-4),22,z],'#8e9aa1',2);
+   const p=project3D(x+(x<0?4:-4),22,z);if(p){c.fillStyle='#fffbe8';c.shadowBlur=14;c.shadowColor='#fff0a8';c.fillRect(p.x-5,p.y-3,10,6);c.shadowBlur=0;}
+ }
 }
+
 function drawGoal3D(side){
  const z=side*47.5,back=side*54.5,crossY=5.8;
  // Net volume first so the frame sits visibly in front of it.
@@ -1184,37 +1330,65 @@ function drawGoal3D(side){
 }
 function drawPitch3D(){
  const c=match3d.ctx,w=match3d.w,h=match3d.h;c.clearRect(0,0,w,h);
- const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#07131d');sky.addColorStop(.48,'#102a1a');sky.addColorStop(1,'#06100a');c.fillStyle=sky;c.fillRect(0,0,w,h);
+ const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#69bcf2');sky.addColorStop(.38,'#c8eeff');sky.addColorStop(.70,'#dff6ff');sky.addColorStop(1,'#8fba7d');c.fillStyle=sky;c.fillRect(0,0,w,h);
+ // soft sun, cloud layers and distant haze
+ c.save();c.globalAlpha=.52;c.fillStyle='#fff8ce';c.beginPath();c.arc(w*.88,h*.12,30,0,Math.PI*2);c.fill();c.globalAlpha=.22;c.fillStyle='#fff';
+ for(const cl of [{x:.17,y:.13,s:1.1},{x:.43,y:.08,s:.7},{x:.73,y:.18,s:.85}]){c.beginPath();c.ellipse(w*cl.x,h*cl.y,58*cl.s,18*cl.s,0,0,Math.PI*2);c.fill();c.beginPath();c.ellipse(w*cl.x-30*cl.s,h*cl.y+3*cl.s,30*cl.s,12*cl.s,0,0,Math.PI*2);c.fill();c.beginPath();c.ellipse(w*cl.x+28*cl.s,h*cl.y+1*cl.s,28*cl.s,12*cl.s,0,0,Math.PI*2);c.fill();}c.restore();
  drawStadium3D();
- drawPoly3D([[-60,0,-56],[60,0,-56],[60,0,56],[-60,0,56]],'#167b45','#dfffe8',2);
- for(let z=-56;z<56;z+=11.2)drawPoly3D([[-60,.01,z],[60,.01,z],[60,.01,z+11.2],[-60,.01,z+11.2]],Math.floor((z+37.5)/7.5)%2?'#197f47':'#177743');
- drawLine3D([-60,.06,-56],[60,.06,-56],'#fff',2);drawLine3D([60,.06,-56],[60,.06,56],'#fff',2);drawLine3D([60,.06,56],[-60,.06,56],'#fff',2);drawLine3D([-60,.06,56],[-60,.06,-56],'#fff',2);drawLine3D([0,.07,-56],[0,.07,56],'#fff',2);
- const circle=[];for(let i=0;i<=64;i++){const a=i/64*Math.PI*2;circle.push([Math.cos(a)*9.15,.07,Math.sin(a)*9.15]);}for(let i=1;i<circle.length;i++)drawLine3D(circle[i-1],circle[i],'#fff',1.5);
- for(const side of [-1,1]){const z=side*56,inner=z-side*20.5;drawLine3D([-9.15,.07,z],[9.15,.07,z],'#fff',2);drawLine3D([-9.15,.07,z],[9.15,.07,inner],'#fff',1.5);drawLine3D([9.15,.07,z],[9.15,.07,inner],'#fff',1.5);drawLine3D([-9.15,.07,z],[-9.15,.07,inner],'#fff',1.5);drawGoal3D(side);}
+ // Pitch with mowing stripes and subtle texture
+ drawPoly3D([[-60,0,-56],[60,0,-56],[60,0,56],[-60,0,56]],'#1b8148','#effff3',2);
+ for(let z=-56;z<56;z+=9.33){ const k=Math.floor((z+56)/9.33)%2;drawPoly3D([[-60,.015,z],[60,.015,z],[60,.015,Math.min(56,z+9.33)],[-60,.015,Math.min(56,z+9.33)]],k?'#177442':'#1b8048'); }
+ // Fine pitch lines
+ drawLine3D([-60,.05,-56],[60,.05,-56],'#fff',2);drawLine3D([60,.05,-56],[60,.05,56],'#fff',2);drawLine3D([60,.05,56],[-60,.05,56],'#fff',2);drawLine3D([-60,.05,56],[-60,.05,-56],'#fff',2);drawLine3D([0,.07,-56],[0,.07,56],'#fff',2);
+ const circle=[];for(let i=0;i<=72;i++){const a=i/72*Math.PI*2;circle.push([Math.cos(a)*9.15,.08,Math.sin(a)*9.15]);}for(let i=1;i<circle.length;i++)drawLine3D(circle[i-1],circle[i],'#fff',1.7);
+ for(const side of [-1,1]){
+   const z=side*56,inner=z-side*20.5;
+   drawLine3D([-9.15,.08,z],[9.15,.08,z],'#fff',2);drawLine3D([-9.15,.08,z],[9.15,.08,inner],'#fff',1.6);drawLine3D([9.15,.08,z],[9.15,.08,inner],'#fff',1.6);drawLine3D([-9.15,.08,z],[-9.15,.08,inner],'#fff',1.6);
+   const spot=[];for(let i=0;i<=48;i++){const a=Math.PI*2*i/48;spot.push([9.15*Math.cos(a),.08,inner+4+4*Math.sin(a)]);}for(let i=1;i<spot.length;i++)drawLine3D(spot[i-1],spot[i],'#fff',1.2);
+   drawGoal3D(side);
+ }
+ // Stadium-side ambient lighting and slight vignette
+ const g=c.createRadialGradient(w/2,h*.55,Math.min(w,h)*.15,w/2,h*.55,Math.max(w,h)*.8);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(0,30,20,.28)');c.fillStyle=g;c.fillRect(0,0,w,h);
 }
+
 function drawHuman3D(p,i){
- const c=match3d.ctx,w=match3d.w,h=match3d.h;const world=worldFromPitch(p.x,p.y),base=project3D(world.x,0,world.z);if(!base)return;
- const head=project3D(world.x,2.25,world.z),shoulder=project3D(world.x,1.45,world.z),hip=project3D(world.x,.85,world.z),lArm=project3D(world.x-.42,1.4,world.z),rArm=project3D(world.x+.42,1.4,world.z),lLeg=project3D(world.x-.2,.05,world.z),rLeg=project3D(world.x+.2,.05,world.z);if(!head||!shoulder||!hip)return;
- const size=Math.max(4,Math.min(20,145/head.depth));
- c.save();c.globalAlpha=.32;c.fillStyle='#000';c.beginPath();c.ellipse(base.x,base.y,size*.85,size*.28,0,0,Math.PI*2);c.fill();c.restore();
- const isKeeper=p.isGK===true;
- const teamColor=isKeeper?'#f2c94c':(p.team===0?'#d9274d':'#2e61d8'),dark=isKeeper?'#8a6d08':(p.team===0?'#8c1630':'#173a91');
- const drawSeg=(a,b,color,lw)=>{if(!a||!b)return;c.strokeStyle=color;c.lineWidth=Math.max(2,lw);c.lineCap='round';c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke()};
- drawSeg(lArm,project3D(world.x-.42,.75,world.z), '#d9a078',Math.max(2,size*.22));drawSeg(rArm,project3D(world.x+.42,.75,world.z),'#d9a078',Math.max(2,size*.22));
- drawSeg(project3D(world.x-.2,.78,world.z),lLeg,'#111827',Math.max(2,size*.26));drawSeg(project3D(world.x+.2,.78,world.z),rLeg,'#111827',Math.max(2,size*.26));
- c.fillStyle=dark;c.fillRect(hip.x-size*.34,hip.y-size*.35,size*.68,size*.48);c.fillStyle=teamColor;c.beginPath();c.ellipse(shoulder.x,shoulder.y-size*.05,size*.5,size*.7,0,0,Math.PI*2);c.fill();
- c.fillStyle='#c98f6b';c.beginPath();c.arc(head.x,head.y,size*.27,0,Math.PI*2);c.fill();c.fillStyle='#241b17';c.beginPath();c.arc(head.x,head.y-size*.05,size*.28,Math.PI,Math.PI*2);c.fill();
- const controlled=i===match.control;if(controlled){c.strokeStyle='#ffe45c';c.lineWidth=3;c.beginPath();c.ellipse(base.x,base.y,size*.95,size*.35,0,0,Math.PI*2);c.stroke()}
- c.font=`900 ${Math.max(10,Math.min(18,size*.72))}px Arial`;c.textAlign='center';c.textBaseline='bottom';c.lineWidth=4;c.strokeStyle='rgba(0,0,0,.8)';c.strokeText(p.name,head.x,head.y-size*.38);c.fillStyle='#fff';c.fillText(p.name,head.x,head.y-size*.38);if(isKeeper){c.font=`900 ${Math.max(9,Math.min(15,size*.58))}px Arial`;c.fillStyle='#ffe45c';c.fillText('GK',head.x,head.y+size*.82);}
+ const c=match3d.ctx;const world=worldFromPitch(p.x,p.y),base=project3D(world.x,0,world.z);if(!base)return;
+ const moving=Math.hypot(p.vx||0,p.vy||0);const phase=match.time*10+(i*1.7);const stride=Math.min(1,moving/8);const swing=Math.sin(phase)*(0.32+0.42*stride);
+ const head=project3D(world.x,2.28,world.z),shoulder=project3D(world.x,1.48,world.z),hip=project3D(world.x,.82,world.z);if(!head||!shoulder||!hip)return;
+ const size=Math.max(4,Math.min(20,150/head.depth));
+ c.save();c.globalAlpha=.28;c.fillStyle='#000';c.beginPath();c.ellipse(base.x,base.y,size*.95,size*.30,0,0,Math.PI*2);c.fill();c.restore();
+ const isKeeper=p.isGK===true;const teamColor=isKeeper?'#ffd34d':(p.team===0?'#d52d52':'#285fd4'),dark=isKeeper?'#8d720e':(p.team===0?'#85172f':'#17377f');
+ const px=(v)=>project3D(world.x+v.x,v.y,world.z+v.z);
+ const lArm=px({x:-.46+ swing*.18,y:1.42,z:.06}),rArm=px({x:.46- swing*.18,y:1.42,z:.06}),lHand=px({x:-.52-swing*.20,y:.74,z:.02}),rHand=px({x:.52+swing*.20,y:.74,z:.02});
+ const lHip=px({x:-.18,y:.78,z:0}),rHip=px({x:.18,y:.78,z:0}),lFoot=px({x:-.20+swing*.16,y:.05,z:.07}),rFoot=px({x:.20-swing*.16,y:.05,z:.07});
+ const seg=(a,b,color,lw)=>{if(!a||!b)return;c.strokeStyle=color;c.lineWidth=Math.max(2,lw);c.lineCap='round';c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke()};
+ seg(lArm,lHand,'#d6a078',Math.max(2,size*.20));seg(rArm,rHand,'#d6a078',Math.max(2,size*.20));seg(lHip,lFoot,'#161c25',Math.max(2,size*.25));seg(rHip,rFoot,'#161c25',Math.max(2,size*.25));
+ c.fillStyle=dark;c.fillRect(hip.x-size*.34,hip.y-size*.34,size*.68,size*.45);
+ c.fillStyle=teamColor;c.beginPath();c.ellipse(shoulder.x,shoulder.y-size*.04,size*.52,size*.72,0,0,Math.PI*2);c.fill();
+ // shirt collar / stripe detail
+ c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=Math.max(1,size*.08);c.beginPath();c.moveTo(shoulder.x-size*.30,shoulder.y-size*.14);c.lineTo(shoulder.x,shoulder.y+size*.05);c.lineTo(shoulder.x+size*.30,shoulder.y-size*.14);c.stroke();
+ c.fillStyle='#c98f6b';c.beginPath();c.arc(head.x,head.y,size*.27,0,Math.PI*2);c.fill();c.fillStyle='#201713';c.beginPath();c.arc(head.x,head.y-size*.05,size*.28,Math.PI,Math.PI*2);c.fill();
+ const controlled=i===match.control;if(controlled){c.strokeStyle='#ffe45c';c.lineWidth=3;c.beginPath();c.ellipse(base.x,base.y,size*1.05,size*.38,0,0,Math.PI*2);c.stroke();}
+ c.font=`900 ${Math.max(10,Math.min(18,size*.72))}px Arial`;c.textAlign='center';c.textBaseline='bottom';c.lineWidth=4;c.strokeStyle='rgba(0,0,0,.82)';c.strokeText(p.name,head.x,head.y-size*.38);c.fillStyle='#fff';c.fillText(p.name,head.x,head.y-size*.38);
+ if(isKeeper){c.font=`900 ${Math.max(9,Math.min(15,size*.58))}px Arial`;c.fillStyle='#ffe45c';c.fillText('GK',head.x,head.y+size*.82);}
 }
-function drawBall3D(){const w=worldFromPitch(match.ball.x,match.ball.y),b=project3D(w.x,.45,w.z);if(!b)return;const c=match3d.ctx,r=Math.max(3,Math.min(10,80/b.depth));c.fillStyle='#fff';c.beginPath();c.arc(b.x,b.y,r,0,Math.PI*2);c.fill();c.strokeStyle='#222';c.lineWidth=1;c.stroke()}
+
+function drawBall3D(){
+ const w=worldFromPitch(match.ball.x,match.ball.y);const ground=project3D(w.x,.06,w.z),b=project3D(w.x,.48,w.z);if(!b||!ground)return;const c=match3d.ctx,r=Math.max(3,Math.min(10,85/b.depth));
+ c.save();c.globalAlpha=.24;c.fillStyle='#000';c.beginPath();c.ellipse(ground.x,ground.y,r*1.25,r*.42,0,0,Math.PI*2);c.fill();c.restore();
+ const g=c.createRadialGradient(b.x-r*.35,b.y-r*.45,r*.2,b.x,b.y,r);g.addColorStop(0,'#fff');g.addColorStop(1,'#d9e0e6');c.fillStyle=g;c.beginPath();c.arc(b.x,b.y,r,0,Math.PI*2);c.fill();c.strokeStyle='#1b1b1b';c.lineWidth=1;c.stroke();
+ c.fillStyle='#252525';for(let i=0;i<5;i++){const a=(performance.now()/130+i*1.256);c.beginPath();c.arc(b.x+Math.cos(a)*r*.45,b.y+Math.sin(a)*r*.45,r*.11,0,Math.PI*2);c.fill();}
+}
+
 function update3DMatch(dt){
  if(!match3d)return;const {camera}=match3d;
  const cp=worldFromPitch(match.players[match.control].x,match.players[match.control].y),bp=worldFromPitch(match.ball.x,match.ball.y);
- const actionX=(cp.x+bp.x)/2,actionZ=(cp.z+bp.z)/2,targetLerp=1-Math.exp(-dt*3.2);
+ const ballOffset=match.ball.flight>0?.55:0.35;
+ const actionX=cp.x*(1-ballOffset)+bp.x*ballOffset,actionZ=cp.z*(1-ballOffset)+bp.z*ballOffset,targetLerp=1-Math.exp(-dt*2.5);
  camera.targetX+=(actionX-camera.targetX)*targetLerp;camera.targetZ+=(actionZ-camera.targetZ)*targetLerp;
  camera.tx+=(camera.targetX-camera.tx)*targetLerp;camera.tz+=(camera.targetZ-camera.tz)*targetLerp;
- const desiredX=camera.tx,desiredZ=camera.tz-21,followLerp=1-Math.exp(-dt*2.6);
+ const zoom=match.ball.flight>0?23.5:21;
+ const desiredX=camera.tx,desiredZ=camera.tz-zoom,followLerp=1-Math.exp(-dt*2.4);
  camera.x+=(desiredX-camera.x)*followLerp;camera.z+=(desiredZ-camera.z)*followLerp;camera.y+=(16-camera.y)*(1-Math.exp(-dt*2.2));
  drawPitch3D();const ordered=match.players.map((p,i)=>({p,i,z:worldFromPitch(p.x,p.y).z})).sort((a,b)=>b.z-a.z);for(const item of ordered)drawHuman3D(item.p,item.i);drawBall3D();
 }
@@ -1228,6 +1402,7 @@ function forfeit(){if(match&&!match.ended&&confirm("Forfeit this match 0-3?")){m
 
 function repairCareerSquad(){
   if(!career) return;
+  try{_fullSquadRepair()}catch(e){console.warn("Full squad repair skipped",e)}
   if(!Array.isArray(career.players)) career.players=[];
   if(!Array.isArray(career.soldPlayers)) career.soldPlayers=[];
   const sold=new Set(career.soldPlayers.map(n=>String(n).trim().toLowerCase()));
@@ -1372,7 +1547,24 @@ function trainAll(){
 }
 function matchView(){
  const me=CLUBS[career.club],op=CLUBS[match.op];
- return layout(`<div class="card"><div class="matchTop"><div><div class="muted">PREMIER LEAGUE · 3D LIVE MATCH · v5.65</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
+ return layout(`<div class="card"><div class="matchTop"><div><div class="muted">PREMIER LEAGUE · 3D LIVE MATCH · v11.9</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
+}
+function initMobileControls(){
+ const wrap=document.querySelector('.mobileControls'),zone=document.getElementById('mobileJoystick'),knob=document.getElementById('joystickKnob'),pass=document.getElementById('mobilePass'),shoot=document.getElementById('mobileShoot');
+ if(!wrap||!zone||!knob||!pass||!shoot)return;
+ const isMobile=()=>window.matchMedia('(max-width:700px)').matches;
+ window.mobileMatchInput={x:0,y:0,active:false};
+ let joyId=null;
+ const resetJoy=()=>{joyId=null;window.mobileMatchInput.active=false;window.mobileMatchInput.x=0;window.mobileMatchInput.y=0;knob.style.transform='translate(0,0)';};
+ const updateJoy=(clientX,clientY)=>{
+   const r=zone.getBoundingClientRect(),cx=r.left+60,cy=r.top+60,max=38;let dx=clientX-cx,dy=clientY-cy;const d=Math.hypot(dx,dy)||1;if(d>max){dx=dx/d*max;dy=dy/d*max;}window.mobileMatchInput.x=dx/max;window.mobileMatchInput.y=dy/max;window.mobileMatchInput.active=Math.hypot(dx,dy)>.08;knob.style.transform=`translate(${dx}px,${-dy}px)`;
+ };
+ zone.onpointerdown=e=>{if(!isMobile())return;e.preventDefault();joyId=e.pointerId;try{zone.setPointerCapture(e.pointerId)}catch(_){};updateJoy(e.clientX,e.clientY);};
+ zone.onpointermove=e=>{if(e.pointerId!==joyId)return;e.preventDefault();updateJoy(e.clientX,e.clientY);};
+ zone.onpointerup=e=>{if(e.pointerId===joyId)resetJoy();};zone.onpointercancel=e=>{if(e.pointerId===joyId)resetJoy();};
+ const bindHold=(el,start,finish)=>{let id=null;el.onpointerdown=e=>{if(!isMobile()||!match||match.ended)return;e.preventDefault();id=e.pointerId;try{el.setPointerCapture(e.pointerId)}catch(_){};start();};el.onpointerup=e=>{if(id===e.pointerId){e.preventDefault();finish();id=null;}};el.onpointercancel=e=>{if(id===e.pointerId){e.preventDefault();finish();id=null;}};};
+ bindHold(pass,startPassCharge,finishPassCharge);bindHold(shoot,startShootCharge,finishShootCharge);
+ window.addEventListener('resize',()=>{if(!isMobile())resetJoy();},{passive:true});
 }
 function bindMatchControls(){
  document.querySelectorAll('[data-action]').forEach(b=>{
