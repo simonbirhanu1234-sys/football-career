@@ -86,6 +86,10 @@ const EURO_CLUBS=[
 
 const DOMESTIC_CLUB_IDS=CLUBS.map((_,i)=>i);
 const DOMESTIC_LEAGUE_NAME="Premier League";
+const FA_CUP_GUESTS=["Blackburn Rovers","Bristol City","Derby County","Middlesbrough","Norwich City","Queens Park Rangers","Sheffield United","Stoke City","Swansea City","Watford","West Bromwich Albion","Preston North End"];
+const FA_CUP_TEAM_NAMES=[...CLUBS.map(c=>c.name),...FA_CUP_GUESTS];
+function faCupTeamRating(name){ const c=CLUBS.find(x=>x.name===name); return c?strengthForClub(CLUBS.indexOf(c)):68; }
+
 
 const PLAYER_POOL=[
 ["Robert Sanchez","GK",75,20,"Chelsea"],["Filip Jorgensen","GK",74,16,"Chelsea"],["David Raya","GK",86,45,"Arsenal"],["Kepa Arrizabalaga","GK",82,20,"Arsenal"],["Illan Meslier","GK",78,12,"Arsenal"],
@@ -224,6 +228,7 @@ function startCareer(i){
   inbox:["Career started. Your board expects steady progress and sensible squad building."],
  tactics:{formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",role0:"Balanced",role1:"Defend",role2:"Support",role3:"Balanced",role4:"Attack",role5:"Attack",role6:"Attack",mentality:"Balanced",press:"Medium"},
  champions:{qualified:false,phase:[],played:0,pts:0,wins:0,draws:0,losses:0,gf:0,ga:0,rank:null,knockout:null,eliminated:false},
+  faCup:{round:"Third Round",teams:[],matches:[],playedIndex:0,eliminated:false,winner:null,champion:false},
   leagueSchedule:[]
  };
  makeFixtures();
@@ -269,6 +274,7 @@ function nextSeason(){
  const earnedCL=!!career.champions?.qualified;
  career.seasonComplete=false;
  career.champions={qualified:earnedCL,phase:[],played:0,pts:0,wins:0,draws:0,losses:0,gf:0,ga:0,rank:null,knockout:null,eliminated:false};
+ career.faCup=createFACup();
  if(earnedCL){const pool=easierUCLDraw();career.champions.phase=pool.map((op,i)=>({op,home:i%2===0,played:false}));}
  makeFixtures();
  career.inbox.push(`Season ${career.season} begins. Prize money: $${prize}m. Your squad carries over.`);
@@ -285,6 +291,7 @@ function nav(){return `<div class="nav">
 <button data-go="transfers" class="${page==="transfers"?"active":""}">Transfers</button>
 <button data-go="tactics" class="${page==="tactics"?"active":""}">Tactics</button>
 <button data-go="champions" class="${page==="champions"?"active":""}">Champions League</button>
+<button data-go="facup" class="${page==="facup"?"active":""}">🏆 FA Cup</button>
 ${match?`<button data-go="match" class="${page==="match"?"active":""}">Match</button>`:""}
 </div>`}
 function layout(body){
@@ -1583,6 +1590,81 @@ function bindMatchControls(){
  document.querySelectorAll('[data-forfeit]').forEach(b=>b.onclick=forfeit);
 }
 
+function createFACup(){
+  const pool=FA_CUP_TEAM_NAMES.slice().sort(()=>Math.random()-.5);
+  const matches=[];
+  for(let i=0;i<pool.length;i+=2){
+    const home=Math.random()<.5;
+    matches.push({home:home?pool[i]:pool[i+1],away:home?pool[i+1]:pool[i],played:false,score:null,winner:null,penalties:false});
+  }
+  return {round:"Third Round",teams:pool,matches,playedIndex:0,eliminated:false,winner:null,champion:false,history:[]};
+}
+function faCupScore(home,away){
+  const diff=faCupTeamRating(home)-faCupTeamRating(away)+3;
+  const xg=Math.max(.35,Math.min(2.5,1.15*Math.exp(diff/35)));
+  const oxg=Math.max(.3,Math.min(2.2,1.05*Math.exp(-diff/38)));
+  return [Math.min(6,poisson(xg)),Math.min(6,poisson(oxg))];
+}
+function faCupNextRoundName(r){
+  return ({"Third Round":"Fourth Round","Fourth Round":"Fifth Round","Fifth Round":"Quarter-final","Quarter-final":"Semi-final","Semi-final":"Final","Final":"Winner"})[r]||"Winner";
+}
+function advanceFACupRound(fc){
+  const winners=fc.matches.map(m=>m.winner).filter(Boolean);
+  fc.history.push({round:fc.round,matches:fc.matches.map(m=>({...m}))});
+  const next=faCupNextRoundName(fc.round);
+  if(next==="Winner"){
+    fc.winner=winners[0]||null; fc.champion=fc.winner===CLUBS[career.club].name; fc.playedIndex=fc.matches.length; fc.round="Winner";
+    career.inbox.unshift(`🏆 FA Cup Final: ${fc.winner||"Unknown"} are the champions!`);
+    if(fc.champion) career.inbox.unshift("🏆 FA Cup WINNERS! Your club lifted the trophy at Wembley.");
+    return;
+  }
+  fc.round=next;fc.teams=winners;fc.matches=[];fc.playedIndex=0;
+  for(let i=0;i<winners.length;i+=2){
+    const a=winners[i],b=winners[i+1]; if(!b)continue;
+    const home=Math.random()<.5;fc.matches.push({home:home?a:b,away:home?b:a,played:false,score:null,winner:null,penalties:false});
+  }
+  career.inbox.unshift(`🏆 FA Cup draw: ${fc.round} is ready.`);
+}
+function resolveFACupTie(m){
+  let [a,b]=faCupScore(m.home,m.away);
+  if(a===b){m.penalties=true;m.winner=Math.random()<(faCupTeamRating(m.home)/(faCupTeamRating(m.home)+faCupTeamRating(m.away)))?m.home:m.away;}
+  else m.winner=a>b?m.home:m.away;
+  m.played=true;m.score=`${a}-${b}${a===b?` (pens ${m.winner===m.home?'H':'A'})`:''}`;
+}
+function simulateFACupMatch(){
+  const fc=career.faCup; if(!fc||fc.eliminated||fc.round==="Winner")return;
+  const user=CLUBS[career.club].name;
+  let userMatch=fc.matches.find(m=>(m.home===user||m.away===user)&&!m.played);
+  if(!userMatch){
+    fc.matches.filter(m=>!m.played).forEach(resolveFACupTie);
+    fc.playedIndex=fc.matches.length;
+    advanceFACupRound(fc); save(); render(); return;
+  }
+  // The rest of the draw is simulated automatically so the user's tie is always ready.
+  fc.matches.filter(m=>!m.played && m!==userMatch).forEach(resolveFACupTie);
+  resolveFACupTie(userMatch);
+  const usWon=userMatch.winner===user;
+  fc.eliminated=!usWon;
+  career.inbox.unshift(`FA Cup ${fc.round}: ${userMatch.home} ${userMatch.score} ${userMatch.away} — ${usWon?'you advance':'you are eliminated'}.`);
+  fc.playedIndex=fc.matches.length;
+  if(!fc.eliminated)advanceFACupRound(fc);
+  save();render();
+}
+function facup(){
+  const fc=career.faCup||createFACup(); career.faCup=fc;
+  const user=CLUBS[career.club].name;
+  const status=fc.eliminated?'Eliminated':fc.round==='Winner'?(fc.champion?'FA CUP WINNERS 🏆':`Winner: ${fc.winner||'Unknown'}`):fc.round;
+  const active=fc.matches[fc.playedIndex];
+  const rows=fc.round==='Winner'?[]:fc.matches.map((m,i)=>{
+    const involved=m.home===user||m.away===user;
+    const action=!m.played&&i===fc.playedIndex&&involved&&!fc.eliminated?`<button data-fa-play>Simulate</button>`:'';
+    return `<tr class="${involved?'you':''}"><td>${esc(m.home)}</td><td>${m.played?m.score:'vs'}</td><td>${esc(m.away)}</td><td>${m.winner?`<span class="good">${esc(m.winner)} advances</span>`:action}</td></tr>`;
+  }).join('');
+  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>🏆 Emirates FA Cup</h2><p class="muted">32-team career-mode knockout cup. Drawn ties go straight to penalties; the other ties are simulated automatically.</p></div><span class="pill">${status}</span></div>
+  <div class="stats"><div class="stat"><span class="muted">Round</span><b>${status}</b></div><div class="stat"><span class="muted">Matches played</span><b>${Math.min(fc.playedIndex,fc.matches.length)}</b></div><div class="stat"><span class="muted">Your club</span><b>${esc(user)}</b></div><div class="stat"><span class="muted">Prize</span><b>£2.12m</b></div></div>
+  ${active&&!fc.eliminated?`<div class="notice"><b>Your next FA Cup tie:</b> ${esc(active.home)} vs ${esc(active.away)} ${active.home===user||active.away===user?'<button data-fa-play style="float:right">Play / Sim</button>':''}</div>`:''}
+  <div class="table"><table><tr><th>Home</th><th>Score</th><th>Away</th><th>Status</th></tr>${rows||`<tr><td colspan="4">The FA Cup has finished for this season.</td></tr>`}</table></div></div>`);
+}
 function champions(){
  const q=career.champions||{qualified:false,phase:[],played:0,pts:0,wins:0,draws:0,losses:0,gf:0,ga:0,rank:null,knockout:null,eliminated:false};
  const ko=q.knockout;
@@ -1637,6 +1719,7 @@ function render(){
    :page==="transfers"?transfers()
    :page==="tactics"?tactics()
    :page==="champions"?champions()
+   :page==="facup"?facup()
    :page==="match"?matchView()
    :dashboard())
   :home();
@@ -1689,6 +1772,7 @@ function bind(){
  document.querySelectorAll("[data-ucl-sim]").forEach(b=>b.onclick=simulateUCL);
  document.querySelectorAll("[data-ucl-continue]").forEach(b=>b.onclick=continueUCL);
  document.querySelectorAll("[data-ucl-ko]").forEach(b=>b.onclick=playUCLKnockout);
+ document.querySelectorAll("[data-fa-play]").forEach(b=>b.onclick=simulateFACupMatch);
  document.querySelectorAll("[data-drag-player]").forEach(el=>el.ondragstart=e=>e.dataTransfer.setData("text/plain",el.dataset.dragPlayer));
  const pitch=document.querySelector('.tacticalPitch');
  if(pitch){pitch.ondragover=e=>e.preventDefault();pitch.ondrop=e=>{e.preventDefault();const el=document.querySelector(`[data-drag-player="${e.dataTransfer.getData('text/plain')}"]`);if(!el)return;const r=pitch.getBoundingClientRect();el.style.left=Math.max(2,Math.min(98,(e.clientX-r.left)/r.width*100))+'%';el.style.top=Math.max(4,Math.min(96,(e.clientY-r.top)/r.height*100))+'%';};}
@@ -1702,6 +1786,7 @@ function bootGame(){
     if(career){
       if(!career.tactics || typeof career.tactics!=="object") career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};
       try{ensureLineup()}catch(e){career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};ensureLineup();}
+      if(!career.faCup || !Array.isArray(career.faCup.matches)) career.faCup=createFACup();
       const validSchedule=Array.isArray(career.leagueSchedule)&&career.leagueSchedule.length===38&&Array.isArray(career.fixtures)&&career.fixtures.length===38&&Array.isArray(career.table)&&career.table.length===20;
       if(!validSchedule){career.table=CLUBS.map(x=>({name:x.name,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}));makeFixtures();}
       try{repairCareerSquad()}catch(e){console.warn("Squad repair skipped",e)}
