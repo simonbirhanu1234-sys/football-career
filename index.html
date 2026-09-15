@@ -608,8 +608,9 @@ function substituteDuringMatch(outIndex,inName){
  save();destroy3DMatch();render();init3DMatch();
 }
 
-function startMatch(){
-  const f=nextFixture();if(!f)return;
+function startMatch(custom={}){
+  const isFACup=!!custom.faCupMatch;
+  const f=isFACup?custom.faCupMatch:nextFixture();if(!f)return;
   ensureLineup();
   const lineup=getStartingLineup();
   const spots=formationSpots();
@@ -619,7 +620,9 @@ function startMatch(){
   const normalizeSlot=(slot)=>String(slot||'CM').toUpperCase();
   const userPos=spots.map(([depth,width])=>({x:width,y:100-depth}));
   const oppPos=spots.map(([depth,width])=>({x:width,y:depth}));
-  match={op:f.op,fixture:f,time:0,hs:0,as:0,pos:50,control:9,ball:{x:50,y:50,vx:0,vy:0,flight:0,shotTeam:null,shotPower:0,shotWillScore:false,shotSaveAttempted:false,holderIndex:-1,passTeam:null,passTarget:-1,passPower:0,passFrom:-1},log:[`Kick-off: ${CLUBS[career.club].name} vs ${CLUBS[f.op].name}.`],players:[],ended:false,last:performance.now(),boostUntil:0,passCooldown:0,aiPassCooldown:3,autoSwitchCooldown:0,kickoffTimer:0,restartTimer:0,restartIndex:-1,bench:career.players.filter(p=>!ordered.slice(0,11).some(x=>x&&x.name===p.name)).map(p=>p.name)};
+  const opponentName=isFACup?f.opponentName:CLUBS[f.op].name;
+  const opponentShort=isFACup?(opponentName.split(/\s+/).map(x=>x[0]).join().slice(0,3).toUpperCase()||"OPP"):CLUBS[f.op].short;
+  match={op:isFACup?opponentName:f.op,opponentName,opponentShort,competition:isFACup?"FA CUP":"PREMIER LEAGUE",faCupRef:isFACup?f.faRef:null,fixture:f,time:0,hs:0,as:0,pos:50,control:9,ball:{x:50,y:50,vx:0,vy:0,flight:0,shotTeam:null,shotPower:0,shotWillScore:false,shotSaveAttempted:false,holderIndex:-1,passTeam:null,passTarget:-1,passPower:0,passFrom:-1},log:[`Kick-off: ${CLUBS[career.club].name} vs ${opponentName}.`],players:[],ended:false,last:performance.now(),boostUntil:0,passCooldown:0,aiPassCooldown:3,autoSwitchCooldown:0,kickoffTimer:0,restartTimer:0,restartIndex:-1,bench:career.players.filter(p=>!ordered.slice(0,11).some(x=>x&&x.name===p.name)).map(p=>p.name)};
   userPos.forEach(({x,y},i)=>{
     const slot=normalizeSlot(spots[i]?.[2]);
     const ref=ordered[i]||null;
@@ -631,7 +634,7 @@ function startMatch(){
     const slot=normalizeSlot(spots[i]?.[2]);
     const isGK=i===0;
     const pos=isGK?'GK':slot;
-    match.players.push({team:1,x,y,homeX:x,homeY:y,role:i,vx:0,vy:0,stamina:100,playerIndex:-1,name:isGK?`${CLUBS[f.op].short} Goalkeeper`:`${CLUBS[f.op].short} ${i+1}`,ov:isGK?84+Math.floor(Math.random()*6):72+Math.floor(Math.random()*10),pos,isGK});
+    match.players.push({team:1,x,y,homeX:x,homeY:y,role:i,vx:0,vy:0,stamina:100,playerIndex:-1,name:isGK?`${opponentShort} Goalkeeper`:`${opponentShort} ${i+1}`,ov:isGK?84+Math.floor(Math.random()*6):72+Math.floor(Math.random()*10),pos,isGK});
   });
   match.control=Math.max(1,Math.min(10,match.control));
   page="match";render();installKeys();init3DMatch();requestAnimationFrame(tick);
@@ -881,7 +884,7 @@ function aiMatchUpdate(dt){
 
   // Team intelligence is tied to overall rating. Elite teams think/react faster;
   // lower-rated teams are deliberately slower, less accurate and less decisive.
-  const opponentClub=CLUBS[match.op]||null;
+  const opponentClub=typeof match.op==="number"?CLUBS[match.op]:null;
   const opponentTeamOVR=opponentClub?(opponentClub.atk+opponentClub.mid+opponentClub.def)/3:80;
   const aiTeamIQ=Math.max(.28,Math.min(.78,.30+(opponentTeamOVR-70)*.012));
   const aiPlayerIQ=(pl)=>Math.max(.24,Math.min(.82,aiTeamIQ+(Number(pl?.ov||75)-75)*.003));
@@ -1238,7 +1241,7 @@ function tick(now){
  }
  // Do not create random goals or teleport the ball to midfield; all goals come from a shot crossing the line.
  update3DMatch(dt);updateMatchHUD();
- if(match.time>=90){match.ended=true;destroy3DMatch();makeResult(match.fixture,match.hs,match.as,false);return}
+ if(match.time>=90){match.ended=true;destroy3DMatch();if(match.competition==="FA CUP") finishFACupUserMatch(match.faCupRef,match.hs,match.as,false); else makeResult(match.fixture,match.hs,match.as,false);return}
  requestAnimationFrame(tick);
 }
 function worldFromPitch(x,y){return {x:(x-50)*1.2,z:(50-y)*1.42}}
@@ -1401,10 +1404,10 @@ function update3DMatch(dt){
 }
 function destroy3DMatch(){if(!match3d)return;try{window.removeEventListener('resize',match3d.resize);match3d.el.innerHTML=''}catch(e){}match3d=null}
 
-function updateMatchHUD(){const sc=document.getElementById('matchScore');if(sc)sc.textContent=`${CLUBS[career.club].short} ${match.hs} - ${match.as} ${CLUBS[match.op].short}`;const mut=document.getElementById('matchStatus');if(mut){if(match.shootCharging)mut.textContent=`Hold K / SHOOT · Power ${Math.round(Math.min(1,((performance.now()-match.shootChargeStarted)/1000)/1.15)*100)}% · Release to shoot`;else if(match.passCharging)mut.textContent=`Hold J / PASS · Power ${Math.round(Math.min(1,((performance.now()-match.passChargeStarted)/1000)/1.15)*100)}% · Release to pass`;else mut.textContent=`${Math.min(90,Math.floor(match.time))}' · Possession ${Math.round(match.pos)}% · Player ${match.control+1}`;}const lg=document.getElementById('log');if(lg)lg.innerHTML=match.log.slice(0,15).map(x=>`<div>${esc(x)}</div>`).join('')}
+function updateMatchHUD(){const sc=document.getElementById('matchScore');if(sc)sc.textContent=`${CLUBS[career.club].short} ${match.hs} - ${match.as} ${match.opponentShort}`;const mut=document.getElementById('matchStatus');if(mut){if(match.shootCharging)mut.textContent=`Hold K / SHOOT · Power ${Math.round(Math.min(1,((performance.now()-match.shootChargeStarted)/1000)/1.15)*100)}% · Release to shoot`;else if(match.passCharging)mut.textContent=`Hold J / PASS · Power ${Math.round(Math.min(1,((performance.now()-match.passChargeStarted)/1000)/1.15)*100)}% · Release to pass`;else mut.textContent=`${Math.min(90,Math.floor(match.time))}' · Possession ${Math.round(match.pos)}% · Player ${match.control+1}`;}const lg=document.getElementById('log');if(lg)lg.innerHTML=match.log.slice(0,15).map(x=>`<div>${esc(x)}</div>`).join('')}
 function updatePitch(){updateMatchHUD()}
 
-function forfeit(){if(match&&!match.ended&&confirm("Forfeit this match 0-3?")){match.hs=0;match.as=3;match.ended=true;makeResult(match.fixture,0,3,false)}}
+function forfeit(){if(match&&!match.ended&&confirm("Forfeit this match 0-3?")){match.hs=0;match.as=3;match.ended=true;destroy3DMatch();if(match.competition==="FA CUP") finishFACupUserMatch(match.faCupRef,0,3,false); else makeResult(match.fixture,0,3,false)}}
 
 
 function repairCareerSquad(){
@@ -1553,8 +1556,8 @@ function trainAll(){
  career.inbox.unshift(`Squad training completed: ${eligible.length} eligible players improved.`);save();render();
 }
 function matchView(){
- const me=CLUBS[career.club],op=CLUBS[match.op];
- return layout(`<div class="card"><div class="matchTop"><div><div class="muted">PREMIER LEAGUE · 3D LIVE MATCH · v11.9</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
+ const me=CLUBS[career.club],op={name:match.opponentName,short:match.opponentShort};
+ return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v11.11</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
 }
 function initMobileControls(){
  const wrap=document.querySelector('.mobileControls'),zone=document.getElementById('mobileJoystick'),knob=document.getElementById('joystickKnob'),pass=document.getElementById('mobilePass'),shoot=document.getElementById('mobileShoot');
@@ -1597,7 +1600,7 @@ function createFACup(){
     const home=Math.random()<.5;
     matches.push({home:home?pool[i]:pool[i+1],away:home?pool[i+1]:pool[i],played:false,score:null,winner:null,penalties:false});
   }
-  return {round:"Third Round",teams:pool,matches,playedIndex:0,eliminated:false,winner:null,champion:false,history:[]};
+  return {round:"Round of 32",teams:pool,matches,playedIndex:0,eliminated:false,winner:null,champion:false,history:[]};
 }
 function faCupScore(home,away){
   const diff=faCupTeamRating(home)-faCupTeamRating(away)+3;
@@ -1606,7 +1609,7 @@ function faCupScore(home,away){
   return [Math.min(6,poisson(xg)),Math.min(6,poisson(oxg))];
 }
 function faCupNextRoundName(r){
-  return ({"Third Round":"Fourth Round","Fourth Round":"Fifth Round","Fifth Round":"Quarter-final","Quarter-final":"Semi-final","Semi-final":"Final","Final":"Winner"})[r]||"Winner";
+  return ({"Round of 32":"Round of 16","Round of 16":"Quarter-final","Quarter-final":"Semi-final","Semi-final":"Final","Final":"Winner"})[r]||"Winner";
 }
 function advanceFACupRound(fc){
   const winners=fc.matches.map(m=>m.winner).filter(Boolean);
@@ -1631,23 +1634,55 @@ function resolveFACupTie(m){
   else m.winner=a>b?m.home:m.away;
   m.played=true;m.score=`${a}-${b}${a===b?` (pens ${m.winner===m.home?'H':'A'})`:''}`;
 }
+function getUserFACupMatch(){
+  const fc=career.faCup; if(!fc||fc.eliminated||fc.round==="Winner")return null;
+  const user=CLUBS[career.club].name;
+  return fc.matches.find(m=>(m.home===user||m.away===user)&&!m.played)||null;
+}
+function finishFACupUserMatch(userMatch,hs,as,simulated){
+  const fc=career.faCup; if(!fc||!userMatch||userMatch.played)return;
+  const user=CLUBS[career.club].name;
+  userMatch.played=true;
+  userMatch.score=`${hs}-${as}`;
+  let winner=hs>as?userMatch.home:hs<as?userMatch.away:null;
+  if(!winner){
+    const homeR=faCupTeamRating(userMatch.home),awayR=faCupTeamRating(userMatch.away);
+    winner=Math.random()<(homeR/(homeR+awayR))?userMatch.home:userMatch.away;
+    userMatch.penalties=true;
+    userMatch.score+=` (pens ${winner===userMatch.home?'H':'A'})`;
+  }
+  userMatch.winner=winner;
+  const usWon=winner===user;
+  fc.playedIndex=fc.matches.length;
+  fc.eliminated=!usWon;
+  career.inbox.unshift(`${simulated?'Simulated ':''}FA Cup ${fc.round}: ${userMatch.home} ${userMatch.score} ${userMatch.away} — ${usWon?'you advance':'you are eliminated'}.`);
+  if(!fc.eliminated)advanceFACupRound(fc);
+  save();page="facup";render();
+}
 function simulateFACupMatch(){
   const fc=career.faCup; if(!fc||fc.eliminated||fc.round==="Winner")return;
-  const user=CLUBS[career.club].name;
-  let userMatch=fc.matches.find(m=>(m.home===user||m.away===user)&&!m.played);
+  const userMatch=getUserFACupMatch();
   if(!userMatch){
     fc.matches.filter(m=>!m.played).forEach(resolveFACupTie);
     fc.playedIndex=fc.matches.length;
     advanceFACupRound(fc); save(); render(); return;
   }
-  // The rest of the draw is simulated automatically so the user's tie is always ready.
   fc.matches.filter(m=>!m.played && m!==userMatch).forEach(resolveFACupTie);
-  resolveFACupTie(userMatch);
-  const usWon=userMatch.winner===user;
-  fc.eliminated=!usWon;
-  career.inbox.unshift(`FA Cup ${fc.round}: ${userMatch.home} ${userMatch.score} ${userMatch.away} — ${usWon?'you advance':'you are eliminated'}.`);
-  fc.playedIndex=fc.matches.length;
-  if(!fc.eliminated)advanceFACupRound(fc);
+  const [hs,as]=faCupScore(userMatch.home,userMatch.away);
+  finishFACupUserMatch(userMatch,hs,as,true);
+}
+function playFACupMatch(){
+  const userMatch=getUserFACupMatch();
+  if(!userMatch)return;
+  const user=CLUBS[career.club].name;
+  const opponentName=userMatch.home===user?userMatch.away:userMatch.home;
+  const isHome=userMatch.home===user;
+  const fixture={faCup:true,homeName:userMatch.home,awayName:userMatch.away,isHomeUser:isHome,opponentName,faRef:userMatch};
+  startMatch({faCupMatch:fixture});
+}
+function simulateFACupOnlyOtherTies(){
+  const fc=career.faCup; if(!fc)return;
+  fc.matches.filter(m=>!m.played && !((m.home===CLUBS[career.club].name)||(m.away===CLUBS[career.club].name))).forEach(resolveFACupTie);
   save();render();
 }
 function facup(){
@@ -1657,12 +1692,12 @@ function facup(){
   const active=fc.matches[fc.playedIndex];
   const rows=fc.round==='Winner'?[]:fc.matches.map((m,i)=>{
     const involved=m.home===user||m.away===user;
-    const action=!m.played&&i===fc.playedIndex&&involved&&!fc.eliminated?`<button data-fa-play>Simulate</button>`:'';
+    const action=!m.played&&i===fc.playedIndex&&involved&&!fc.eliminated?`<button data-fa-play>Play Match</button><button class="secondary" data-fa-sim>Simulate</button>`:'';
     return `<tr class="${involved?'you':''}"><td>${esc(m.home)}</td><td>${m.played?m.score:'vs'}</td><td>${esc(m.away)}</td><td>${m.winner?`<span class="good">${esc(m.winner)} advances</span>`:action}</td></tr>`;
   }).join('');
-  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>🏆 Emirates FA Cup</h2><p class="muted">32-team career-mode knockout cup. Drawn ties go straight to penalties; the other ties are simulated automatically.</p></div><span class="pill">${status}</span></div>
+  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>🏆 Emirates FA Cup</h2><p class="muted">32-team career-mode knockout cup starting in the Round of 32. Drawn ties go straight to penalties; the other ties are simulated automatically.</p></div><span class="pill">${status}</span></div>
   <div class="stats"><div class="stat"><span class="muted">Round</span><b>${status}</b></div><div class="stat"><span class="muted">Matches played</span><b>${Math.min(fc.playedIndex,fc.matches.length)}</b></div><div class="stat"><span class="muted">Your club</span><b>${esc(user)}</b></div><div class="stat"><span class="muted">Prize</span><b>£2.12m</b></div></div>
-  ${active&&!fc.eliminated?`<div class="notice"><b>Your next FA Cup tie:</b> ${esc(active.home)} vs ${esc(active.away)} ${active.home===user||active.away===user?'<button data-fa-play style="float:right">Play / Sim</button>':''}</div>`:''}
+  ${active&&!fc.eliminated?`<div class="notice"><b>Your next FA Cup tie:</b> ${esc(active.home)} vs ${esc(active.away)} ${active.home===user||active.away===user?'<span style="float:right;display:flex;gap:8px"><button data-fa-play>Play Match</button><button class="secondary" data-fa-sim>Simulate</button></span>':''}</div>`:''}
   <div class="table"><table><tr><th>Home</th><th>Score</th><th>Away</th><th>Status</th></tr>${rows||`<tr><td colspan="4">The FA Cup has finished for this season.</td></tr>`}</table></div></div>`);
 }
 function champions(){
@@ -1772,7 +1807,8 @@ function bind(){
  document.querySelectorAll("[data-ucl-sim]").forEach(b=>b.onclick=simulateUCL);
  document.querySelectorAll("[data-ucl-continue]").forEach(b=>b.onclick=continueUCL);
  document.querySelectorAll("[data-ucl-ko]").forEach(b=>b.onclick=playUCLKnockout);
- document.querySelectorAll("[data-fa-play]").forEach(b=>b.onclick=simulateFACupMatch);
+ document.querySelectorAll("[data-fa-play]").forEach(b=>b.onclick=playFACupMatch);
+ document.querySelectorAll("[data-fa-sim]").forEach(b=>b.onclick=simulateFACupMatch);
  document.querySelectorAll("[data-drag-player]").forEach(el=>el.ondragstart=e=>e.dataTransfer.setData("text/plain",el.dataset.dragPlayer));
  const pitch=document.querySelector('.tacticalPitch');
  if(pitch){pitch.ondragover=e=>e.preventDefault();pitch.ondrop=e=>{e.preventDefault();const el=document.querySelector(`[data-drag-player="${e.dataTransfer.getData('text/plain')}"]`);if(!el)return;const r=pitch.getBoundingClientRect();el.style.left=Math.max(2,Math.min(98,(e.clientX-r.left)/r.width*100))+'%';el.style.top=Math.max(4,Math.min(96,(e.clientY-r.top)/r.height*100))+'%';};}
