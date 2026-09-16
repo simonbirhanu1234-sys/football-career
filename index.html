@@ -1557,7 +1557,7 @@ function trainAll(){
 }
 function matchView(){
  const me=CLUBS[career.club],op={name:match.opponentName,short:match.opponentShort};
- return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v11.11</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
+ return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v11.12</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
 }
 function initMobileControls(){
  const wrap=document.querySelector('.mobileControls'),zone=document.getElementById('mobileJoystick'),knob=document.getElementById('joystickKnob'),pass=document.getElementById('mobilePass'),shoot=document.getElementById('mobileShoot');
@@ -1639,6 +1639,11 @@ function getUserFACupMatch(){
   const user=CLUBS[career.club].name;
   return fc.matches.find(m=>(m.home===user||m.away===user)&&!m.played)||null;
 }
+function resolveOtherFACupTies(fc,userMatch){
+  if(!fc||!Array.isArray(fc.matches))return;
+  fc.matches.filter(m=>!m.played&&m!==userMatch).forEach(resolveFACupTie);
+  fc.playedIndex=fc.matches.length;
+}
 function finishFACupUserMatch(userMatch,hs,as,simulated){
   const fc=career.faCup; if(!fc||!userMatch||userMatch.played)return;
   const user=CLUBS[career.club].name;
@@ -1653,7 +1658,7 @@ function finishFACupUserMatch(userMatch,hs,as,simulated){
   }
   userMatch.winner=winner;
   const usWon=winner===user;
-  fc.playedIndex=fc.matches.length;
+  resolveOtherFACupTies(fc,userMatch);
   fc.eliminated=!usWon;
   career.inbox.unshift(`${simulated?'Simulated ':''}FA Cup ${fc.round}: ${userMatch.home} ${userMatch.score} ${userMatch.away} — ${usWon?'you advance':'you are eliminated'}.`);
   if(!fc.eliminated)advanceFACupRound(fc);
@@ -1674,6 +1679,8 @@ function simulateFACupMatch(){
 function playFACupMatch(){
   const userMatch=getUserFACupMatch();
   if(!userMatch)return;
+  resolveOtherFACupTies(career.faCup,userMatch);
+  save();
   const user=CLUBS[career.club].name;
   const opponentName=userMatch.home===user?userMatch.away:userMatch.home;
   const isHome=userMatch.home===user;
@@ -1689,15 +1696,16 @@ function facup(){
   const fc=career.faCup||createFACup(); career.faCup=fc;
   const user=CLUBS[career.club].name;
   const status=fc.eliminated?'Eliminated':fc.round==='Winner'?(fc.champion?'FA CUP WINNERS 🏆':`Winner: ${fc.winner||'Unknown'}`):fc.round;
-  const active=fc.matches[fc.playedIndex];
-  const rows=fc.round==='Winner'?[]:fc.matches.map((m,i)=>{
+  const active=getUserFACupMatch();
+  const rows=fc.round==='Winner'?[]:fc.matches.map((m)=>{
     const involved=m.home===user||m.away===user;
-    const action=!m.played&&i===fc.playedIndex&&involved&&!fc.eliminated?`<button data-fa-play>Play Match</button><button class="secondary" data-fa-sim>Simulate</button>`:'';
+    const action=!m.played&&involved&&!fc.eliminated?`<button data-fa-play>Play Match</button><button class="secondary" data-fa-sim>Simulate</button>`:'';
     return `<tr class="${involved?'you':''}"><td>${esc(m.home)}</td><td>${m.played?m.score:'vs'}</td><td>${esc(m.away)}</td><td>${m.winner?`<span class="good">${esc(m.winner)} advances</span>`:action}</td></tr>`;
   }).join('');
-  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>🏆 Emirates FA Cup</h2><p class="muted">32-team career-mode knockout cup starting in the Round of 32. Drawn ties go straight to penalties; the other ties are simulated automatically.</p></div><span class="pill">${status}</span></div>
-  <div class="stats"><div class="stat"><span class="muted">Round</span><b>${status}</b></div><div class="stat"><span class="muted">Matches played</span><b>${Math.min(fc.playedIndex,fc.matches.length)}</b></div><div class="stat"><span class="muted">Your club</span><b>${esc(user)}</b></div><div class="stat"><span class="muted">Prize</span><b>£2.12m</b></div></div>
-  ${active&&!fc.eliminated?`<div class="notice"><b>Your next FA Cup tie:</b> ${esc(active.home)} vs ${esc(active.away)} ${active.home===user||active.away===user?'<span style="float:right;display:flex;gap:8px"><button data-fa-play>Play Match</button><button class="secondary" data-fa-sim>Simulate</button></span>':''}</div>`:''}
+  const playedCount=fc.matches.filter(m=>m.played).length;
+  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>🏆 Emirates FA Cup</h2><p class="muted">32-team career-mode knockout cup starting in the Round of 32. Play your tie in 3D or simulate it just like the Champions League. The other ties are simulated automatically.</p></div><span class="pill">${status}</span></div>
+  <div class="stats"><div class="stat"><span class="muted">Round</span><b>${status}</b></div><div class="stat"><span class="muted">Matches played</span><b>${playedCount}/${fc.matches.length}</b></div><div class="stat"><span class="muted">Your club</span><b>${esc(user)}</b></div><div class="stat"><span class="muted">Prize</span><b>£2.12m</b></div></div>
+  ${active&&!fc.eliminated?`<div class="notice"><b>Your FA Cup tie:</b> ${esc(active.home)} vs ${esc(active.away)} <span style="float:right;display:flex;gap:8px"><button data-fa-play>Play Match</button><button class="secondary" data-fa-sim>Simulate</button></span></div>`:''}
   <div class="table"><table><tr><th>Home</th><th>Score</th><th>Away</th><th>Status</th></tr>${rows||`<tr><td colspan="4">The FA Cup has finished for this season.</td></tr>`}</table></div></div>`);
 }
 function champions(){
@@ -1822,7 +1830,7 @@ function bootGame(){
     if(career){
       if(!career.tactics || typeof career.tactics!=="object") career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};
       try{ensureLineup()}catch(e){career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};ensureLineup();}
-      if(!career.faCup || !Array.isArray(career.faCup.matches)) career.faCup=createFACup();
+      if(!career.faCup || !Array.isArray(career.faCup.matches) || career.faCup.round==='Third Round' || (career.faCup.round==='Round of 32' && career.faCup.matches.length!==16)) career.faCup=createFACup();
       const validSchedule=Array.isArray(career.leagueSchedule)&&career.leagueSchedule.length===38&&Array.isArray(career.fixtures)&&career.fixtures.length===38&&Array.isArray(career.table)&&career.table.length===20;
       if(!validSchedule){career.table=CLUBS.map(x=>({name:x.name,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}));makeFixtures();}
       try{repairCareerSquad()}catch(e){console.warn("Squad repair skipped",e)}
