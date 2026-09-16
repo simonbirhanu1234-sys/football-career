@@ -88,7 +88,16 @@ const DOMESTIC_CLUB_IDS=CLUBS.map((_,i)=>i);
 const DOMESTIC_LEAGUE_NAME="Premier League";
 const FA_CUP_GUESTS=["Blackburn Rovers","Bristol City","Derby County","Middlesbrough","Norwich City","Queens Park Rangers","Sheffield United","Stoke City","Swansea City","Watford","West Bromwich Albion","Preston North End"];
 const FA_CUP_TEAM_NAMES=[...CLUBS.map(c=>c.name),...FA_CUP_GUESTS];
-function faCupTeamRating(name){ const c=CLUBS.find(x=>x.name===name); return c?strengthForClub(CLUBS.indexOf(c)):68; }
+const FA_CUP_GUEST_RATINGS={
+ "Blackburn Rovers":73,"Bristol City":71,"Derby County":69,"Middlesbrough":72,
+ "Norwich City":71,"Queens Park Rangers":68,"Sheffield United":74,"Stoke City":69,
+ "Swansea City":70,"Watford":71,"West Bromwich Albion":73,"Preston North End":70
+};
+function faCupTeamRating(name){
+ const c=CLUBS.find(x=>x.name===name);
+ if(c) return strengthForClub(CLUBS.indexOf(c));
+ return FA_CUP_GUEST_RATINGS[name]||68;
+}
 
 
 const PLAYER_POOL=[
@@ -1557,7 +1566,7 @@ function trainAll(){
 }
 function matchView(){
  const me=CLUBS[career.club],op={name:match.opponentName,short:match.opponentShort};
- return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v11.12</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
+ return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v11.13</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
 }
 function initMobileControls(){
  const wrap=document.querySelector('.mobileControls'),zone=document.getElementById('mobileJoystick'),knob=document.getElementById('joystickKnob'),pass=document.getElementById('mobilePass'),shoot=document.getElementById('mobileShoot');
@@ -1602,11 +1611,42 @@ function createFACup(){
   }
   return {round:"Round of 32",teams:pool,matches,playedIndex:0,eliminated:false,winner:null,champion:false,history:[]};
 }
+function faCupProfile(name){
+  const c=CLUBS.find(x=>x.name===name);
+  if(c){
+    return {atk:c.atk,mid:c.mid,def:c.def,overall:(c.atk+c.mid+c.def)/3};
+  }
+  const r=FA_CUP_GUEST_RATINGS[name]||68;
+  return {atk:r,mid:r-1,def:r+1,overall:r};
+}
+
 function faCupScore(home,away){
-  const diff=faCupTeamRating(home)-faCupTeamRating(away)+3;
-  const xg=Math.max(.35,Math.min(2.5,1.15*Math.exp(diff/35)));
-  const oxg=Math.max(.3,Math.min(2.2,1.05*Math.exp(-diff/38)));
-  return [Math.min(6,poisson(xg)),Math.min(6,poisson(oxg))];
+  // More realistic cup simulation: attack vs defence, midfield control, home advantage,
+  // a little form/variance, and strong limits on extreme scorelines.
+  const h=faCupProfile(home), a=faCupProfile(away);
+  const baseHome=1.28, baseAway=1.02;
+  const homeAdv=2.7;
+  const qualityGap=(h.overall-a.overall);
+  const midfieldGap=(h.mid-a.mid)*0.22;
+  const hForm=(Math.random()-.5)*3.0, aForm=(Math.random()-.5)*3.0;
+  const matchEdge=qualityGap*0.48+midfieldGap+homeAdv+hForm-aForm;
+  const hAttack=(h.atk-a.def)*0.016;
+  const aAttack=(a.atk-h.def)*0.015;
+  let homeXg=baseHome+hAttack+matchEdge*0.020;
+  let awayXg=baseAway+aAttack-matchEdge*0.017;
+  homeXg=Math.max(0.38,Math.min(2.75,homeXg));
+  awayXg=Math.max(0.30,Math.min(2.35,awayXg));
+
+  let hs=Math.min(6,poisson(homeXg));
+  let as=Math.min(6,poisson(awayXg));
+
+  // Keep the most common football scorelines common and arcade-style blowouts rare.
+  if(Math.abs(hs-as)>=4 && Math.random()<0.90){
+    if(hs>as) hs=Math.min(5,as+3); else as=Math.min(5,hs+3);
+  }
+  if(hs===5 && as===0 && Math.random()<0.65) hs=4;
+  if(as===5 && hs===0 && Math.random()<0.65) as=4;
+  return [hs,as];
 }
 function faCupNextRoundName(r){
   return ({"Round of 32":"Round of 16","Round of 16":"Quarter-final","Quarter-final":"Semi-final","Semi-final":"Final","Final":"Winner"})[r]||"Winner";
@@ -1630,9 +1670,30 @@ function advanceFACupRound(fc){
 }
 function resolveFACupTie(m){
   let [a,b]=faCupScore(m.home,m.away);
-  if(a===b){m.penalties=true;m.winner=Math.random()<(faCupTeamRating(m.home)/(faCupTeamRating(m.home)+faCupTeamRating(m.away)))?m.home:m.away;}
-  else m.winner=a>b?m.home:m.away;
-  m.played=true;m.score=`${a}-${b}${a===b?` (pens ${m.winner===m.home?'H':'A'})`:''}`;
+  let wentToPens=false;
+
+  // FA Cup simulation uses extra time before penalties when level after 90.
+  if(a===b){
+    const h=faCupProfile(m.home), ar=faCupProfile(m.away);
+    const extraHomeXg=Math.max(0.08,Math.min(0.52,0.19+(h.atk-ar.def)*0.006+(h.mid-ar.mid)*0.003));
+    const extraAwayXg=Math.max(0.08,Math.min(0.48,0.16+(ar.atk-h.def)*0.006+(ar.mid-h.mid)*0.003));
+    const ea=poisson(extraHomeXg), eb=poisson(extraAwayXg);
+    a+=Math.min(1,ea); b+=Math.min(1,eb);
+    if(a===b){
+      wentToPens=true;
+      const quality=(h.overall-ar.overall);
+      const pHome=Math.max(0.35,Math.min(0.65,0.50+quality*0.008+0.015));
+      m.winner=Math.random()<pHome?m.home:m.away;
+    }else{
+      m.winner=a>b?m.home:m.away;
+    }
+  }else{
+    m.winner=a>b?m.home:m.away;
+  }
+
+  m.penalties=wentToPens;
+  m.played=true;
+  m.score=`${a}-${b}${wentToPens?` (pens ${m.winner===m.home?'H':'A'})`:''}`;
 }
 function getUserFACupMatch(){
   const fc=career.faCup; if(!fc||fc.eliminated||fc.round==="Winner")return null;
