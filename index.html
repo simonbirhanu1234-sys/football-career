@@ -119,6 +119,75 @@ const PLAYER_POOL=[
 ["Kenan Yildiz","LW",82,60,"Juventus"],["Dusan Vlahovic","FWD",84,55,"Juventus"],["Jadon Sancho","LW",81,30,"Free Agent"],["Raheem Sterling","RW",79,18,"Free Agent"]
 ];
 
+/* v11.18 ACCURATE AGE DATA
+   Ages are calculated from DOBs on the career date (2026-09-16).
+   Players without a verified DOB use a stable age estimate rather than defaulting to 20. */
+const VERIFIED_DOBS={
+  "Robert Sanchez":"1998-11-18","Filip Jorgensen":"2002-04-16","David Raya":"1995-09-15","Kepa Arrizabalaga":"1994-10-03","Illan Meslier":"2000-03-02",
+  "William Saliba":"2001-03-24","Cristhian Mosquera":"2004-06-27","Ben White":"1997-10-08","Piero Hincapie":"2002-01-09","Gabriel":"1998-12-19","Jurrien Timber":"2001-06-17","Ezri Konsa":"1998-10-23","Riccardo Calafiori":"2002-05-19",
+  "Martin Odegaard":"1998-12-17","Eberechi Eze":"1998-06-29","Noni Madueke":"2002-03-10","Mikel Merino":"1996-06-22","Kai Havertz":"1999-06-11","Martin Zubimendi":"1999-02-02","Bruno Guimaraes":"1997-11-16","Declan Rice":"1999-01-14","Bukayo Saka":"2001-09-05","Viktor Gyokeres":"1998-06-04","Christos Tzolis":"2002-01-30",
+  "Alisson":"1992-10-02","Virgil van Dijk":"1991-07-08","Ibrahima Konate":"1999-05-25","Alexis Mac Allister":"1999-12-24","Dominik Szoboszlai":"2000-10-25","Mohamed Salah":"1992-06-15","Luis Diaz":"1997-01-13","Darwin Nunez":"1999-06-24","Florian Wirtz":"2003-05-03","Ronald Araujo":"1999-03-07","Giorgi Mamardashvili":"2000-09-29","Hugo Ekitike":"2002-06-20","Cody Gakpo":"1999-05-07","Federico Chiesa":"1997-10-25",
+  "Ruben Dias":"1997-05-14","Josko Gvardiol":"2002-01-23","Rodri":"1996-06-22","Kevin De Bruyne":"1991-06-28","Phil Foden":"2000-05-28","Erling Haaland":"2000-07-21","Bernardo Silva":"1994-08-10","Rayan Cherki":"2003-08-17","Enzo Fernandez":"2001-01-17","Gianluigi Donnarumma":"1999-02-25",
+  "Bruno Fernandes":"1994-09-08","Lisandro Martinez":"1998-01-18","Mason Mount":"1999-01-10","James Maddison":"1996-11-23","Son Heung-min":"1992-07-08",
+  "Lamine Yamal":"2007-07-13","Raphinha":"1996-12-14","Pedri":"2002-11-25","Gavi":"2004-08-05","Robert Lewandowski":"1988-08-21","Jules Kounde":"1998-11-12","Thibaut Courtois":"1992-05-11","Antonio Rudiger":"1993-03-03","Jude Bellingham":"2003-06-29","Federico Valverde":"1998-07-22","Vinicius Jr":"2000-07-12","Kylian Mbappe":"1998-12-20","Rodrygo":"2001-01-09",
+  "Harry Kane":"1993-07-28","Michael Olise":"2001-12-12","Jamal Musiala":"2003-02-26","Joshua Kimmich":"1995-02-08","Alphonso Davies":"2000-11-02","Dayot Upamecano":"1998-10-27","Ousmane Dembele":"1997-05-15","Khvicha Kvaratskhelia":"2001-02-12","Achraf Hakimi":"1998-11-04","Victor Osimhen":"1998-12-29",
+  "Lautaro Martinez":"1997-08-22","Nicolo Barella":"1997-02-07","Marcus Thuram":"1997-08-06","Theo Hernandez":"1997-10-06","Rafael Leao":"1999-06-10","Christian Pulisic":"1998-09-18","Mike Maignan":"1995-07-03","Kenan Yildiz":"2005-05-04","Dusan Vlahovic":"2000-01-28","Jadon Sancho":"2000-03-25","Raheem Sterling":"1994-12-08"
+};
+function _verifiedDobFor(name){ return VERIFIED_DOBS[String(name||'').trim()]||null; }
+function stableAgeEstimate(name,ov,pos,club){
+  const n=String(name||'')+'|'+String(club||'')+'|age'; let h=0; for(let i=0;i<n.length;i++) h=((h<<5)-h+n.charCodeAt(i))|0; h=Math.abs(h);
+  const rating=Number(ov)||70;
+  let age=18+(h%17);
+  if(rating>=88) age=25+(h%10);
+  else if(rating>=83) age=22+(h%12);
+  else if(rating<=70) age=18+(h%12);
+  return Math.max(17,Math.min(40,age));
+}
+
+/* v11.16 MULTI-LEAGUE TRANSFER MARKET
+   Real-player transfer pool across LaLiga, Bundesliga, Serie A, Ligue 1 and Eredivisie.
+   DOB is stored when known so ages are calculated instead of randomized. */
+// Backfill verified DOBs into the original transfer pool so they never fall back to age 20.
+for(const p of PLAYER_POOL){ if(!p[5]) p[5]=_verifiedDobFor(p[0]); }
+
+const MULTI_LEAGUE_PLAYERS=[
+["Jan Oblak","GK",89,45,"Atletico Madrid","1993-01-07"],["Jose Maria Gimenez","CB",86,42,"Atletico Madrid","1995-01-20"],["Marcos Llorente","CM",86,45,"Atletico Madrid","1995-01-30"],["Koke","CM",83,18,"Atletico Madrid","1992-01-08"],["Rodrigo De Paul","CM",85,22,"Atletico Madrid","1994-05-24"],["Hjulmand","DM",84,60,"Atletico Madrid","1999-06-25"],["Alexander Isak","FWD",89,120,"Atletico Madrid","1999-09-21"],["Jonathan David","FWD",86,65,"Atletico Madrid","2000-01-14"],["Kang In Lee","AM",84,48,"Atletico Madrid","2001-02-19"],
+["Dani Vivian","CB",84,30,"Athletic Club","1999-07-05"],["Oihan Sancet","AM",84,55,"Athletic Club","2000-04-25"],["Nico Williams","LW",86,75,"Athletic Club","2002-07-12"],["Inaki Williams","RW",82,24,"Athletic Club","1994-06-15"],["Unai Simon","GK",86,32,"Athletic Club","1997-06-11"],
+["Thibaut Courtois","GK",88,45,"Real Madrid","1992-05-11"],["Eder Militao","CB",86,48,"Real Madrid","1998-01-18"],["Trent Alexander-Arnold","RB",87,72,"Real Madrid","1998-10-07"],["Ferland Mendy","LB",83,22,"Real Madrid","1995-06-08"],["Eduardo Camavinga","CM",88,100,"Real Madrid","2002-11-10"],["Aurelien Tchouameni","DM",87,80,"Real Madrid","2000-01-27"],["Arda Guler","AM",83,75,"Real Madrid","2005-02-25"],["Brahim Diaz","AM",82,42,"Real Madrid","1999-08-03"],
+["Ronald Araujo","CB",88,80,"Barcelona","1999-03-07"],["Pau Cubarsi","CB",82,65,"Barcelona","2007-01-22"],["Alejandro Balde","LB",83,50,"Barcelona","2003-10-18"],["Frenkie de Jong","CM",87,60,"Barcelona","1997-05-12"],["Dani Olmo","AM",86,65,"Barcelona","1998-05-07"],["Fermin Lopez","AM",82,35,"Barcelona","2003-05-11"],["Ferran Torres","RW",81,30,"Barcelona","2000-02-29"],
+["Alex Remiro","GK",84,25,"Real Sociedad","1995-03-24"],["Takefusa Kubo","RW",85,72,"Real Sociedad","2001-06-04"],["Mikel Oyarzabal","LW",84,38,"Real Sociedad","1997-04-21"],["Martin Zubimendi","DM",85,65,"Real Sociedad","1999-02-02"],
+["Gerard Moreno","FWD",82,15,"Villarreal","1992-04-07"],["Yeremy Pino","RW",83,48,"Villarreal","2002-10-20"],["Ayoze Perez","FWD",82,12,"Villarreal","1993-07-29"],["Isco","AM",84,12,"Real Betis","1992-04-21"],["Antony","RW",83,35,"Real Betis","2000-02-24"],["Cucho Hernandez","FWD",80,22,"Real Betis","1999-04-20"],["Youssef En-Nesyri","FWD",82,24,"Sevilla","1997-06-01"],["Loic Bade","CB",82,28,"Sevilla","2000-04-11"],
+["Manuel Neuer","GK",88,8,"Bayern Munich","1986-03-27"],["Jonathan Tah","CB",86,25,"Bayern Munich","1996-02-11"],["Joshua Kimmich","DM",88,75,"Bayern Munich","1995-02-08"],["Jamal Musiala","AM",91,150,"Bayern Munich","2003-02-26"],["Konrad Laimer","CM",82,25,"Bayern Munich","1997-05-27"],["Serge Gnabry","RW",83,20,"Bayern Munich","1995-07-14"],["Harry Kane","FWD",91,90,"Bayern Munich","1993-07-28"],["Michael Olise","RW",87,95,"Bayern Munich","2001-12-12"],
+["Gregor Kobel","GK",88,45,"Borussia Dortmund","1997-12-06"],["Nico Schlotterbeck","CB",87,55,"Borussia Dortmund","2000-12-01"],["Waldemar Anton","CB",82,24,"Borussia Dortmund","1996-07-20"],["Jobe Bellingham","CM",81,65,"Borussia Dortmund","2005-09-23"],["Felix Nmecha","CM",79,28,"Borussia Dortmund","2000-10-10"],["Serhou Guirassy","FWD",86,22,"Borussia Dortmund","1996-03-12"],["Maximilian Beier","FWD",80,30,"Borussia Dortmund","2002-10-17"],
+["Peter Gulacsi","GK",82,8,"RB Leipzig","1990-05-06"],["David Raum","LB",83,30,"RB Leipzig","1998-04-22"],["Castello Lukeba","CB",84,48,"RB Leipzig","2003-12-17"],["Xavi Simons","AM",87,90,"RB Leipzig","2003-04-21"],["Christopher Nkunku","AM",86,75,"RB Leipzig","1997-11-14"],["Benjamin Sesko","FWD",84,80,"RB Leipzig","2003-05-31"],
+["Florian Wirtz","AM",89,130,"Bayer Leverkusen","2003-05-03"],["Jeremie Frimpong","RB",86,55,"Bayer Leverkusen","2000-12-10"],["Alejandro Grimaldo","LB",87,40,"Bayer Leverkusen","1995-09-20"],["Granit Xhaka","DM",83,10,"Bayer Leverkusen","1992-09-27"],["Victor Boniface","FWD",83,45,"Bayer Leverkusen","2000-12-23"],
+["Koen Casteels","GK",82,8,"Wolfsburg","1992-06-25"],["Maxence Lacroix","CB",81,18,"Wolfsburg","2000-04-06"],["Lovro Majer","AM",82,24,"Wolfsburg","1998-01-17"],["Mohammed Amoura","FWD",82,32,"Wolfsburg","2000-05-09"],
+["Gianluigi Donnarumma","GK",89,60,"Paris Saint-Germain","1999-02-25"],["Marquinhos","CB",86,22,"Paris Saint-Germain","1994-05-14"],["Lucas Hernandez","CB",82,24,"Paris Saint-Germain","1996-02-14"],["Achraf Hakimi","RB",88,70,"Paris Saint-Germain","1998-11-04"],["Nuno Mendes","LB",87,70,"Paris Saint-Germain","2002-06-19"],["Vitinha","CM",87,95,"Paris Saint-Germain","2000-02-13"],["Joao Neves","CM",86,85,"Paris Saint-Germain","2004-09-27"],["Warren Zaire-Emery","CM",84,75,"Paris Saint-Germain","2006-03-08"],["Ousmane Dembele","RW",90,100,"Paris Saint-Germain","1997-05-15"],["Bradley Barcola","LW",87,100,"Paris Saint-Germain","2002-09-02"],
+["Lucas Chevalier","GK",83,35,"Lille","2001-11-06"],["Benjamin Andre","CM",81,5,"Lille","1990-08-03"],["Hakon Arnar Haraldsson","AM",78,20,"Lille","2003-04-10"],["Ayase Ueda","FWD",79,15,"Lille","1998-08-10"],["Brice Samba","GK",83,15,"Lens","1994-04-25"],["Facundo Medina","CB",83,30,"Lens","1999-05-28"],["Elye Wahi","FWD",79,22,"Lens","2003-01-02"],["Marcin Bulka","GK",82,20,"Nice","1999-10-04"],["Terem Moffi","FWD",79,15,"Nice","1999-05-25"],["Geronimo Rulli","GK",82,10,"Marseille","1992-05-20"],["Jonathan Clauss","RB",80,6,"Marseille","1992-09-25"],["Pierre-Emile Hojbjerg","DM",83,10,"Marseille","1995-08-05"],["Mason Greenwood","RW",81,30,"Marseille","2001-10-01"],["Adrien Rabiot","CM",84,22,"Marseille","1995-04-03"],["Denis Zakaria","DM",82,18,"Monaco","1996-11-20"],["Takumi Minamino","AM",80,10,"Monaco","1995-01-16"],["Folarin Balogun","FWD",80,35,"Monaco","2001-07-03"],["Breel Embolo","FWD",79,10,"Monaco","1997-02-14"],
+["Mile Svilar","GK",84,35,"AS Roma","1999-08-27"],["Gianluca Mancini","CB",82,18,"AS Roma","1996-04-17"],["Manu Kone","CM",84,45,"AS Roma","2001-05-17"],["Paulo Dybala","AM",86,18,"AS Roma","1993-11-15"],["Evan Ferguson","FWD",78,30,"AS Roma","2004-10-19"],["Yann Sommer","GK",81,4,"Inter Milan","1988-12-17"],["Alessandro Bastoni","CB",88,65,"Inter Milan","1999-04-13"],["Federico Dimarco","LB",87,55,"Inter Milan","1997-11-10"],["Hakan Calhanoglu","CM",88,28,"Inter Milan","1994-02-08"],["Federico Chiesa","RW",83,35,"Inter Milan","1997-10-25"],["Wojciech Szczesny","GK",82,3,"Juventus","1990-04-18"],["Gleison Bremer","CB",87,50,"Juventus","1997-03-18"],["Andrea Cambiaso","LB",84,45,"Juventus","2000-02-20"],["Manuel Locatelli","DM",83,20,"Juventus","1998-01-08"],["Kenan Yildiz","LW",82,60,"Juventus","2005-05-04"],["Dusan Vlahovic","FWD",84,55,"Juventus","2000-01-28"],["Mike Maignan","GK",87,45,"AC Milan","1995-07-03"],["Fikayo Tomori","CB",83,35,"AC Milan","1997-12-19"],["Theo Hernandez","LB",87,60,"AC Milan","1997-10-06"],["Tijjani Reijnders","CM",85,65,"AC Milan","1998-07-29"],["Rafael Leao","LW",88,110,"AC Milan","1999-06-10"],["Christian Pulisic","RW",84,55,"AC Milan","1998-09-18"],["Romelu Lukaku","FWD",84,22,"Napoli","1993-05-13"],["Scott McTominay","CM",84,45,"Napoli","1996-12-08"],["Stanislav Lobotka","DM",83,15,"Napoli","1994-11-25"],["Gianluca Scamacca","FWD",80,24,"Atalanta","1999-01-01"],["Ademola Lookman","LW",86,55,"Atalanta","1997-10-20"],
+["Justin Bijlow","GK",79,10,"Feyenoord","1998-01-22"],["Quinten Timber","CM",83,35,"Feyenoord","2001-06-17"],["Ayase Ueda","FWD",79,15,"Feyenoord","1998-08-10"],["Antoni Milambo","AM",77,22,"Feyenoord","2005-04-03"],["Walter Benitez","GK",80,8,"PSV Eindhoven","1993-01-19"],["Malik Tillman","AM",82,35,"PSV Eindhoven","2002-05-28"],["Joey Veerman","CM",83,35,"PSV Eindhoven","1998-11-19"],["Luuk de Jong","FWD",79,5,"PSV Eindhoven","1990-08-27"],["Ismael Saibari","AM",80,32,"PSV Eindhoven","2001-01-21"],["Wout Weghorst","FWD",77,5,"Ajax","1992-08-07"],["Bertrand Traore","RW",78,7,"Ajax","1995-09-06"],["Kenneth Taylor","CM",78,18,"Ajax","2002-05-16"],["Jorrel Hato","CB",80,32,"Ajax","2006-03-07"],["Mika Godts","LW",77,25,"Ajax","2005-06-07"]
+];
+function clubLeague(club){
+ if(["Atletico Madrid","Athletic Club","Real Madrid","Barcelona","Real Sociedad","Villarreal","Real Betis","Sevilla"].includes(club)) return "LaLiga";
+ if(["Bayern Munich","Borussia Dortmund","RB Leipzig","Bayer Leverkusen","Wolfsburg"].includes(club)) return "Bundesliga";
+ if(["AS Roma","Inter Milan","Juventus","AC Milan","Napoli","Atalanta"].includes(club)) return "Serie A";
+ if(["Feyenoord","PSV Eindhoven","Ajax"].includes(club)) return "Eredivisie";
+ if(["Paris Saint-Germain","Lille","Lens","Nice","Marseille","Monaco"].includes(club)) return "Ligue 1";
+ return "Premier League";
+}
+const _multiSeen=new Set(PLAYER_POOL.map(p=>String(p[0]).toLowerCase()));
+for(const p of MULTI_LEAGUE_PLAYERS){
+ const [name,pos,ov,value,club,dob]=p; const key=String(name).toLowerCase();
+ if(_multiSeen.has(key)) continue;
+ PLAYER_POOL.push([name,pos,ov,value,club,dob,clubLeague(club)]); _multiSeen.add(key);
+}
+function playerAgeFromDob(dob,season){
+ if(!dob)return null; const d=new Date(`${dob}T00:00:00Z`); if(Number.isNaN(d.getTime()))return null;
+ const ref=new Date(`${season||2026}-09-16T00:00:00Z`); let age=ref.getUTCFullYear()-d.getUTCFullYear();
+ if(ref.getUTCMonth()<d.getUTCMonth() || (ref.getUTCMonth()===d.getUTCMonth()&&ref.getUTCDate()<d.getUTCDate())) age--;
+ return Math.max(1,Math.min(40,age));
+}
+
 /* v5.66 FULL PREMIER LEAGUE SQUADS
    The 2026/27 Premier League first-team lists are used as the squad-name source.
    Existing player ratings/positions are preserved; newly added players receive
@@ -171,9 +240,8 @@ for(const [club,names] of Object.entries(FULL_SQUADS)){
     if(!clean||_existingPlayerNames.has(clean.toLowerCase())) continue;
     const h=_stableNum(clean,club);
     const ov=Math.max(62,Math.min(88,base-7+(h%15)));
-    const age=18+(h%14);
     const value=Math.max(2,Math.round((ov-55)*(ov-55)/7));
-    PLAYER_POOL.push([clean,_guessPos(clean),ov,value,club]);
+    PLAYER_POOL.push([clean,_guessPos(clean),ov,value,club,_verifiedDobFor(clean)]);
     _existingPlayerNames.add(clean.toLowerCase());
   }
 }
@@ -190,7 +258,7 @@ function _fullSquadRepair(){
     if(current.has(key)) merged.push(current.get(key));
     else {
       const h=_stableNum(x[0],clubName);
-      merged.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:18+(h%14)});
+      merged.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],clubName)});
     }
   }
   for(const p of current.values()){
@@ -220,7 +288,7 @@ function startingSquad(clubName){
    if(seen.has(key)) return false;
    seen.add(key);
    return true;
- }).map(x=>({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:20+Math.floor(Math.random()*10)}));
+ }).map(x=>({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])}));
 }
 function playerOwner(name){
  const p=PLAYER_POOL.find(x=>x[0]===name); return p?p[4]:"European Club";
@@ -270,12 +338,21 @@ function makeFixtures(){
  }));
 }
 
+function normalizeCareerAges(){
+ if(!career||!Array.isArray(career.players)) return;
+ for(const p of career.players){
+   const src=PLAYER_POOL.find(x=>String(x[0]).trim().toLowerCase()===String(p.name||'').trim().toLowerCase());
+   const exact=src?playerAgeFromDob(src[5],career.season||2026):null;
+   p.age=exact!=null?exact:stableAgeEstimate(p.name,p.ov,p.pos,CLUBS[career.club]?.name||'');
+   p.age=Math.max(1,Math.min(40,Number(p.age)||18));
+ }
+}
 function nextSeason(){
  if(!career?.seasonComplete)return;
  const pos=rows().findIndex(r=>r.i===career.club)+1;
  const prize=Math.max(8,(5-pos)*5);
  career.cash+=prize;
- career.players.forEach(p=>{p.age=Math.min(40,Math.max(1,Number(p.age)||20)+1);});
+ career.players.forEach(p=>{ const src=PLAYER_POOL.find(x=>String(x[0]).trim().toLowerCase()===String(p.name||'').trim().toLowerCase()); const oldAge=Number(p.age)||18; const newAge=src?.[5]?Math.min(40,playerAgeFromDob(src[5],(career.season||2026)+1)||Math.min(40,oldAge+1)):Math.min(40,oldAge+1); p.age=newAge; if(newAge>=33){p.ov=Math.max(1,Number(p.ov||1)-1);} });
  career.trainingUsed=false;
  career.season++;
  career.matchday=1;career.wins=0;career.draws=0;career.losses=0;career.gf=0;career.ga=0;career.points=0;
@@ -335,7 +412,7 @@ function getTransferAsking(i){
  if(!Number.isFinite(Number(career.transferAsking[i]))){
    const x=PLAYER_POOL[i]; if(!x)return 0;
    const base=Number(x[3])||1, ov=Number(x[2])||70;
-   const age=career.players.find(p=>p.name===x[0])?.age??(18+Math.floor(Math.random()*10));
+   const age=career.players.find(p=>p.name===x[0])?.age??(playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4]));
    const eliteClub=["Real Madrid","Barcelona","Bayern Munich","Paris Saint-Germain","Manchester City","Liverpool","Arsenal"].includes(x[4]);
    const clubFactor=eliteClub?1.28:1.10;
    const ageFactor=age<=23?1.18:age<=27?1.08:Math.max(.82,1-(age-27)*.035);
@@ -348,11 +425,11 @@ function getTransferAsking(i){
 }
 function transfers(){
  const owned=new Set(career.players.map(p=>p.name));
- const market=PLAYER_POOL.map((x,i)=>({i,name:x[0],pos:x[1],ov:x[2],value:x[3],owner:x[4],asking:getTransferAsking(i)})).filter(x=>!owned.has(x.name));
- return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>Transfer Market</h2><p class="muted">Enter your offer directly in the table. No browser popup is required.</p></div><span class="pill">Budget $${career.cash}m</span></div>
+ const market=PLAYER_POOL.map((x,i)=>({i,name:x[0],pos:x[1],ov:x[2],value:x[3],owner:x[4],league:x[6]||clubLeague(x[4]),asking:getTransferAsking(i)})).filter(x=>!owned.has(x.name));
+ return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>Transfer Market</h2><p class="muted">Browse a much larger transfer market with players from the Premier League, LaLiga, Bundesliga, Serie A, Ligue 1 and Eredivisie. Enter your offer directly in the table.</p></div><span class="pill">Budget $${career.cash}m</span></div>
  <div class="actions" style="margin:14px 0"><input id="marketSearch" data-market-search placeholder="Search players..." style="flex:1;min-width:220px;background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:11px" value="${esc(window.marketQuery||'')}"><select id="marketPos" style="background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:11px"><option value="">All positions</option>${['GK','CB','LB','RB','DM','CM','AM','LW','RW','FWD'].map(x=>`<option ${window.marketPos===x?'selected':''}>${x}</option>`).join('')}</select><button type="button" data-market-filter>Search</button></div>
- <div class="table"><table><tr><th>Player</th><th>Pos</th><th>OVR</th><th>Value</th><th>Club</th><th>Minimum</th><th>Your offer</th></tr>
- ${market.map(p=>`<tr class="marketRow" data-market-text="${esc((p.name+' '+p.pos+' '+p.owner).toLowerCase())}" data-market-ov="${p.ov}" data-market-pos="${p.pos}"><td><b>${esc(p.name)}</b></td><td>${p.pos}</td><td>${p.ov}</td><td>$${p.value}m</td><td>${esc(p.owner)}</td><td>$${p.asking}m</td><td><div class="actions"><input type="number" min="1" step="1" value="${p.asking}" data-bid-offer="${p.i}" style="width:95px;background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:9px"><button type="button" class="bidBtn" data-bid="${p.i}">Bid</button></div></td></tr>`).join('')}</table></div></div>`);
+ <div class="table"><table><tr><th>Player</th><th>Pos</th><th>OVR</th><th>Value</th><th>Club</th><th>League</th><th>Minimum</th><th>Your offer</th></tr>
+ ${market.map(p=>`<tr class="marketRow" data-market-text="${esc((p.name+' '+p.pos+' '+p.owner).toLowerCase())}" data-market-ov="${p.ov}" data-market-pos="${p.pos}"><td><b>${esc(p.name)}</b></td><td>${p.pos}</td><td>${p.ov}</td><td>$${p.value}m</td><td>${esc(p.owner)}</td><td>${esc(p.league)}</td><td>$${p.asking}m</td><td><div class="actions"><input type="number" min="1" step="1" value="${p.asking}" data-bid-offer="${p.i}" style="width:95px;background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:9px"><button type="button" class="bidBtn" data-bid="${p.i}">Bid</button></div></td></tr>`).join('')}</table></div></div>`);
 }
 function bidForPlayer(i,offerValue){
  try {
@@ -366,7 +443,7 @@ function bidForPlayer(i,offerValue){
  if(offer>career.cash){alert(`That offer is above your $${career.cash}m budget.`);return;}
  if(offer<asking){alert(`Bid rejected. The seller wants at least $${asking}m.`);return;}
  career.cash-=offer;
- career.players.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:20+Math.floor(Math.random()*10)});
+ career.players.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])});
  career.inbox.unshift(`Transfer completed: ${x[0]} joined for $${offer}m.`);
  if(career.transferAsking)delete career.transferAsking[i];
  save(); render();
@@ -1438,7 +1515,7 @@ function repairCareerSquad(){
   // Restore missing genuine players for older saves, but NEVER restore someone
   // recorded in soldPlayers. Transfers already in the squad are preserved.
   const clubName=CLUBS[career.club]?.name;
-  const base=PLAYER_POOL.filter(x=>x[4]===clubName).map(x=>({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:21}));
+  const base=PLAYER_POOL.filter(x=>x[4]===clubName).map(x=>({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])}));
   const byName=new Map(clean.map(p=>[p.name.toLowerCase(),p]));
   const merged=[];
   for(const p of base){
@@ -1895,6 +1972,7 @@ function bootGame(){
       const validSchedule=Array.isArray(career.leagueSchedule)&&career.leagueSchedule.length===38&&Array.isArray(career.fixtures)&&career.fixtures.length===38&&Array.isArray(career.table)&&career.table.length===20;
       if(!validSchedule){career.table=CLUBS.map(x=>({name:x.name,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}));makeFixtures();}
       try{repairCareerSquad()}catch(e){console.warn("Squad repair skipped",e)}
+      try{normalizeCareerAges()}catch(e){console.warn("Age normalization skipped",e)}
       save();
     }
   }catch(e){console.error("Career boot error",e);career=null;page="home";}
