@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Football Career Mode — v11.9 Gameplay & Graphics Upgrade</title>
+<title>Football Career Mode — v12.9 LaLiga & Copa del Rey</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07110c;color:#f2fff7;font-family:Arial,Helvetica,sans-serif}
 button,select{font:inherit}button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:800;background:#20c878;color:#03130b}
@@ -41,7 +41,7 @@ button.secondary{background:#1d3227;color:#eafff2;border:1px solid #345443}butto
 <div id="root"></div>
 
 <script>
-const CLUBS=[
+const PREMIER_LEAGUE_CLUBS=[
  {name:"Arsenal",short:"ARS",badge:"🔴",atk:86,mid:87,def:84,budget:110},
  {name:"Aston Villa",short:"AVL",badge:"🟣",atk:84,mid:82,def:79,budget:80},
  {name:"AFC Bournemouth",short:"BOU",badge:"🔴",atk:79,mid:78,def:76,budget:65},
@@ -64,6 +64,38 @@ const CLUBS=[
  {name:"Hull City",short:"HUL",badge:"🟠",atk:70,mid:69,def:68,budget:42}
 ];
 
+const LALIGA_CLUBS=[
+ {name:"Athletic Club",short:"ATH",badge:"🔴⚪",atk:82,mid:80,def:80,budget:58},
+ {name:"Atletico Madrid",short:"ATM",badge:"🔴⚪",atk:88,mid:86,def:85,budget:105},
+ {name:"Osasuna",short:"OSA",badge:"🔴",atk:74,mid:73,def:74,budget:45},
+ {name:"Celta Vigo",short:"CEL",badge:"🔵",atk:77,mid:78,def:72,budget:52},
+ {name:"Alaves",short:"ALA",badge:"🔵⚪",atk:72,mid:70,def:71,budget:40},
+ {name:"Elche",short:"ELC",badge:"🟢",atk:70,mid:69,def:70,budget:38},
+ {name:"Barcelona",short:"BAR",badge:"🔵🔴",atk:92,mid:93,def:85,budget:140},
+ {name:"Getafe",short:"GET",badge:"🔵",atk:73,mid:72,def:76,budget:45},
+ {name:"Levante",short:"LEV",badge:"🔵🔴",atk:69,mid:68,def:68,budget:35},
+ {name:"Malaga",short:"MAL",badge:"🔵⚪",atk:68,mid:67,def:67,budget:32},
+ {name:"Racing Santander",short:"RAC",badge:"🟢⚪",atk:71,mid:70,def:69,budget:36},
+ {name:"Rayo Vallecano",short:"RAY",badge:"⚡",atk:74,mid:72,def:74,budget:44},
+ {name:"Deportivo La Coruna",short:"DEP",badge:"🔵⚪",atk:72,mid:70,def:69,budget:40},
+ {name:"Espanyol",short:"ESP",badge:"🔵⚪",atk:73,mid:71,def:72,budget:44},
+ {name:"Real Betis",short:"BET",badge:"🟢⚪",atk:82,mid:81,def:76,budget:72},
+ {name:"Real Madrid",short:"RMA",badge:"⚪",atk:95,mid:94,def:89,budget:160},
+ {name:"Real Sociedad",short:"RSO",badge:"🔵⚪",atk:80,mid:80,def:79,budget:60},
+ {name:"Sevilla",short:"SEV",badge:"🔴⚪",atk:76,mid:75,def:74,budget:55},
+ {name:"Valencia",short:"VAL",badge:"🟠⚫",atk:75,mid:74,def:74,budget:52},
+ {name:"Villarreal",short:"VIL",badge:"🟡",atk:84,mid:82,def:77,budget:68}
+];
+
+let CLUBS=PREMIER_LEAGUE_CLUBS;
+let DOMESTIC_LEAGUE_NAME="Premier League";
+function activateLeague(name){
+  const league=name==="LaLiga"?"LaLiga":"Premier League";
+  CLUBS=league==="LaLiga"?LALIGA_CLUBS:PREMIER_LEAGUE_CLUBS;
+  DOMESTIC_LEAGUE_NAME=league;
+  DOMESTIC_CLUB_IDS=CLUBS.map((_,i)=>i);
+}
+
 const EURO_CLUBS=[
  {name:"Real Madrid",short:"RMA",badge:"⚪",atk:94,mid:93,def:89},
  {name:"Barcelona",short:"BAR",badge:"🔵",atk:91,mid:92,def:84},
@@ -84,10 +116,21 @@ const EURO_CLUBS=[
 ];
 
 
-const DOMESTIC_CLUB_IDS=CLUBS.map((_,i)=>i);
-const DOMESTIC_LEAGUE_NAME="Premier League";
+let DOMESTIC_CLUB_IDS=CLUBS.map((_,i)=>i);
 const FA_CUP_GUESTS=["Blackburn Rovers","Bristol City","Derby County","Middlesbrough","Norwich City","Queens Park Rangers","Sheffield United","Stoke City","Swansea City","Watford","West Bromwich Albion","Preston North End"];
-const FA_CUP_TEAM_NAMES=[...CLUBS.map(c=>c.name),...FA_CUP_GUESTS];
+const FA_CUP_TEAM_NAMES=[...PREMIER_LEAGUE_CLUBS.map(c=>c.name),...FA_CUP_GUESTS];
+const COPA_DEL_REY_GUESTS=["Leganes","RCD Mallorca","Granada","Real Valladolid","UD Almeria","Eibar","Real Oviedo","Sporting Gijon","Tenerife","Cadiz","Castellon","Las Palmas"];
+const COPA_DEL_REY_TEAM_NAMES=[...LALIGA_CLUBS.map(c=>c.name),...COPA_DEL_REY_GUESTS];
+const COPA_GUEST_RATINGS={
+ "Leganes":72,"RCD Mallorca":73,"Granada":70,"Real Valladolid":71,"UD Almeria":72,"Eibar":71,
+ "Real Oviedo":70,"Sporting Gijon":69,"Tenerife":68,"Cadiz":69,"Castellon":68,"Las Palmas":70
+};
+function copaTeamRating(name){
+ const c=LALIGA_CLUBS.find(x=>x.name===name);
+ if(c)return Math.round((c.atk+c.mid+c.def)/3);
+ return COPA_GUEST_RATINGS[name]||68;
+}
+
 const FA_CUP_GUEST_RATINGS={
  "Blackburn Rovers":73,"Bristol City":71,"Derby County":69,"Middlesbrough":72,
  "Norwich City":71,"Queens Park Rangers":68,"Sheffield United":74,"Stoke City":69,
@@ -168,12 +211,10 @@ const MULTI_LEAGUE_PLAYERS=[
 ["Justin Bijlow","GK",79,10,"Feyenoord","1998-01-22"],["Quinten Timber","CM",83,35,"Feyenoord","2001-06-17"],["Ayase Ueda","FWD",79,15,"Feyenoord","1998-08-10"],["Antoni Milambo","AM",77,22,"Feyenoord","2005-04-03"],["Walter Benitez","GK",80,8,"PSV Eindhoven","1993-01-19"],["Malik Tillman","AM",82,35,"PSV Eindhoven","2002-05-28"],["Joey Veerman","CM",83,35,"PSV Eindhoven","1998-11-19"],["Luuk de Jong","FWD",79,5,"PSV Eindhoven","1990-08-27"],["Ismael Saibari","AM",80,32,"PSV Eindhoven","2001-01-21"],["Wout Weghorst","FWD",77,5,"Ajax","1992-08-07"],["Bertrand Traore","RW",78,7,"Ajax","1995-09-06"],["Kenneth Taylor","CM",78,18,"Ajax","2002-05-16"],["Jorrel Hato","CB",80,32,"Ajax","2006-03-07"],["Mika Godts","LW",77,25,"Ajax","2005-06-07"]
 ];
 function clubLeague(club){
- if(["Atletico Madrid","Athletic Club","Real Madrid","Barcelona","Real Sociedad","Villarreal","Real Betis","Sevilla"].includes(club)) return "LaLiga";
- if(["Bayern Munich","Borussia Dortmund","RB Leipzig","Bayer Leverkusen","Wolfsburg"].includes(club)) return "Bundesliga";
- if(["AS Roma","Inter Milan","Juventus","AC Milan","Napoli","Atalanta"].includes(club)) return "Serie A";
- if(["Feyenoord","PSV Eindhoven","Ajax"].includes(club)) return "Eredivisie";
- if(["Paris Saint-Germain","Lille","Lens","Nice","Marseille","Monaco"].includes(club)) return "Ligue 1";
- return "Premier League";
+  if(LALIGA_CLUBS.some(c=>c.name===club)) return "LaLiga";
+  if(PREMIER_LEAGUE_CLUBS.some(c=>c.name===club)) return "Premier League";
+  if(["Real Madrid","Barcelona","Atletico Madrid","Athletic Club","Real Betis","Real Sociedad","Sevilla","Valencia","Villarreal"].includes(club)) return "LaLiga";
+  return "European League";
 }
 const _multiSeen=new Set(PLAYER_POOL.map(p=>String(p[0]).toLowerCase()));
 for(const p of MULTI_LEAGUE_PLAYERS){
@@ -194,7 +235,8 @@ function playerAgeFromDob(dob,season){
    stable estimated game attributes so every club has a usable squad.
 */
 const FULL_SQUADS={"Arsenal":["David Raya","Kepa Arrizabalaga","Illan Meslier","Jurrien Timber","Ben White","William Saliba","Cristhian Mosquera","Gabriel","Piero Hincapie","Riccardo Calafiori","Declan Rice","Bruno Guimaraes","Martin Zubimendi","Martin Odegaard","Eberechi Eze","Mikel Merino","Kai Havertz","Viktor Gyokeres","Bukayo Saka","Noni Madueke","Christos Tzolis","Myles Lewis-Skelly","Ethan Nwaneri","Gabriel Martinelli","Gabriel Jesus"],"Aston Villa":["Marco Bizot","Emiliano Martinez","Matty Cash","Victor Lindelof","Ezri Konsa","Tyrone Mings","Pau Torres","Ian Maatsen","Kosta Nedeljkovic","Modou Keba Cisse","Joao Gomes","John McGinn","Boubacar Kamara","Amadou Onana","Johan Manzambi","Emi Buendia","Ross Barkley","Lamare Bogarde","Ollie Watkins","Tammy Abraham","Alejandro Garnacho","Brian Madjo","Leon Bailey","Alysson","Taylor Harwood-Bellis"],"AFC Bournemouth":["Djorde Petrovic","Fraser Forster","Will Dennis","Maximillian Aarons","Adam Smith","Julian Araujo","James Hill","Antonio Silva","Adrien Truffert","Julio Soler","Bafode Diakite","Veljko Milosavljevic","Lewis Cook","Alex Toth","Alex Scott","Tyler Adams","Marcus Tavernier","David Brooks","Ryan Christie","Justin Kluivert","Evanilson","Junior Kroupi","Ben Gannon-Doak","Daniel Jebbison","Rayan"],"Brentford":["Caoimhin Kelleher","Hakon Valdimarsson","Ellery Balcombe","Sepp van den Berg","Kristoffer Ajer","Nathan Collins","Michael Kayode","Ethan Pinnock","Rico Henry","Aaron Hickey","Mamadou Sangare","Yehor Yarmoliuk","Mikkel Damsgaard","Mathias Jensen","Keane Lewis-Potter","Vitaly Janelt","Fabio Carvalho","Antoni Milambo","Igor Thiago","Kevin Schade","Dango Ouattara","Callum Wilson","Jaidon Anthony","Gustavo Nunes","Jayden Meghoma"],"Brighton & Hove Albion":["Bart Verbruggen","Jason Steele","Tom McGill","Pascal Struijk","Ferdi Kadioglu","Maxim De Cuyper","Luka Vuskovic","Lewis Dunk","Michael Svoboda","Olivier Boscagli","Mats Wieffer","Costinha","Igor Julio","Eiran Cashin","Yasin Ayari","Carlos Baleba","Jack Hinshelwood","Diego Gomez","Matt O'Riley","Georginio Rutter","Yankuba Minteh","Kaoru Mitoma","Charalampos Kostoulas","Evan Ferguson","Stefanos Tzimas"],"Chelsea":["Robert Sanchez","Teddy Sharman-Lowe","Mike Penders","Levi Colwill","Reece James","Maxence Lacroix","Marco Palestra","Malo Gusto","Wesley Fofana","Josh Acheampong","Tosin Adarabioyo","Jorrel Hato","Benoit Badiashile","Mamadou Sarr","Pep Chavarria","Moises Caicedo","Enzo Fernandez","Cole Palmer","Morgan Rogers","Jordan Henderson","Romeo Lavia","Valentin Barco","Dario Essugo","Joao Pedro","Danny Welbeck","Liam Delap","Nicolas Jackson","Estevao","Pedro Neto","Geovany Quenda"],"Coventry City":["Daniel Bentley","Carl Rushworth","Aurele Amenda","Taiwo Awoniyi","Jay Dasilva","Josh Eccles","Matt Grimes","Gustavo Hamer","Kaine Kesler-Hayden","Joel Latibeaudiere","Ephron Mason-Clark","Frank Onyeka","Dario Osorio","Victor Torp","Ethan Pinnock","Jack Rudoni","Tatsuhiro Sakamoto","Ellis Simms","Loum Tchaouna","Bobby Thomas","Solomon Asante","Milan van Ewijk","Ben Wilson","Luke Woolfenden","Haji Wright"],"Crystal Palace":["Walter Benitez","Dean Henderson","Remi Matthews","Benjamin Chilwell","Axel Disasi","Cheick Doucoure","Matheus Franca","Evann Guessand","William Hughes","Daichi Kamada","Anan Khalaili","Jorgen Strand Larsen","Jefferson Lerma","Jean-Philippe Mateta","Dwight McNeil","Oscar Mingueza","Tyrick Mitchell","Eddie Nketiah","Dario Esteban Osorio","Yeremy Pino","Chris Richards","Ismaila Sarr","Quinten Timber","Takehiro Tomiyasu","Adam Wharton"],"Everton":["Jordan Pickford","Mark Travers","Carlos Alcaraz","Fraser Barnsley","Thierno Barry","Christian Norgaard","Jarrad Branthwaite","Kiernan Dewsbury-Hall","James Garner","Jack Grealish","Hayden Hackney","Brennan Johnson","Michael Keane","Thomas King","Ainsley Maitland-Niles","Vitalii Mykolenko","Jake O'Brien","Merlin Rohl","James Tarkowski","Beto","Iliman Ndiaye","Tyrique George","Nathan Patterson","Tim Iroegbunam","Harrison Armstrong"],"Fulham":["Bernd Leno","Benjamin Lecomte","Joachim Andersen","Calvin Bassey","Kenny Tete","Jorge Cuenca","Antonee Robinson","Timothy Castagne","Sander Berge","Alex Iwobi","Shea Charles","Tom Cairney","Harrison Reed","Emile Smith Rowe","Cesar Palacios","Gonzalo Garcia","Rodrigo Muniz","Kevin","Oscar Bobb","Jonah Kusi-Asare","Michael Allen","Terrell Works","Hugo Larsson","Ryan Sessegnon"],"Hull City":["Konstantinos Tzolakis","Jack Butland","Dillon Phillips","Nobel Mendy","Lucas Herrington","Charlie Hughes","Semi Ajayi","Lewie Coyle","Ryan Giles","John Egan","Elliot Stroud","Matt Targett","Cody Drameh","Paddy McNair","Matty Jacob","Regan Slater","Jens Hjerto-Dahl","Matt Crooks","Hidemasa Morita","Kieran Dowell","Oscar Zambrano","Elliot Matazo","Darko Gyabi","Abdulkadir Omur","Lucas Gourna-Douath","Oli McBurnie","Mohammed Belloumi","Liam Millar","Joe Gelhardt","David Akintola"],"Ipswich Town":["Kjell Scherpen","Alex Palmer","Christian Walton","Dara O'Shea","Jacob Greaves","Issa Diop","Cedric Kipre","Leif Davis","Darnell Furlong","Ben Johnson","Sasa Lukic","Azor Matusiwa","Jack Taylor","Florentino Luis","Marcelino Nunez","Cameron Humphreys","Emersonn","Sindre Walle Egeli","Daizen Maeda","George Hirst","Jack Clarke","Jaden Philogene","Abdul Fatawu","Kasey McAteer","Chuba Akpom","Anis Mehmeti"],"Leeds United":["Alex Cairns","James Trafford","Melvin Bard","Jaka Bijol","Jayden Bogle","Ethan Ampadu","Nico Elvedi","Ilia Gruev","Gabriel Gudmundsson","Daniel James","Mateo Joseph","James Justin","Sean Longstaff","Tarik Muharemovic","Lukas Nmecha","Noah Okafor","Joe Rodon","Anton Stach","Ao Tanaka","Harry Wilson","Michael Zetterer","Dominic Calvert-Lewin","Brenden Aaronson","Gustavo Hamer","Joel Piroe"],"Liverpool":["Alisson","Giorgi Mamardashvili","Freddie Woodman","Virgil van Dijk","Ronald Araujo","Jeremy Jacquet","Milos Kerkez","Jeremie Frimpong","Joe Gomez","Giovanni Leoni","Conor Bradley","Konstantinos Tsimikas","Calvin Ramsay","Ryan Gravenberch","Dominik Szoboszlai","Florian Wirtz","Alexis Mac Allister","Curtis Jones","Harvey Elliott","Wataru Endo","Stefan Bajcetic","Trey Nyoni","Alexander Isak","Hugo Ekitike","Cody Gakpo","Federico Chiesa","Bradley Barcola"],"Manchester City":["Gianluigi Donnarumma","Geronimo Rulli","Marcus Bettinelli","Ruben Dias","Marc Guehi","Josko Gvardiol","Matheus Nunes","Nico O'Reilly","Abdukodir Khusanov","Rayan Ait-Nouri","Rico Lewis","Vitor Reis","Elliot Anderson","Rayan Cherki","Phil Foden","Tijjani Reijnders","Mateo Kovacic","Nico Gonzalez","Jack Grealish","Claudio Echeverri","Erling Haaland","Omar Marmoush","Antoine Semenyo","Jeremy Doku","Savinho","Jeremy Monga"],"Manchester United":["Karl Darlow","Thomas Heaton","Senne Lammens","Diogo Dalot","Matthijs de Ligt","Lisandro Martinez","Noussair Mazraoui","Harry Maguire","Patrick Dorgu","Luke Shaw","Bruno Fernandes","Amad Diallo","Mason Mount","Carlos Baleba","Bryan Mbeumo","Manuel Ugarte","Benjamin Sesko","Marcus Rashford","Matheus Cunha","Joshua Zirkzee","Andrey Santos","Youri Tielemans","Dermot Mee","Chido Obi"],"Newcastle United":["Nick Pope","Mark Gillespie","Lukas Hornicek","Sven Botman","Dan Burn","Amar Dedic","Anthony Elanga","Nicolas Gonzalez","Lewis Hall","Valentino Livramento","Jacob Murphy","William Osula","Kieran Trippier","Fabian Schar","Malick Thiaw","Joe Willock","Yoane Wissa","Joelinton","Harvey Barnes","Jacob Ramsey","Bruno Guimaraes","Sandro Tonali","Anthony Gordon","Alexander Isak","Tino Livramento"],"Nottingham Forest":["Matz Sels","Steven Benda","Aaron Bott","Murillo","Liam Delap","Ousmane Diomande","Nicolas Dominguez","Morgan Gibbs-White","Callum Hudson-Odoi","Arnaud Kalimuendo","Igor Jesus","John Victor","James McAtee","Nikola Milenkovic","Danilo","Dan Ndoye","Luca Netz","Felipe","Ibrahim Sangare","Nicolo Savona","Xaver Schlager","Neco Williams","Chris Wood","Ryan Yates","Taiwo Awoniyi"],"Sunderland":["Robin Roefs","Simon Moore","Melker Ellborg","Dan Ballard","Omar Alderete","Ajibola Alese","Trai Hume","Thomas Meunier","Nordi Mukiele","Kevin Danso","Reinildo","Abdoullah Ba","Noah Sadiki","Enzo Le Fee","Habib Diarra","Granit Xhaka","Luke O'Nien","Chris Rigg","Brian Brobbey","Wilson Isidor","Nilson Angulo","Romaine Mundle","Luis Semedo","Chemsdine Talbi","Jocelin Ta Bi"],"Tottenham Hotspur":["Antonin Kinsky","Guglielmo Vicario","Martin Dubravka","Brandon Austin","Micky van de Ven","Marcos Senesi","Jan Paul van Hecke","Pedro Porro","Djed Spence","Andy Robertson","Destiny Udogie","Kevin Danso","Ben Davies","Kota Takai","Souza","Sandro Tonali","Mateus Fernandes","Conor Gallagher","James Maddison","Xavi Simons","Dejan Kulusevski","Rodrigo Bentancur","Lucas Bergvall","Pape Sarr","Archie Gray","Dominic Solanke","Richarlison","Mohammed Kudus","Mathys Tel","Wilson Odobert"]};
-const _existingPlayerNames=new Set(PLAYER_POOL.map(p=>String(p[0]).toLowerCase()));
+
+
 const _posHints={
   "David Raya":"GK","Kepa Arrizabalaga":"GK","Illan Meslier":"GK","Marco Bizot":"GK","Emiliano Martinez":"GK",
   "Djorde Petrovic":"GK","Fraser Forster":"GK","Will Dennis":"GK","Caoimhin Kelleher":"GK","Hakon Valdimarsson":"GK","Ellery Balcombe":"GK",
@@ -231,6 +273,35 @@ function _stableNum(name,club){
   for(let i=0;i<s.length;i++) h=((h<<5)-h+s.charCodeAt(i))|0;
   return Math.abs(h);
 }
+/* Extra LaLiga squad depth for playable benches and the enlarged transfer market. */
+const LALIGA_EXTRA_SEEDS={
+ "Athletic Club":["Unai Nunez|CB","Alvaro Djalo|LW","Javier Marton|FWD","Ander Herrera|CM","Adu Ares|RW","Mikel Jauregizar|CM"],
+ "Atletico Madrid":["Reinildo|LB","Samuel Lino|LW","Angel Correa|FWD","Axel Witsel|CB","Thomas Lemar|AM","Marcos Paulo|LW"],
+ "Osasuna":["Enzo Boyomo|CB","Bryan Zaragoza|LW","Moi Gomez|AM","Raul Moro|LW","Nacho Vidal|RB","Raul Garcia de Haro|FWD"],
+ "Celta Vigo":["Mihailo Ristic|LB","Hugo Alvarez|LW","Anastasios Douvikas|FWD","Sergio Carreira|RB","Franco Cervi|LW","Joseph Aidoo|CB"],
+ "Alaves":["Carlos Benavidez|DM","Manu Sanchez|LB","Stoichkov|AM","Abde Rebbach|LW","Asier Villalibre|FWD","Nahuel Bustos|FWD"],
+ "Elche":["Helibelton Palacios|RB","David Affengruber|CB","Gerard Hernandez|CM","Adam Boakye|FWD","Nico Fernandez|LB","Ruben Vezo|CB"],
+ "Barcelona":["Fermin Lopez|AM","Ferran Torres|FWD","Eric Garcia|CB","Marc Casado|DM","Hector Fort|RB","Pau Victor|FWD"],
+ "Getafe":["Alex Sola|RB","Juanmi|LW","Alvaro Rodriguez|FWD","Jesus Perez|CM","Allan Nyom|RB","Nabil Aberdin|CB"],
+ "Levante":["Unai Elgezabal|CB","Roger Brugue|LW","Carlos Espi|FWD","Iban Salvador|RW","Andres Fernandez|GK","Oscar Clemente|AM"],
+ "Malaga":["Yanis Rahmani|LW","Haitam Abaida|RW","Dani Sanchez|LB","Genaro Rodriguez|DM","Jozabed|CM","Julen Lobete|FWD"],
+ "Racing Santander":["Ruben Alves|CB","German Sanchez|CB","Yeray Cabanzon|RW","Marco Sangalli|RW","Aritz Arambarri|CB","Andres Martin|RW"],
+ "Rayo Vallecano":["Pedro Diaz|CM","Adrian Embarba|RW","Ivan Balliu|RB","Sergio Guardiola|FWD","Unai Lopez|CM","Ratiu|RB"],
+ "Deportivo La Coruna":["Pablo Martinez|CB","Rafael Obrador|LB","Mohamed Bouldini|FWD","Yeremay Hernandez|LW","Nuke Mfulu|DM","Cristian Herrera|FWD"],
+ "Espanyol":["Carlos Romero|LB","Alejo Veliz|FWD","Salvi Sanchez|RW","Fernando Calero|CB","Ramon Ramos|LB","Kalechi Iheanacho|FWD"],
+ "Real Betis":["Natan|CB","Aitor Ruibal|RW","Marc Roca|DM","Hector Bellerin|RB","Abde Ezzalzouli|LW","Vitor Roque|FWD"],
+ "Real Madrid":["Brahim Diaz|AM","Arda Guler|AM","Eduardo Camavinga|CM","Dani Ceballos|CM","Fran Garcia|LB","Endrick|FWD"],
+ "Real Sociedad":["Sergio Gomez|LB","Jon Ander Olasagasti|CM","Arsen Zakharyan|AM","Benat Turrientes|DM","Sheraldo Becker|RW","Jon Ander Olasagasti|CM"],
+ "Sevilla":["Ruben Vargas|LW","Lucien Agoume|DM","Peque Fernandez|AM","Kelechi Iheanacho|FWD","Stanis Idumbo|RW","Jesus Navas|RB"],
+ "Valencia":["Cesar Tarrega|CB","Jesus Vazquez|LB","Sergi Canos|RW","Max Aarons|RB","Hugo Gonzalez|LW","Alberto Mari|FWD"],
+ "Villarreal":["Juan Foyth|RB","Eric Bailly|CB","Denis Suarez|CM","Ramon Terrats|CM","Pape Gueye|DM","Ilias Akhomach|RW"]
+};
+const _laligaExtraSeen=new Set(PLAYER_POOL.map(p=>String(p[0]).toLowerCase()));
+for(const [club,arr] of Object.entries(LALIGA_EXTRA_SEEDS)){
+ const c=LALIGA_CLUBS.find(x=>x.name===club); if(!c)continue; const base=Math.round((c.atk+c.mid+c.def)/3);
+ for(const entry of arr){const [name,pos]=entry.split('|');const clean=name.trim();if(!clean||_laligaExtraSeen.has(clean.toLowerCase()))continue;const h=_stableNum(clean,club);const ov=Math.max(63,Math.min(90,base-5+(h%12)));const value=Math.max(2,Math.round((ov-55)*(ov-55)/7));PLAYER_POOL.push([clean,pos,ov,value,club,_verifiedDobFor(clean),'LaLiga']);_laligaExtraSeen.add(clean.toLowerCase());}
+}
+const _existingPlayerNames=new Set(PLAYER_POOL.map(p=>String(p[0]).toLowerCase()));
 for(const [club,names] of Object.entries(FULL_SQUADS)){
   const c=CLUBS.find(x=>x.name===club);
   if(!c) continue;
@@ -268,9 +339,51 @@ function _fullSquadRepair(){
 }
 
 
+/* v12.9 — LaLiga squad pool. These are real-player names used for playable
+   2026/27 LaLiga careers and the enlarged transfer market. */
+const LALIGA_SQUAD_SEEDS={
+ "Athletic Club":["Unai Simon|GK","Julen Agirrezabala|GK","Dani Vivian|CB","Aitor Paredes|CB","Yuri Berchiche|LB","Inigo Lekue|RB","Benat Prados|DM","Mikel Vesga|CM","Oihan Sancet|AM","Alex Berenguer|LW","Iñaki Williams|RW","Nico Williams|LW","Gorka Guruzeta|FWD"],
+ "Atletico Madrid":["Jan Oblak|GK","Juan Musso|GK","Jose Gimenez|CB","Robin Le Normand|CB","David Hancko|CB","Nahuel Molina|RB","Marcos Llorente|CM","Koke|CM","Rodrigo De Paul|CM","Pablo Barrios|CM","Julian Alvarez|FWD","Alexander Sorloth|FWD","Antoine Griezmann|FWD","Giuliano Simeone|RW"],
+ "Osasuna":["Sergio Herrera|GK","Aitor Fernandez|GK","Jesus Areso|RB","Alejandro Catena|CB","Jorge Herrando|CB","Juan Cruz|LB","Abel Bretones|LB","Lucas Torro|DM","Jon Moncayola|CM","Aimar Oroz|AM","Ruben Garcia|RW","Ante Budimir|FWD","Kike Barja|RW"],
+ "Celta Vigo":["Ivan Villar|GK","Vicente Guaita|GK","Oscar Mingueza|RB","Carl Starfelt|CB","Marcos Alonso|LB","Carlos Dominguez|CB","Fran Beltran|CM","Ilaix Moriba|CM","Williot Swedberg|AM","Jonathan Bamba|LW","Iago Aspas|FWD","Borja Iglesias|FWD","Oscar Rodriguez|AM"],
+ "Alaves":["Antonio Sivera|GK","Jesus Owono|GK","Nahuel Tenaglia|RB","Abdelkabir Abqar|CB","Moussa Diarra|CB","Adrian Pica|CB","Rafa Marin|CB","Antonio Blanco|DM","Jon Guridi|CM","Carlos Vicente|RW","Toni Martinez|FWD","Kike Garcia|FWD","Carlos Martin|LW"],
+ "Elche":["Matias Dituro|GK","Miguel San Roman|GK","Pedro Bigas|CB","Nicolas Castro|CM","Aleix Febas|CM","Rodrigo Mendoza|CM","John Nwankwo|DM","Tete Morente|LW","Yago Santiago|AM","Mourad|FWD","Alvaro Gimenez|FWD","Oscar Plano|RW"],
+ "Barcelona":["Joan Garcia|GK","Wojciech Szczesny|GK","Ronald Araujo|CB","Jules Kounde|RB","Pau Cubarsi|CB","Alejandro Balde|LB","Frenkie de Jong|CM","Pedri|CM","Gavi|CM","Dani Olmo|AM","Lamine Yamal|RW","Raphinha|LW","Robert Lewandowski|FWD"],
+ "Getafe":["David Soria|GK","Kiko Casilla|GK","Djene|CB","Omar Alderete|CB","Diego Rico|LB","Juan Iglesias|RB","Luis Milla|DM","Mauro Arambarri|CM","Carles Alena|AM","Coba da Costa|LW","Borja Mayoral|FWD","Chrisantus|FWD","Peter Federico|RW"],
+ "Levante":["Pablo Cuñat|GK","Andres Fernandez|GK","Carlos Alvarez|AM","Sergio Postigo|CB","Adrian de la Fuente|CB","Jorge Cabello|CB","Diego Pampin|LB","Oriol Rey|DM","Sergio Lozano|CM","Giorgi Kochorashvili|CM","Jose Luis Morales|FWD","Ivan Romero|FWD","Brugui|LW"],
+ "Malaga":["Alfonso Herrero|GK","Jokin Gabilondo|RB","Einar Galilea|CB","Nelson Monte|CB","Aaron Ochoa|AM","Luismi Sanchez|DM","Manu Molina|CM","Dani Lorenzo|AM","David Larrubia|LW","Kevin Medina|RW","Dioni|FWD","Roberto Fernandez|FWD","Antonio Cordero|LW"],
+ "Racing Santander":["Jokin Ezkieta|GK","Mario Garcia|LB","Manu Hernando|CB","Pol Moreno|CB","Michelin|RB","Aritz Aldasoro|CM","Peque Fernandez|AM","Iñigo Vicente|LW","Pablo Rodriguez|FWD","Andres Martin|RW","Juan Carlos Arana|FWD","Jon Karrikaburu|FWD","Unai Vencedor|CM"],
+ "Rayo Vallecano":["Augusto Batalla|GK","Dani Cardenas|GK","Florian Lejeune|CB","Abdul Mumin|CB","Andrei Ratiu|RB","Pep Chavarria|LB","Pathé Ciss|DM","Oscar Trejo|AM","Isi Palazon|RW","Alvaro Garcia|LW","Jorge de Frutos|RW","Sergio Camello|FWD","Randy Nteka|FWD"],
+ "Deportivo La Coruna":["Helton Leite|GK","Pablo Vázquez|CB","Jaime Sanchez|CB","Ximo Navarro|RB","Rafa Obrador|LB","Jose Angel Jurado|DM","Diego Villares|CM","Mario Soriano|AM","Yeremay Hernandez|LW","Lucas Perez|FWD","David Mella|RW","Barbero|FWD","Davo|LW"],
+ "Espanyol":["Joan Garcia|GK","Fernando Pacheco|GK","Leandro Cabrera|CB","Sergi Gomez|CB","Omar El Hilali|RB","Brian Olivan|LB","Pol Lozano|DM","Edu Exposito|CM","Jofre Carreras|RW","Javi Puado|LW","Pere Milla|FWD","Roberto Fernandez|FWD","Antoniu Roca|RW"],
+ "Real Betis":["Rui Silva|GK","Adrian San Miguel|GK","Diego Llorente|CB","Marc Bartra|CB","Youssouf Sabaly|RB","Ricardo Rodriguez|LB","Johnny Cardoso|DM","Pablo Fornals|CM","Giovani Lo Celso|AM","Isco|AM","Antony|RW","Cucho Hernandez|FWD","Cedric Bakambu|FWD"],
+ "Real Madrid":["Thibaut Courtois|GK","Andriy Lunin|GK","Antonio Rudiger|CB","Eder Militao|CB","David Alaba|CB","Ferland Mendy|LB","Dani Carvajal|RB","Aurelien Tchouameni|DM","Federico Valverde|CM","Jude Bellingham|AM","Vinicius Jr|LW","Kylian Mbappe|FWD","Rodrygo|RW"],
+ "Real Sociedad":["Alex Remiro|GK","Unai Marrero|GK","Igor Zubeldia|CB","Nayef Aguerd|CB","Aihen Munoz|LB","Jon Aramburu|RB","Brais Mendez|AM","Takefusa Kubo|RW","Mikel Oyarzabal|LW","Ander Barrenetxea|LW","Orri Oskarsson|FWD","Sadiq Umar|FWD","Jon Pacheco|CB"],
+ "Sevilla":["Orjan Nyland|GK","Alvaro Fernandez|GK","Loic Bade|CB","Kike Salas|CB","Juanlu Sanchez|RB","Jose Angel Carmona|RB","Marcao|CB","Nemanja Gudelj|DM","Djibril Sow|CM","Dodi Lukebakio|RW","Isaac Romero|FWD","Akor Adams|FWD","Chidera Ejuke|LW"],
+ "Valencia":["Stole Dimitrievski|GK","Giorgi Mamardashvili|GK","Jose Gaya|LB","Dimitri Foulquier|RB","Cristhian Mosquera|CB","Yarek Gasiorowski|CB","Pepelu|DM","Javi Guerra|CM","Andre Almeida|AM","Diego Lopez|LW","Hugo Duro|FWD","Fran Perez|RW","Sergi Canos|LW"],
+ "Villarreal":["Diego Conde|GK","Luiz Junior|GK","Raul Albiol|CB","Willy Kambwala|CB","Kiko Femenia|RB","Pau Navarro|CB","Dani Parejo|CM","Santi Comesana|DM","Alex Baena|AM","Yeremy Pino|RW","Gerard Moreno|FWD","Ayoze Perez|FWD","Thierno Barry|FWD"]
+};
+const _laligaExistingNames=new Set(PLAYER_POOL.map(p=>String(p[0]).toLowerCase()));
+for(const [club,arr] of Object.entries(LALIGA_SQUAD_SEEDS)){
+  const c=LALIGA_CLUBS.find(x=>x.name===club); if(!c)continue;
+  const base=Math.round((c.atk+c.mid+c.def)/3);
+  arr.forEach((entry,idx)=>{
+    const [name,pos]=entry.split('|'); const clean=name.trim();
+    if(!clean || _laligaExistingNames.has(clean.toLowerCase())) return;
+    const h=_stableNum(clean,club); const ov=Math.max(64,Math.min(92,base-4+(h%11)));
+    const value=Math.max(3,Math.round((ov-55)*(ov-55)/7));
+    PLAYER_POOL.push([clean,pos,ov,value,club,_verifiedDobFor(clean),'LaLiga']);
+    _laligaExistingNames.add(clean.toLowerCase());
+  });
+}
+
 let career=null, page="home", match=null, keys={};
 
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function currentLeague(){return career?.league||DOMESTIC_LEAGUE_NAME||"Premier League";}
+function domesticCupKey(){return currentLeague()==="LaLiga"?"copaDelRey":"faCup";}
+function domesticCupName(){return currentLeague()==="LaLiga"?"Copa del Rey":"FA Cup";}
+function domesticCup(){if(!career)return null;return career[domesticCupKey()]||null;}
 function save(){try{localStorage.setItem("fc_new_career_v526",JSON.stringify(career))}catch(e){}}
 function load(){try{
   const raw=localStorage.getItem("fc_new_career_v526")||localStorage.getItem("fc_new_career_v526")||localStorage.getItem("fc_new_career_v526");
@@ -294,9 +407,10 @@ function playerOwner(name){
  const p=PLAYER_POOL.find(x=>x[0]===name); return p?p[4]:"European Club";
 }
 function startCareer(i){
+ activateLeague(window.selectedLeague||"Premier League");
  const c=CLUBS[i];
  career={
-  club:i, season:2026, matchday:1, cash:c.budget,
+  league:DOMESTIC_LEAGUE_NAME, club:i, season:2026, matchday:1, cash:c.budget,
   wins:0,draws:0,losses:0,gf:0,ga:0,points:0,
   players:startingSquad(c.name),
   soldPlayers:[],
@@ -305,7 +419,8 @@ function startCareer(i){
   inbox:["Career started. Your board expects steady progress and sensible squad building."],
  tactics:{formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",role0:"Balanced",role1:"Defend",role2:"Support",role3:"Balanced",role4:"Attack",role5:"Attack",role6:"Attack",mentality:"Balanced",press:"Medium"},
  champions:{qualified:false,phase:[],played:0,pts:0,wins:0,draws:0,losses:0,gf:0,ga:0,rank:null,knockout:null,eliminated:false},
-  faCup:{round:"Third Round",teams:[],matches:[],playedIndex:0,eliminated:false,winner:null,champion:false},
+  faCup:DOMESTIC_LEAGUE_NAME==="Premier League"?createFACup():null,
+  copaDelRey:DOMESTIC_LEAGUE_NAME==="LaLiga"?createCopaDelRey():null,
   leagueSchedule:[]
  };
  makeFixtures();
@@ -360,7 +475,7 @@ function nextSeason(){
  const earnedCL=!!career.champions?.qualified;
  career.seasonComplete=false;
  career.champions={qualified:earnedCL,phase:[],played:0,pts:0,wins:0,draws:0,losses:0,gf:0,ga:0,rank:null,knockout:null,eliminated:false};
- career.faCup=createFACup();
+ if(currentLeague()==="LaLiga"){career.copaDelRey=createCopaDelRey();career.faCup=null;}else{career.faCup=createFACup();career.copaDelRey=null;}
  if(earnedCL){const pool=easierUCLDraw();career.champions.phase=pool.map((op,i)=>({op,home:i%2===0,played:false}));}
  makeFixtures();
  career.inbox.push(`Season ${career.season} begins. Prize money: $${prize}m. Your squad carries over.`);
@@ -373,11 +488,11 @@ function nav(){return `<div class="nav">
 <button data-go="dashboard" class="${page==="dashboard"?"active":""}">Dashboard</button>
 <button data-go="squad" class="${page==="squad"?"active":""}">Squad</button>
 <button data-go="fixtures" class="${page==="fixtures"?"active":""}">Fixtures</button>
-<button data-go="table" class="${page==="table"?"active":""}">Premier League</button>
+<button data-go="table" class="${page==="table"?"active":""}">${esc(DOMESTIC_LEAGUE_NAME)}</button>
 <button data-go="transfers" class="${page==="transfers"?"active":""}">Transfers</button>
 <button data-go="tactics" class="${page==="tactics"?"active":""}">Tactics</button>
 <button data-go="champions" class="${page==="champions"?"active":""}">Champions League</button>
-<button data-go="facup" class="${page==="facup"?"active":""}">🏆 FA Cup</button>
+<button data-go="facup" class="${page==="facup"?"active":""}">🏆 ${domesticCupName()}</button>
 ${match?`<button data-go="match" class="${page==="match"?"active":""}">Match</button>`:""}
 </div>`}
 function layout(body){
@@ -386,12 +501,18 @@ function layout(body){
  <main class="wrap">${nav()}${body}</main>`;
 }
 function home(){
- return `<main class="wrap"><section class="hero"><div style="font-size:54px">⚽</div><h1>Football Career Mode</h1><p class="muted">Start a brand-new career with real clubs. English clubs play in the Premier League; European clubs are kept for Champions League and transfers.</p></section>
- <div class="card"><h2>Choose your club</h2><div class="grid">${CLUBS.map((c,i)=>`<article class="card club"><div><div class="badge">${c.badge}</div><h3>${c.name}</h3><div class="muted">Strength ${strength(i)} · Budget $${c.budget}m</div></div><button data-start="${i}">Start Career</button></article>`).join("")}</div></div></main>`;
+ const selected=window.selectedLeague||"Premier League";
+ activateLeague(selected);
+ return `<main class="wrap"><section class="hero"><div style="font-size:54px">⚽</div><h1>Football Career Mode</h1><p class="muted">Choose your domestic league first, then choose the club you want to manage.</p></section>
+ <div class="card" style="margin-bottom:16px"><h2>1. Choose your league</h2><div class="actions">
+ <button data-league="Premier League" class="${selected==="Premier League"?"":"secondary"}">🏴 Premier League</button>
+ <button data-league="LaLiga" class="${selected==="LaLiga"?"":"secondary"}">🇪🇸 LaLiga</button>
+ </div></div>
+ <div class="card"><h2>2. Choose your club · ${selected}</h2><p class="muted">${selected==="LaLiga"?"20 clubs · 38 matches · Copa del Rey · Champions League when qualified":"20 clubs · 38 matches · FA Cup · Champions League when qualified"}</p><div class="grid">${CLUBS.map((c,i)=>`<article class="card club"><div><div class="badge">${c.badge}</div><h3>${c.name}</h3><div class="muted">Strength ${strength(i)} · Budget $${c.budget}m</div></div><button data-start="${i}">Start Career</button></article>`).join("")}</div></div></main>`;
 }
 function dashboard(){
  const c=CLUBS[career.club], f=nextFixture(), op=f?CLUBS[f.op]:null;
- return layout(`<section class="card" style="margin-bottom:16px"><div class="actions" style="justify-content:space-between;align-items:center"><div><div class="muted">PREMIER LEAGUE · SEASON ${career.season} · MATCH ${Math.min(career.matchday,career.fixtures.length)}/${career.fixtures.length}</div><h1 style="margin:6px 0">${c.badge} ${c.name}</h1><div class="muted">Club strength ${strength(career.club)} · Squad OVR ${avg()}</div></div><div style="text-align:center"><div style="font-size:38px;font-weight:900">${career.points}</div><div class="muted">POINTS</div></div></div></section>
+ return layout(`<section class="card" style="margin-bottom:16px"><div class="actions" style="justify-content:space-between;align-items:center"><div><div class="muted">${DOMESTIC_LEAGUE_NAME.toUpperCase()} · SEASON ${career.season} · MATCH ${Math.min(career.matchday,career.fixtures.length)}/${career.fixtures.length}</div><h1 style="margin:6px 0">${c.badge} ${c.name}</h1><div class="muted">Club strength ${strength(career.club)} · Squad OVR ${avg()}</div></div><div style="text-align:center"><div style="font-size:38px;font-weight:900">${career.points}</div><div class="muted">POINTS</div></div></div></section>
  <div class="stats"><div class="stat"><span class="muted">Record</span><b>${career.wins}-${career.draws}-${career.losses}</b></div><div class="stat"><span class="muted">Goals</span><b>${career.gf}-${career.ga}</b></div><div class="stat"><span class="muted">Squad OVR</span><b>${avg()}</b></div><div class="stat"><span class="muted">Budget</span><b>$${career.cash}m</b></div></div>
  <div class="two" style="margin-top:16px"><div class="card"><div class="muted">NEXT MATCH</div><h2>${op?`${f.home?"🏠":"✈️"} ${op.name}`:"Season complete"}</h2>${op?`<div class="actions"><button data-play>Play Match</button><button class="secondary" data-sim>Simulate Match</button></div>`:`<div class="actions"><button data-next-season>➡️ Next Season</button></div>`}</div>
  <div class="card"><h2>Manager Inbox</h2>${career.inbox.slice(-5).reverse().map(x=>`<div class="notice">${esc(x)}</div>`).join("")}</div></div>`);
@@ -401,10 +522,10 @@ function squad(){
  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>Squad</h2><p class="muted">Training is available once per season and only for players aged 25 or younger.</p><div class="notice ${used?"draw":"good"}">${used?"Training already used this season.":"Training available this season."}</div></div><button data-trainall ${used?"disabled":""}>Train Squad</button></div><div class="table"><table><tr><th>Player</th><th>Pos</th><th>OVR</th><th>Age</th><th>Morale</th><th>Value</th><th>Action</th></tr>${career.players.map((p,i)=>{const eligible=!used&&Number(p.age||99)<=25&&p.ov<95;return `<tr><td>${esc(p.name)}</td><td>${p.pos}</td><td><b>${p.ov}</b></td><td>${p.age}</td><td>${p.morale}%</td><td>$${p.value}m</td><td><div class="actions"><button class="secondary" data-train="${i}" ${eligible?"":"disabled"}>+1 OVR</button><button class="danger" data-sell="${i}">Sell</button></div></td></tr>`}).join('')}</table></div></div>`);
 }
 function fixtures(){
- return layout(`<div class="card"><h2>Premier League Fixtures</h2><div class="table"><table><tr><th>Match</th><th>Opponent</th><th>Venue</th><th>Status</th></tr>${career.fixtures.map((f,i)=>`<tr><td>${i+1}</td><td>${CLUBS[f.op].badge} ${CLUBS[f.op].name}</td><td>${f.home?"Home":"Away"}</td><td>${f.played?`<span class="${f.result==="W"?"good":f.result==="L"?"bad":"draw"}">${f.result} ${f.score}</span>`:f===nextFixture()?`<div class="actions"><button class="secondary" data-play>Play</button><button data-sim>Sim</button></div>`:"Scheduled"}</td></tr>`).join("")}</table></div></div>`);
+ return layout(`<div class="card"><h2>${esc(DOMESTIC_LEAGUE_NAME)} Fixtures</h2><div class="table"><table><tr><th>Match</th><th>Opponent</th><th>Venue</th><th>Status</th></tr>${career.fixtures.map((f,i)=>`<tr><td>${i+1}</td><td>${CLUBS[f.op].badge} ${CLUBS[f.op].name}</td><td>${f.home?"Home":"Away"}</td><td>${f.played?`<span class="${f.result==="W"?"good":f.result==="L"?"bad":"draw"}">${f.result} ${f.score}</span>`:f===nextFixture()?`<div class="actions"><button class="secondary" data-play>Play</button><button data-sim>Sim</button></div>`:"Scheduled"}</td></tr>`).join("")}</table></div></div>`);
 }
 function table(){
- return layout(`<div class="card"><h2>Premier League Table</h2><p class="muted">20 teams · 38 matches per club · 380 matches total</p><div class="table"><table><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr>${rows().map((r,n)=>`<tr class="${r.i===career.club?"you":""}"><td>${n+1}</td><td>${CLUBS[r.i].badge} ${r.name}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td><b>${r.pts}</b></td></tr>`).join("")}</table></div></div>`);
+ return layout(`<div class="card"><h2>${esc(DOMESTIC_LEAGUE_NAME)} Table</h2><p class="muted">20 teams · 38 matches per club · 380 matches total</p><div class="table"><table><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr>${rows().map((r,n)=>`<tr class="${r.i===career.club?"you":""}"><td>${n+1}</td><td>${CLUBS[r.i].badge} ${r.name}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td><b>${r.pts}</b></td></tr>`).join("")}</table></div></div>`);
 }
 function getTransferAsking(i){
  if(!career)return 0;
@@ -708,7 +829,7 @@ function startMatch(custom={}){
   const oppPos=spots.map(([depth,width])=>({x:width,y:depth}));
   const opponentName=isFACup?f.opponentName:CLUBS[f.op].name;
   const opponentShort=isFACup?(opponentName.split(/\s+/).map(x=>x[0]).join().slice(0,3).toUpperCase()||"OPP"):CLUBS[f.op].short;
-  match={op:isFACup?opponentName:f.op,opponentName,opponentShort,competition:isFACup?"FA CUP":"PREMIER LEAGUE",faCupRef:isFACup?f.faRef:null,fixture:f,time:0,hs:0,as:0,pos:50,control:9,ball:{x:50,y:50,vx:0,vy:0,flight:0,shotTeam:null,shotPower:0,shotWillScore:false,shotSaveAttempted:false,holderIndex:-1,passTeam:null,passTarget:-1,passPower:0,passFrom:-1},log:[`Kick-off: ${CLUBS[career.club].name} vs ${opponentName}.`],players:[],ended:false,last:performance.now(),boostUntil:0,passCooldown:0,aiPassCooldown:3,autoSwitchCooldown:0,kickoffTimer:0,restartTimer:0,restartIndex:-1,bench:career.players.filter(p=>!ordered.slice(0,11).some(x=>x&&x.name===p.name)).map(p=>p.name)};
+  match={op:isFACup?opponentName:f.op,opponentName,opponentShort,competition:isFACup?domesticCupName():DOMESTIC_LEAGUE_NAME.toUpperCase(),faCupRef:isFACup?f.faRef:null,fixture:f,time:0,hs:0,as:0,pos:50,control:9,ball:{x:50,y:50,vx:0,vy:0,flight:0,shotTeam:null,shotPower:0,shotWillScore:false,shotSaveAttempted:false,holderIndex:-1,passTeam:null,passTarget:-1,passPower:0,passFrom:-1},log:[`Kick-off: ${CLUBS[career.club].name} vs ${opponentName}.`],players:[],ended:false,last:performance.now(),boostUntil:0,passCooldown:0,aiPassCooldown:3,autoSwitchCooldown:0,kickoffTimer:0,restartTimer:0,restartIndex:-1,bench:career.players.filter(p=>!ordered.slice(0,11).some(x=>x&&x.name===p.name)).map(p=>p.name)};
   userPos.forEach(({x,y},i)=>{
     const slot=normalizeSlot(spots[i]?.[2]);
     const ref=ordered[i]||null;
@@ -1643,7 +1764,7 @@ function trainAll(){
 }
 function matchView(){
  const me=CLUBS[career.club],op={name:match.opponentName,short:match.opponentShort};
- return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v11.13</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
+ return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v12.9</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
 }
 function initMobileControls(){
  const wrap=document.querySelector('.mobileControls'),zone=document.getElementById('mobileJoystick'),knob=document.getElementById('joystickKnob'),pass=document.getElementById('mobilePass'),shoot=document.getElementById('mobileShoot');
@@ -1678,6 +1799,61 @@ function bindMatchControls(){
  });
  document.querySelectorAll('[data-forfeit]').forEach(b=>b.onclick=forfeit);
 }
+
+function createCopaDelRey(){
+  const pool=COPA_DEL_REY_TEAM_NAMES.slice().sort(()=>Math.random()-.5);
+  const matches=[];
+  for(let i=0;i<pool.length;i+=2){
+    const home=Math.random()<.5;
+    matches.push({home:home?pool[i]:pool[i+1],away:home?pool[i+1]:pool[i],played:false,score:null,winner:null,penalties:false});
+  }
+  return {round:"Round of 32",teams:pool,matches,playedIndex:0,eliminated:false,winner:null,champion:false,history:[]};
+}
+function copaProfile(name){
+  const c=LALIGA_CLUBS.find(x=>x.name===name);
+  if(c)return {atk:c.atk,mid:c.mid,def:c.def,overall:(c.atk+c.mid+c.def)/3};
+  const r=COPA_GUEST_RATINGS[name]||68;
+  return {atk:r,mid:r-1,def:r+1,overall:r};
+}
+function copaScore(home,away){
+  const h=copaProfile(home), a=copaProfile(away);
+  const gap=h.overall-a.overall, formH=(Math.random()-.5)*2.5, formA=(Math.random()-.5)*2.5;
+  const edge=gap*.48+(h.mid-a.mid)*.20+2.2+formH-formA;
+  let hx=Math.max(.38,Math.min(2.65,1.22+(h.atk-a.def)*.017+edge*.019));
+  let ax=Math.max(.28,Math.min(2.25,1.00+(a.atk-h.def)*.015-edge*.016));
+  let hs=Math.min(6,poisson(hx)),as=Math.min(6,poisson(ax));
+  if(Math.abs(hs-as)>=4&&Math.random()<.9){if(hs>as)hs=Math.min(5,as+3);else as=Math.min(5,hs+3);}
+  return [hs,as];
+}
+function copaNextRoundName(r){return ({"Round of 32":"Round of 16","Round of 16":"Quarter-final","Quarter-final":"Semi-final","Semi-final":"Final","Final":"Winner"})[r]||"Winner";}
+function resolveCopaTie(m){
+  let [a,b]=copaScore(m.home,m.away), pens=false;
+  if(a===b){
+    const h=copaProfile(m.home), ar=copaProfile(m.away);
+    const ea=poisson(Math.max(.08,Math.min(.45,.18+(h.atk-ar.def)*.006))); const eb=poisson(Math.max(.08,Math.min(.42,.15+(ar.atk-h.def)*.006)));
+    a+=Math.min(1,ea);b+=Math.min(1,eb);
+    if(a===b){pens=true;const ph=Math.max(.35,Math.min(.65,.5+(h.overall-ar.overall)*.008+.01));m.winner=Math.random()<ph?m.home:m.away;}else m.winner=a>b?m.home:m.away;
+  }else m.winner=a>b?m.home:m.away;
+  m.penalties=pens;m.played=true;m.score=`${a}-${b}${pens?` (pens ${m.winner===m.home?'H':'A'})`:''}`;
+}
+function getUserCopaMatch(){const cp=career.copaDelRey;if(!cp||cp.eliminated||cp.round==='Winner')return null;const user=CLUBS[career.club].name;return cp.matches.find(m=>(m.home===user||m.away===user)&&!m.played)||null;}
+function advanceCopaRound(cp){
+  const winners=cp.matches.map(m=>m.winner).filter(Boolean);cp.history.push({round:cp.round,matches:cp.matches.map(m=>({...m}))});const next=copaNextRoundName(cp.round);
+  if(next==='Winner'){cp.winner=winners[0]||null;cp.champion=cp.winner===CLUBS[career.club].name;cp.round='Winner';cp.playedIndex=cp.matches.length;career.inbox.unshift(`🏆 Copa del Rey Final: ${cp.winner||'Unknown'} are the champions!`);if(cp.champion)career.inbox.unshift('🏆 Copa del Rey WINNERS! Your club lifted the trophy.');return;}
+  cp.round=next;cp.teams=winners;cp.matches=[];cp.playedIndex=0;
+  for(let i=0;i<winners.length;i+=2){const a=winners[i],b=winners[i+1];if(!b)continue;const home=Math.random()<.5;cp.matches.push({home:home?a:b,away:home?b:a,played:false,score:null,winner:null,penalties:false});}
+  career.inbox.unshift(`🏆 Copa del Rey draw: ${cp.round} is ready.`);
+}
+function finishCopaUserMatch(userMatch,hs,as,simulated){
+  const cp=career.copaDelRey;if(!cp||!userMatch||userMatch.played)return;const user=CLUBS[career.club].name;userMatch.played=true;userMatch.score=`${hs}-${as}`;let winner=hs>as?userMatch.home:hs<as?userMatch.away:null;
+  if(!winner){const hr=copaTeamRating(userMatch.home),ar=copaTeamRating(userMatch.away);winner=Math.random()<(hr/(hr+ar))?userMatch.home:userMatch.away;userMatch.penalties=true;userMatch.score+=` (pens ${winner===userMatch.home?'H':'A'})`;}
+  userMatch.winner=winner;const usWon=winner===user;cp.eliminated=!usWon;
+  cp.matches.filter(m=>!m.played&&m!==userMatch).forEach(resolveCopaTie);cp.playedIndex=cp.matches.length;
+  career.inbox.unshift(`${simulated?'Simulated ':''}Copa del Rey ${cp.round}: ${userMatch.home} ${userMatch.score} ${userMatch.away} — ${usWon?'you advance':'you are eliminated'}.`);
+  if(!cp.eliminated)advanceCopaRound(cp);save();page='facup';render();
+}
+function simulateCopaMatch(){const cp=career.copaDelRey;if(!cp||cp.eliminated||cp.round==='Winner')return;const um=getUserCopaMatch();if(!um){cp.matches.filter(m=>!m.played).forEach(resolveCopaTie);advanceCopaRound(cp);save();render();return;}cp.matches.filter(m=>!m.played&&m!==um).forEach(resolveCopaTie);const [hs,as]=copaScore(um.home,um.away);finishCopaUserMatch(um,hs,as,true);}
+function playCopaMatch(){const um=getUserCopaMatch();if(!um)return;const user=CLUBS[career.club].name;const opp=um.home===user?um.away:um.home;const fixture={faCup:true,homeName:um.home,awayName:um.away,isHomeUser:um.home===user,opponentName:opp,faRef:um};startMatch({faCupMatch:fixture});}
 
 function createFACup(){
   const pool=FA_CUP_TEAM_NAMES.slice().sort(()=>Math.random()-.5);
@@ -1831,21 +2007,25 @@ function simulateFACupOnlyOtherTies(){
   save();render();
 }
 function facup(){
-  const fc=career.faCup||createFACup(); career.faCup=fc;
+  const isSpain=currentLeague()==='LaLiga';
+  const cupName=domesticCupName();
+  let cp=domesticCup();
+  if(!cp){cp=isSpain?createCopaDelRey():createFACup();career[domesticCupKey()]=cp;}
   const user=CLUBS[career.club].name;
-  const status=fc.eliminated?'Eliminated':fc.round==='Winner'?(fc.champion?'FA CUP WINNERS 🏆':`Winner: ${fc.winner||'Unknown'}`):fc.round;
-  const active=getUserFACupMatch();
-  const rows=fc.round==='Winner'?[]:fc.matches.map((m)=>{
+  const status=cp.eliminated?'Eliminated':cp.round==='Winner'?(cp.champion?`${cupName.toUpperCase()} WINNERS 🏆`:`Winner: ${cp.winner||'Unknown'}`):cp.round;
+  const active=isSpain?getUserCopaMatch():getUserFACupMatch();
+  const rows=cp.round==='Winner'?[]:cp.matches.map(m=>{
     const involved=m.home===user||m.away===user;
-    const action=!m.played&&involved&&!fc.eliminated?`<button data-fa-play>Play Match</button><button class="secondary" data-fa-sim>Simulate</button>`:'';
+    const action=!m.played&&involved&&!cp.eliminated?`<button ${isSpain?'data-copa-play':'data-fa-play'}>Play Match</button><button class="secondary" ${isSpain?'data-copa-sim':'data-fa-sim'}>Simulate</button>`:'';
     return `<tr class="${involved?'you':''}"><td>${esc(m.home)}</td><td>${m.played?m.score:'vs'}</td><td>${esc(m.away)}</td><td>${m.winner?`<span class="good">${esc(m.winner)} advances</span>`:action}</td></tr>`;
   }).join('');
-  const playedCount=fc.matches.filter(m=>m.played).length;
-  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>🏆 Emirates FA Cup</h2><p class="muted">32-team career-mode knockout cup starting in the Round of 32. Play your tie in 3D or simulate it just like the Champions League. The other ties are simulated automatically.</p></div><span class="pill">${status}</span></div>
-  <div class="stats"><div class="stat"><span class="muted">Round</span><b>${status}</b></div><div class="stat"><span class="muted">Matches played</span><b>${playedCount}/${fc.matches.length}</b></div><div class="stat"><span class="muted">Your club</span><b>${esc(user)}</b></div><div class="stat"><span class="muted">Prize</span><b>£2.12m</b></div></div>
-  ${active&&!fc.eliminated?`<div class="notice"><b>Your FA Cup tie:</b> ${esc(active.home)} vs ${esc(active.away)} <span style="float:right;display:flex;gap:8px"><button data-fa-play>Play Match</button><button class="secondary" data-fa-sim>Simulate</button></span></div>`:''}
-  <div class="table"><table><tr><th>Home</th><th>Score</th><th>Away</th><th>Status</th></tr>${rows||`<tr><td colspan="4">The FA Cup has finished for this season.</td></tr>`}</table></div></div>`);
+  const playedCount=cp.matches.filter(m=>m.played).length;
+  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>🏆 ${cupName}</h2><p class="muted">${isSpain?'Spanish 32-team career-mode knockout cup starting in the Round of 32. Play your tie in 3D or simulate it.':'32-team career-mode knockout cup starting in the Round of 32. Play your tie in 3D or simulate it.'} Other ties are simulated automatically.</p></div><span class="pill">${status}</span></div>
+  <div class="stats"><div class="stat"><span class="muted">Round</span><b>${status}</b></div><div class="stat"><span class="muted">Matches played</span><b>${playedCount}/${cp.matches.length}</b></div><div class="stat"><span class="muted">Your club</span><b>${esc(user)}</b></div><div class="stat"><span class="muted">Competition</span><b>${esc(cupName)}</b></div></div>
+  ${active&&!cp.eliminated?`<div class="notice"><b>Your ${esc(cupName)} tie:</b> ${esc(active.home)} vs ${esc(active.away)} <span style="float:right;display:flex;gap:8px"><button ${isSpain?'data-copa-play':'data-fa-play'}>Play Match</button><button class="secondary" ${isSpain?'data-copa-sim':'data-fa-sim'}>Simulate</button></span></div>`:''}
+  <div class="table"><table><tr><th>Home</th><th>Score</th><th>Away</th><th>Status</th></tr>${rows||`<tr><td colspan="4">The ${esc(cupName)} has finished for this season.</td></tr>`}</table></div></div>`);
 }
+
 function champions(){
  const q=career.champions||{qualified:false,phase:[],played:0,pts:0,wins:0,draws:0,losses:0,gf:0,ga:0,rank:null,knockout:null,eliminated:false};
  const ko=q.knockout;
@@ -1908,6 +2088,7 @@ function render(){
  if(page==="match")bindMatchControls();
 }
 function bind(){
+ document.querySelectorAll("[data-league]").forEach(b=>b.onclick=()=>{window.selectedLeague=b.dataset.league;activateLeague(window.selectedLeague);render()});
  document.querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>startCareer(Number(b.dataset.start)));
  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{page=b.dataset.go;render()});
  document.querySelectorAll("[data-new]").forEach(b=>b.onclick=newCareer);
@@ -1955,6 +2136,8 @@ function bind(){
  document.querySelectorAll("[data-ucl-ko]").forEach(b=>b.onclick=playUCLKnockout);
  document.querySelectorAll("[data-fa-play]").forEach(b=>b.onclick=playFACupMatch);
  document.querySelectorAll("[data-fa-sim]").forEach(b=>b.onclick=simulateFACupMatch);
+ document.querySelectorAll("[data-copa-sim]").forEach(b=>b.onclick=simulateCopaMatch);
+ document.querySelectorAll("[data-copa-play]").forEach(b=>b.onclick=playCopaMatch);
  document.querySelectorAll("[data-drag-player]").forEach(el=>el.ondragstart=e=>e.dataTransfer.setData("text/plain",el.dataset.dragPlayer));
  const pitch=document.querySelector('.tacticalPitch');
  if(pitch){pitch.ondragover=e=>e.preventDefault();pitch.ondrop=e=>{e.preventDefault();const el=document.querySelector(`[data-drag-player="${e.dataTransfer.getData('text/plain')}"]`);if(!el)return;const r=pitch.getBoundingClientRect();el.style.left=Math.max(2,Math.min(98,(e.clientX-r.left)/r.width*100))+'%';el.style.top=Math.max(4,Math.min(96,(e.clientY-r.top)/r.height*100))+'%';};}
@@ -1964,11 +2147,18 @@ function bind(){
 function bootGame(){
   try{
     career=load();
+    if(career){ activateLeague(career.league||"Premier League"); window.selectedLeague=DOMESTIC_LEAGUE_NAME; }
     if(career && (!CLUBS[career.club] || !Array.isArray(career.players) || !Array.isArray(career.fixtures))){career=null;}
     if(career){
       if(!career.tactics || typeof career.tactics!=="object") career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};
       try{ensureLineup()}catch(e){career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};ensureLineup();}
-      if(!career.faCup || !Array.isArray(career.faCup.matches) || career.faCup.round==='Third Round' || (career.faCup.round==='Round of 32' && career.faCup.matches.length!==16)) career.faCup=createFACup();
+      if(currentLeague()==='LaLiga'){
+        career.faCup=null;
+        if(!career.copaDelRey || !Array.isArray(career.copaDelRey.matches) || (career.copaDelRey.round==='Round of 32' && career.copaDelRey.matches.length!==16)) career.copaDelRey=createCopaDelRey();
+      }else{
+        career.copaDelRey=null;
+        if(!career.faCup || !Array.isArray(career.faCup.matches) || career.faCup.round==='Third Round' || (career.faCup.round==='Round of 32' && career.faCup.matches.length!==16)) career.faCup=createFACup();
+      }
       const validSchedule=Array.isArray(career.leagueSchedule)&&career.leagueSchedule.length===38&&Array.isArray(career.fixtures)&&career.fixtures.length===38&&Array.isArray(career.table)&&career.table.length===20;
       if(!validSchedule){career.table=CLUBS.map(x=>({name:x.name,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}));makeFixtures();}
       try{repairCareerSquad()}catch(e){console.warn("Squad repair skipped",e)}
@@ -1989,3 +2179,4 @@ bootGame();
 </script>
 </body>
 </html>
+  
