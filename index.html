@@ -452,12 +452,12 @@ for(const [club,names] of Object.entries(FULL_SQUADS)){
 function _fullSquadRepair(){
   if(!career)return;
   const clubName=CLUBS[career.club]?.name;
-  const sold=new Set((career.soldPlayers||[]).map(n=>playerIdentity(n)));
+  const sold=new Set((career.soldPlayers||[]).map(n=>String(n).trim().toLowerCase()));
   const base=PLAYER_POOL.filter(x=>x[4]===clubName);
-  const current=new Map((career.players||[]).filter(p=>p&&p.name).map(p=>[playerIdentity(p.name),{...p,name:officialPlayerName(p.name)}]));
+  const current=new Map((career.players||[]).filter(p=>p&&p.name).map(p=>[String(p.name).toLowerCase(),p]));
   const merged=[];
   for(const x of base){
-    const key=playerIdentity(x[0]);
+    const key=String(x[0]).toLowerCase();
     if(sold.has(key)) continue;
     if(current.has(key)) merged.push(current.get(key));
     else {
@@ -466,7 +466,7 @@ function _fullSquadRepair(){
     }
   }
   for(const p of current.values()){
-    if(!base.some(x=>playerIdentity(x[0])===playerIdentity(p.name))&&!sold.has(playerIdentity(p.name))) merged.push({...p,name:officialPlayerName(p.name)});
+    if(!base.some(x=>String(x[0]).toLowerCase()===String(p.name).toLowerCase())&&!sold.has(String(p.name).toLowerCase())) merged.push(p);
   }
   career.players=merged;
 }
@@ -534,7 +534,7 @@ function startingSquad(clubName){
    if(seen.has(key)) return false;
    seen.add(key);
    return true;
- }).map(x=>({name:officialPlayerName(x[0]),pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])}));
+ }).map(x=>({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])}));
 }
 function playerOwner(name){
  const p=PLAYER_POOL.find(x=>x[0]===name); return p?p[4]:"European Club";
@@ -2023,10 +2023,10 @@ function repairCareerSquad(){
   for(const p of career.players){
     if(!p || typeof p!=="object" || !p.name) continue;
     const name=String(p.name).trim();
-    const key=playerIdentity(name);
+    const key=name.toLowerCase();
     if(sold.has(key) || seen.has(key)) continue;
     seen.add(key);
-    clean.push({...p,name:officialPlayerName(name)});
+    clean.push({...p,name});
   }
   // Restore missing genuine players for older saves, but NEVER restore someone
   // recorded in soldPlayers. Transfers already in the squad are preserved.
@@ -2043,9 +2043,9 @@ function repairCareerSquad(){
   for(const p of clean){
     if(!base.some(x=>x.name.toLowerCase()===p.name.toLowerCase())) merged.push(p);
   }
-  career.players=merged.filter(p=>!sold.has(playerIdentity(p.name)));
+  career.players=merged.filter(p=>!sold.has(String(p.name).trim().toLowerCase()));
   if(career.tactics&&Array.isArray(career.tactics.lineup)) career.tactics.lineup=career.tactics.lineup.filter(n=>!sold.has(String(n).trim().toLowerCase()));
-  career._squadRepairVersion=8;
+  career._squadRepairVersion=7;
   save();
 }
 const normalizeTacticalSquad=repairCareerSquad;
