@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Football Career Mode — v14.7</title>
+<title>Football Career Mode — v14.9</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07110c;color:#f2fff7;font-family:Arial,Helvetica,sans-serif}
 button,select{font:inherit}button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
@@ -246,7 +246,7 @@ const MULTI_LEAGUE_PLAYERS=[
 ["Justin Bijlow","GK",79,10,"Feyenoord","1998-01-22"],["Quinten Timber","CM",83,35,"Feyenoord","2001-06-17"],["Ayase Ueda","FWD",79,15,"Feyenoord","1998-08-10"],["Antoni Milambo","AM",77,22,"Feyenoord","2005-04-03"],["Walter Benitez","GK",80,8,"PSV Eindhoven","1993-01-19"],["Malik Tillman","AM",82,35,"PSV Eindhoven","2002-05-28"],["Joey Veerman","CM",83,35,"PSV Eindhoven","1998-11-19"],["Luuk de Jong","FWD",79,5,"PSV Eindhoven","1990-08-27"],["Ismael Saibari","AM",80,32,"PSV Eindhoven","2001-01-21"],["Wout Weghorst","FWD",77,5,"Ajax","1992-08-07"],["Bertrand Traore","RW",78,7,"Ajax","1995-09-06"],["Kenneth Taylor","CM",78,18,"Ajax","2002-05-16"],["Jorrel Hato","CB",80,32,"Ajax","2006-03-07"],["Mika Godts","LW",77,25,"Ajax","2005-06-07"]
 ];
 
-/* v14.7 EXTRA STAR + YOUNG PLAYER MARKET
+/* v14.8 EXTRA STAR + YOUNG PLAYER MARKET
    Expanded transfer list with high-profile stars and young talents from major clubs.
    Birth dates are stored so the age system can calculate their season age. */
 const EXTRA_STAR_PLAYERS=[
@@ -472,7 +472,7 @@ function _fullSquadRepair(){
 }
 
 
-/* v14.7 — LaLiga squad pool. These are real-player names used for playable
+/* v14.8 — LaLiga squad pool. These are real-player names used for playable
    2026/27 LaLiga careers and the enlarged transfer market. */
 const LALIGA_SQUAD_SEEDS={
  "Athletic Club":["Unai Simon|GK","Julen Agirrezabala|GK","Dani Vivian|CB","Aitor Paredes|CB","Yuri Berchiche|LB","Inigo Lekue|RB","Benat Prados|DM","Mikel Vesga|CM","Oihan Sancet|AM","Alex Berenguer|LW","Iñaki Williams|RW","Nico Williams|LW","Gorka Guruzeta|FWD"],
@@ -643,7 +643,7 @@ function home(){
  <button data-league="Premier League" class="${selected==="Premier League"?"":"secondary"}">🏴 Premier League</button>
  <button data-league="LaLiga" class="${selected==="LaLiga"?"":"secondary"}">🇪🇸 LaLiga</button>
  </div></div>
- <div class="card"><h2>2. Choose your club · ${selected}</h2><p class="muted">${selected==="LaLiga"?"20 clubs · 38 matches · Copa del Rey · Champions League when qualified":"20 clubs · 38 matches · FA Cup · Champions League when qualified"}</p><div class="grid">${CLUBS.map((c,i)=>`<article class="card club"><div><div class="badge">${c.badge}</div><h3>${c.name}</h3><div class="muted">Strength ${strength(i)} · Budget $${c.budget}m</div></div><button data-start="${i}">Start Career</button></article>`).join("")}</div></div></main>`;
+ <div class="card"><h2>2. Choose your club · ${selected}</h2><p class="muted">${selected==="LaLiga"?"20 clubs · 38 matches · Copa del Rey · Champions League when qualified":"20 clubs · 38 matches · FA Cup · Champions League when qualified"}</p><div class="grid">${CLUBS.map((c,i)=>`<article class="card club"><div><div class="badge">${c.badge}</div><h3>${c.name}</h3><div class="muted">Strength ${strength(i)} · Budget $${c.budget}m</div></div><button type="button" data-start="${i}" onclick="startCareer(${i});return false;">Start Career</button></article>`).join("")}</div></div></main>`;
 }
 function dashboard(){
  const c=CLUBS[career.club], f=nextFixture(), op=f?CLUBS[f.op]:null;
@@ -2022,7 +2022,7 @@ function trainAll(){
 }
 function matchView(){
  const me=CLUBS[career.club],op={name:match.opponentName,short:match.opponentShort};
- return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v14.7</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
+ return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v14.8</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
 }
 function initMobileControls(){
  const wrap=document.querySelector('.mobileControls'),zone=document.getElementById('mobileJoystick'),knob=document.getElementById('joystickKnob'),pass=document.getElementById('mobilePass'),shoot=document.getElementById('mobileShoot');
@@ -2347,10 +2347,7 @@ function bind(){
    b.type='button';
    b.onclick=e=>{e.preventDefault();window.selectedLeague=b.dataset.league;activateLeague(window.selectedLeague);render()};
  });
- document.querySelectorAll("[data-start]").forEach(b=>{
-   b.type='button';
-   b.onclick=e=>{e.preventDefault();startCareer(Number(b.dataset.start))};
- });
+ /* Start Career uses a direct button handler in home() so it cannot be blocked by the generic binder. */
  document.querySelectorAll("[data-go]").forEach(b=>{
    b.type='button';
    b.onclick=e=>{e.preventDefault();const next=b.dataset.go;if(next){page=next;window.scheduleModalEvent=null;render();}};
@@ -2405,6 +2402,7 @@ function bind(){
  const pitch=document.querySelector('.tacticalPitch');
  if(pitch){pitch.ondragover=e=>e.preventDefault();pitch.ondrop=e=>{e.preventDefault();const el=document.querySelector(`[data-drag-player="${e.dataTransfer.getData('text/plain')}"]`);if(!el)return;const r=pitch.getBoundingClientRect();el.style.left=Math.max(2,Math.min(98,(e.clientX-r.left)/r.width*100))+'%';el.style.top=Math.max(4,Math.min(96,(e.clientY-r.top)/r.height*100))+'%';};}
 }
+
 
 
 document.addEventListener('click',function(e){
