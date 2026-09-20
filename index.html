@@ -2120,7 +2120,7 @@ function tactics(){
    lineup=strictTacticalLineup.filter(Boolean);
    t.lineup=lineup.map(p=>p.name);
  }
- const selectedNames=new Set((t.lineup||[]).map(playerNameKey));
+ const selectedNames=new Set(lineup.filter(Boolean).map(p=>playerNameKey(p.name)));
  const roleNames=['GK','CB','LB/RB','DM/CM','AM','LW/RW','ST'];
  const roleOptions=['Defend','Support','Build-Up','Attack','Balanced','Versatile'];
  const breakdown={
