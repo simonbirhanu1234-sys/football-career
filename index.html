@@ -452,12 +452,12 @@ for(const [club,names] of Object.entries(FULL_SQUADS)){
 function _fullSquadRepair(){
   if(!career)return;
   const clubName=CLUBS[career.club]?.name;
-  const sold=new Set((career.soldPlayers||[]).map(n=>String(n).trim().toLowerCase()));
+  const sold=new Set((career.soldPlayers||[]).map(n=>playerIdentity(n)));
   const base=PLAYER_POOL.filter(x=>x[4]===clubName);
-  const current=new Map((career.players||[]).filter(p=>p&&p.name).map(p=>[String(p.name).toLowerCase(),p]));
+  const current=new Map((career.players||[]).filter(p=>p&&p.name).map(p=>[playerIdentity(p.name),{...p,name:officialPlayerName(p.name)}]));
   const merged=[];
   for(const x of base){
-    const key=String(x[0]).toLowerCase();
+    const key=playerIdentity(x[0]);
     if(sold.has(key)) continue;
     if(current.has(key)) merged.push(current.get(key));
     else {
@@ -466,7 +466,7 @@ function _fullSquadRepair(){
     }
   }
   for(const p of current.values()){
-    if(!base.some(x=>String(x[0]).toLowerCase()===String(p.name).toLowerCase())&&!sold.has(String(p.name).toLowerCase())) merged.push(p);
+    if(!base.some(x=>playerIdentity(x[0])===playerIdentity(p.name))&&!sold.has(playerIdentity(p.name))) merged.push({...p,name:officialPlayerName(p.name)});
   }
   career.players=merged;
 }
@@ -530,11 +530,11 @@ function startingSquad(clubName){
  const preferred=PLAYER_POOL.filter(x=>x[4]===clubName);
  const seen=new Set();
  return preferred.filter(x=>{
-   const key=String(x[0]).trim().toLowerCase();
+   const key=playerIdentity(x[0]);
    if(seen.has(key)) return false;
    seen.add(key);
    return true;
- }).map(x=>({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])}));
+ }).map(x=>({name:officialPlayerName(x[0]),pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])}));
 }
 function playerOwner(name){
  const p=PLAYER_POOL.find(x=>x[0]===name); return p?p[4]:"European Club";
@@ -1071,7 +1071,8 @@ function chooseBestForSlot(players,slot,used){
  return candidates[0]||null;
 }
 function playerIdentity(name){
- const key=String(name||'').normalize('NFKC').replace(/\s+/g,' ').trim().toLowerCase();
+ let key=String(name||'').normalize('NFKC').replace(/\s+/g,' ').trim().toLowerCase();
+ key=key.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
  const aliases={
   'mbappe':'kylian mbappe',
   'mpabbe':'kylian mbappe',
@@ -1079,6 +1080,7 @@ function playerIdentity(name){
   'klyian mpabbe':'kylian mbappe',
   'kylian mpabbe':'kylian mbappe',
   'vinicius':'vinicius jr',
+  'vinicius junior':'vinicius jr',
   'vini':'vinicius jr'
  };
  return aliases[key]||key;
@@ -2021,10 +2023,10 @@ function repairCareerSquad(){
   for(const p of career.players){
     if(!p || typeof p!=="object" || !p.name) continue;
     const name=String(p.name).trim();
-    const key=name.toLowerCase();
+    const key=playerIdentity(name);
     if(sold.has(key) || seen.has(key)) continue;
     seen.add(key);
-    clean.push({...p,name});
+    clean.push({...p,name:officialPlayerName(name)});
   }
   // Restore missing genuine players for older saves, but NEVER restore someone
   // recorded in soldPlayers. Transfers already in the squad are preserved.
@@ -2041,9 +2043,9 @@ function repairCareerSquad(){
   for(const p of clean){
     if(!base.some(x=>x.name.toLowerCase()===p.name.toLowerCase())) merged.push(p);
   }
-  career.players=merged.filter(p=>!sold.has(String(p.name).trim().toLowerCase()));
+  career.players=merged.filter(p=>!sold.has(playerIdentity(p.name)));
   if(career.tactics&&Array.isArray(career.tactics.lineup)) career.tactics.lineup=career.tactics.lineup.filter(n=>!sold.has(String(n).trim().toLowerCase()));
-  career._squadRepairVersion=7;
+  career._squadRepairVersion=8;
   save();
 }
 const normalizeTacticalSquad=repairCareerSquad;
@@ -2093,7 +2095,7 @@ function tactics(){
  const axes=keys.map((k,i)=>{const a=-Math.PI/2+i*Math.PI/3;return `<div class="radarLabel" style="left:${cx+Math.cos(a)*47}%;top:${cy+Math.sin(a)*47}%">${k}</div>`}).join('');
  const pitch=positions.map((sp,i)=>{
    const pl=lineup[i]||null;
-   const displayName=(pl&&pl.name)?pl.name.replace('Kylian Mbappe','Mbappe').replace('Vinicius Jr','Vinicius Jr').replace('Jude Bellingham','Jude'): 'Squad slot';
+   const displayName=(pl&&pl.name)?pl.name: 'Squad slot';
    return `<div class="tPlayer" draggable="true" data-drag-player="${i}" style="left:${sp[1]}%;top:${sp[0]}%"><span class="pNum">${i+1}</span><span class="pPos">${sp[2]}</span><b>${esc(displayName)}</b></div>`
  }).join('');
  return layout(`<div class="tacticsHeader"><div><h2>⚙️ Tactics & Tactical Vision</h2><p class="muted">A tactical-board view for managing your shape, roles, and tactical approach.</p></div><span class="pill">ACTIVE TACTIC</span></div>
