@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Football Career Mode — v14.9</title>
+<title>Football Career Mode — v17.1</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07110c;color:#f2fff7;font-family:Arial,Helvetica,sans-serif}
 button,select{font:inherit}button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:800;background:#20c878;color:#03130b}
 button.secondary{background:#1d3227;color:#eafff2;border:1px solid #345443}button:disabled{opacity:.45;cursor:not-allowed}.danger{background:#d95757;color:#fff}
-.wrap{max-width:1200px;margin:auto;padding:24px}.hero{text-align:center;padding:42px 20px}.hero h1{font-size:56px;margin:8px 0}.muted{color:#98b3a4}.card{background:#0d1e15;border:1px solid #264434;border-radius:16px;padding:18px;box-shadow:0 12px 28px #0005}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.club{min-height:190px;display:flex;flex-direction:column;justify-content:space-between}.badge{font-size:38px}.club h3{font-size:21px;margin:8px 0}.club button{width:100%}.top{position:sticky;top:0;background:#08130df2;border-bottom:1px solid #20382b;z-index:10}.topin{max-width:1200px;margin:auto;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;gap:15px}.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.nav button{background:#12271b;color:#d7eee0}.nav button.active{background:#20c878;color:#03130b}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;border-radius:12px;background:#08150e}.stat b{font-size:24px;display:block;margin-top:5px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.table{overflow:auto}.table table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:10px;border-bottom:1px solid #20372a;white-space:nowrap}.you{background:#123d29}.pill{display:inline-block;background:#173326;border:1px solid #2c5a43;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}.actions{display:flex;gap:8px;flex-wrap:wrap}.notice{padding:12px;border-radius:10px;background:#12271b;margin:8px 0}.matchgrid{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}.pitch{position:relative;aspect-ratio:1.72;background:repeating-linear-gradient(90deg,#177b48 0 10%,#1a874f 10% 20%);border:4px solid white;border-radius:6px;overflow:hidden}.midline{position:absolute;left:50%;top:0;bottom:0;border-left:2px solid white;opacity:.9}.circle{position:absolute;left:50%;top:50%;width:17%;aspect-ratio:1;border:2px solid white;border-radius:50%;transform:translate(-50%,-50%)}.goal{position:absolute;top:40%;height:20%;width:3%;border:2px solid white}.goal.l{left:-1px}.goal.r{right:-1px}.dot{position:absolute;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid #fff}.me{background:#ff5555}.opp{background:#527cff}.ball{position:absolute;width:10px;height:10px;background:white;border-radius:50%;transform:translate(-50%,-50%)}.matchscore{text-align:center;font-size:34px;font-weight:900}.log{height:200px;overflow:auto;background:#06110a;border-radius:10px;padding:10px;font-size:13px}.keys{display:grid;grid-template-columns:1fr 1fr;gap:8px}.key{background:#14281d;border:1px solid #31513e;border-radius:7px;padding:7px}.good{color:#62e89a}.bad{color:#ff7373}.draw{color:#ffd760}
+.wrap{max-width:1200px;margin:auto;padding:24px}.hero{text-align:center;padding:42px 20px}.hero h1{font-size:56px;margin:8px 0}.muted{color:#98b3a4}.card{background:#0d1e15;border:1px solid #264434;border-radius:16px;padding:18px;box-shadow:0 12px 28px #0005}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.club{min-height:190px;display:flex;flex-direction:column;justify-content:space-between}.badge{font-size:38px}.club h3{font-size:21px;margin:8px 0}.club button{width:100%}.startLink{display:block;width:100%;text-align:center;text-decoration:none;border-radius:10px;padding:12px 16px;font-weight:800;background:#20c878;color:#03130b;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.startLink:active{transform:translateY(1px)}.top{position:sticky;top:0;background:#08130df2;border-bottom:1px solid #20382b;z-index:10}.topin{max-width:1200px;margin:auto;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;gap:15px}.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.nav button{background:#12271b;color:#d7eee0}.nav button.active{background:#20c878;color:#03130b}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;border-radius:12px;background:#08150e}.stat b{font-size:24px;display:block;margin-top:5px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.table{overflow:auto}.table table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:10px;border-bottom:1px solid #20372a;white-space:nowrap}.you{background:#123d29}.pill{display:inline-block;background:#173326;border:1px solid #2c5a43;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}.actions{display:flex;gap:8px;flex-wrap:wrap}.notice{padding:12px;border-radius:10px;background:#12271b;margin:8px 0}.matchgrid{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}.pitch{position:relative;aspect-ratio:1.72;background:repeating-linear-gradient(90deg,#177b48 0 10%,#1a874f 10% 20%);border:4px solid white;border-radius:6px;overflow:hidden}.midline{position:absolute;left:50%;top:0;bottom:0;border-left:2px solid white;opacity:.9}.circle{position:absolute;left:50%;top:50%;width:17%;aspect-ratio:1;border:2px solid white;border-radius:50%;transform:translate(-50%,-50%)}.goal{position:absolute;top:40%;height:20%;width:3%;border:2px solid white}.goal.l{left:-1px}.goal.r{right:-1px}.dot{position:absolute;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid #fff}.me{background:#ff5555}.opp{background:#527cff}.ball{position:absolute;width:10px;height:10px;background:white;border-radius:50%;transform:translate(-50%,-50%)}.matchscore{text-align:center;font-size:34px;font-weight:900}.log{height:200px;overflow:auto;background:#06110a;border-radius:10px;padding:10px;font-size:13px}.keys{display:grid;grid-template-columns:1fr 1fr;gap:8px}.key{background:#14281d;border:1px solid #31513e;border-radius:7px;padding:7px}.good{color:#62e89a}.bad{color:#ff7373}.draw{color:#ffd760}
 .uclBracket,.cupBracket{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:12px;overflow-x:auto;padding:8px 0}.bracketStage{min-width:150px}.bracketTie{min-height:105px;border:1px solid #294635;border-radius:12px;background:#0a1911;padding:12px;display:flex;flex-direction:column;justify-content:center;gap:6px}.bracketTie span,.bracketTie small{color:#8aa494;font-size:11px}
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.two,.matchgrid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid{grid-template-columns:1fr}.wrap{padding:14px}.topin{padding:12px 14px}.hero h1{font-size:40px}}
 
@@ -562,7 +562,46 @@ function startCareer(i){
  page="dashboard";
  render();
 }
+const REAL_PL_FIXTURES_2627=[["2026-08-21",0,6,1],["2026-08-22",19,14,1],["2026-08-22",10,17,1],["2026-08-22",16,11,1],["2026-08-22",8,7,1],["2026-08-22",3,18,1],["2026-08-23",13,2,1],["2026-08-23",4,1,1],["2026-08-23",15,12,1],["2026-08-24",9,5,1],["2026-08-28",7,13,2],["2026-08-29",12,16,2],["2026-08-29",2,8,2],["2026-08-29",6,19,2],["2026-08-29",18,15,2],["2026-08-30",17,9,2],["2026-08-30",5,4,2],["2026-08-30",11,3,2],["2026-08-30",14,10,2],["2026-08-31",1,0,2],["2026-09-04",10,12,3],["2026-09-05",15,2,3],["2026-09-05",16,18,3],["2026-09-05",13,6,3],["2026-09-05",4,11,3],["2026-09-05",3,17,3],["2026-09-05",9,7,3],["2026-09-05",19,1,3],["2026-09-06",8,14,3],["2026-09-06",0,5,3],["2026-09-12",7,10,4],["2026-09-12",12,9,4],["2026-09-12",1,16,4],["2026-09-12",2,3,4],["2026-09-12",5,19,4],["2026-09-12",18,8,4],["2026-09-12",17,0,4],["2026-09-13",6,4,4],["2026-09-13",14,13,4],["2026-09-14",11,15,4],["2026-09-18",3,5,5],["2026-09-19",18,1,5],["2026-09-19",8,10,5],["2026-09-19",4,0,5],["2026-09-19",15,19,5],["2026-09-19",16,6,5],["2026-09-20",2,12,5],["2026-09-20",11,7,5],["2026-09-20",13,17,5],["2026-09-20",9,14,5],["2026-10-10",0,11,6],["2026-10-10",17,4,6],["2026-10-10",5,2,6],["2026-10-10",10,9,6],["2026-10-10",1,3,6],["2026-10-10",14,18,6],["2026-10-11",19,8,6],["2026-10-11",7,16,6],["2026-10-11",12,13,6],["2026-10-12",6,15,6],["2026-10-17",8,5,7],["2026-10-17",9,19,7],["2026-10-17",13,10,7],["2026-10-17",3,12,7],["2026-10-17",15,1,7],["2026-10-18",2,17,7],["2026-10-18",11,14,7],["2026-10-18",4,7,7],["2026-10-18",16,0,7],["2026-10-19",18,6,7],["2026-10-23",10,16,8],["2026-10-24",1,13,8],["2026-10-24",0,8,8],["2026-10-24",6,9,8],["2026-10-24",5,18,8],["2026-10-25",12,4,8],["2026-10-25",7,15,8],["2026-10-25",14,2,8],["2026-10-25",19,3,8],["2026-10-25",17,11,8],["2026-10-31",5,14,9],["2026-10-31",13,4,9],["2026-10-31",2,11,9],["2026-10-31",6,17,9],["2026-10-31",19,10,9],["2026-10-31",3,16,9],["2026-10-31",18,7,9],["2026-10-31",1,9,9],["2026-11-01",12,0,9],["2026-11-02",15,8,9],["2026-11-07",0,19,10],["2026-11-07",16,13,10],["2026-11-07",11,18,10],["2026-11-07",9,15,10],["2026-11-07",8,6,10],["2026-11-07",7,12,10],["2026-11-07",17,5,10],["2026-11-07",10,2,10],["2026-11-07",4,3,10],["2026-11-07",14,1,10],["2026-11-21",5,11,11],["2026-11-21",13,9,11],["2026-11-21",1,17,11],["2026-11-21",12,14,11],["2026-11-21",19,4,11],["2026-11-21",2,16,11],["2026-11-21",18,10,11],["2026-11-21",3,8,11],["2026-11-21",6,7,11],["2026-11-21",15,0,11],["2026-11-28",11,6,12],["2026-11-28",10,1,12],["2026-11-28",0,13,12],["2026-11-28",14,3,12],["2026-11-28",8,12,12],["2026-11-28",9,2,12],["2026-11-28",16,5,12],["2026-11-28",4,15,12],["2026-11-28",17,18,12],["2026-11-28",7,19,12],["2026-12-02",18,9,13],["2026-12-02",12,17,13],["2026-12-02",19,16,13],["2026-12-02",5,7,13],["2026-12-02",1,8,13],["2026-12-02",3,0,13],["2026-12-02",6,10,13],["2026-12-02",13,11,13],["2026-12-02",15,14,13],["2026-12-02",2,4,13],["2026-12-05",18,0,14],["2026-12-05",14,6,14],["2026-12-05",11,10,14],["2026-12-05",15,17,14],["2026-12-05",5,12,14],["2026-12-05",3,13,14],["2026-12-05",2,19,14],["2026-12-05",1,7,14],["2026-12-05",16,4,14],["2026-12-05",8,9,14],["2026-12-12",17,16,15],["2026-12-12",7,14,15],["2026-12-12",19,18,15],["2026-12-12",4,8,15],["2026-12-12",10,15,15],["2026-12-12",6,1,15],["2026-12-12",0,2,15],["2026-12-12",13,5,15],["2026-12-12",12,11,15],["2026-12-12",9,3,15],["2026-12-19",11,9,16],["2026-12-19",4,10,16],["2026-12-19",16,8,16],["2026-12-19",3,15,16],["2026-12-19",13,19,16],["2026-12-19",17,7,16],["2026-12-19",2,6,16],["2026-12-19",0,14,16],["2026-12-19",12,18,16],["2026-12-19",5,1,16],["2026-12-26",1,11,17],["2026-12-26",8,17,17],["2026-12-26",9,4,17],["2026-12-26",18,2,17],["2026-12-26",10,3,17],["2026-12-26",19,12,17],["2026-12-26",15,13,17],["2026-12-27",6,5,17],["2026-12-27",14,16,17],["2026-12-27",7,0,17],["2026-12-29",19,11,18],["2026-12-29",18,4,18],["2026-12-29",8,13,18],["2026-12-30",9,0,18],["2026-12-30",6,3,18],["2026-12-30",15,16,18],["2026-12-30",14,17,18],["2026-12-30",7,2,18],["2026-12-30",1,12,18],["2026-12-30",10,5,18],["2027-01-01",11,8,19],["2027-01-02",4,14,19],["2027-01-02",3,7,19],["2027-01-02",0,10,19],["2027-01-02",17,19,19],["2027-01-02",12,6,19],["2027-01-02",16,9,19],["2027-01-02",2,1,19],["2027-01-03",5,15,19],["2027-01-03",13,18,19],["2027-01-05",0,3,20],["2027-01-05",4,2,20],["2027-01-05",16,19,20],["2027-01-05",8,1,20],["2027-01-05",17,12,20],["2027-01-06",9,18,20],["2027-01-06",7,5,20],["2027-01-06",10,6,20],["2027-01-06",11,13,20],["2027-01-07",14,15,20],["2027-01-16",2,10,21],["2027-01-16",13,16,21],["2027-01-16",5,17,21],["2027-01-16",3,4,21],["2027-01-16",1,14,21],["2027-01-16",18,11,21],["2027-01-16",6,8,21],["2027-01-16",12,7,21],["2027-01-16",19,0,21],["2027-01-16",15,9,21],["2027-01-23",10,19,22],["2027-01-23",8,3,22],["2027-01-23",17,6,22],["2027-01-23",16,2,22],["2027-01-23",0,15,22],["2027-01-23",11,5,22],["2027-01-23",9,1,22],["2027-01-23",14,12,22],["2027-01-23",4,13,22],["2027-01-23",7,18,22],["2027-01-30",18,17,23],["2027-01-30",3,14,23],["2027-01-30",15,4,23],["2027-01-30",19,7,23],["2027-01-30",6,11,23],["2027-01-30",2,9,23],["2027-01-30",5,16,23],["2027-01-30",12,8,23],["2027-01-30",13,0,23],["2027-01-30",1,10,23],["2027-02-06",0,12,24],["2027-02-06",4,19,24],["2027-02-06",17,1,24],["2027-02-06",7,6,24],["2027-02-06",10,18,24],["2027-02-06",8,15,24],["2027-02-06",9,13,24],["2027-02-06",11,2,24],["2027-02-06",14,5,24],["2027-02-06",16,3,24],["2027-02-10",8,11,25],["2027-02-10",6,12,25],["2027-02-10",19,17,25],["2027-02-10",1,2,25],["2027-02-10",7,3,25],["2027-02-10",15,5,25],["2027-02-10",9,16,25],["2027-02-10",18,13,25],["2027-02-10",14,4,25],["2027-02-10",10,0,25],["2027-02-20",13,15,26],["2027-02-20",2,7,26],["2027-02-20",3,6,26],["2027-02-20",5,10,26],["2027-02-20",12,19,26],["2027-02-20",0,9,26],["2027-02-20",16,14,26],["2027-02-20",4,18,26],["2027-02-20",17,8,26],["2027-02-20",11,1,26],["2027-02-27",7,17,27],["2027-02-27",14,0,27],["2027-02-27",10,4,27],["2027-02-27",6,2,27],["2027-02-27",8,16,27],["2027-02-27",9,11,27],["2027-02-27",1,5,27],["2027-02-27",18,12,27],["2027-02-27",15,3,27],["2027-02-27",19,13,27],["2027-03-03",16,15,28],["2027-03-03",2,18,28],["2027-03-03",13,8,28],["2027-03-03",0,7,28],["2027-03-03",11,19,28],["2027-03-03",17,14,28],["2027-03-03",12,1,28],["2027-03-03",4,9,28],["2027-03-03",3,10,28],["2027-03-03",5,6,28],["2027-03-13",11,4,29],["2027-03-13",18,16,29],["2027-03-13",7,9,29],["2027-03-13",12,10,29],["2027-03-13",6,13,29],["2027-03-13",2,15,29],["2027-03-13",5,0,29],["2027-03-13",1,19,29],["2027-03-13",14,8,29],["2027-03-13",17,3,29],["2027-03-20",3,2,30],["2027-03-20",4,6,30],["2027-03-20",13,14,30],["2027-03-20",10,7,30],["2027-03-20",0,17,30],["2027-03-20",9,12,30],["2027-03-20",19,5,30],["2027-03-20",16,1,30],["2027-03-20",8,18,30],["2027-03-20",15,11,30],["2027-04-10",17,10,31],["2027-04-10",11,16,31],["2027-04-10",14,19,31],["2027-04-10",5,9,31],["2027-04-10",12,15,31],["2027-04-10",6,0,31],["2027-04-10",2,13,31],["2027-04-10",7,8,31],["2027-04-10",18,3,31],["2027-04-10",1,4,31],["2027-04-17",4,5,32],["2027-04-17",9,17,32],["2027-04-17",3,11,32],["2027-04-17",16,12,32],["2027-04-17",19,6,32],["2027-04-17",0,1,32],["2027-04-17",10,14,32],["2027-04-17",13,7,32],["2027-04-17",15,18,32],["2027-04-17",8,2,32],["2027-04-24",5,13,33],["2027-04-24",2,0,33],["2027-04-24",18,19,33],["2027-04-24",14,7,33],["2027-04-24",8,4,33],["2027-04-24",16,17,33],["2027-04-24",15,10,33],["2027-04-24",1,6,33],["2027-04-24",3,9,33],["2027-04-24",11,12,33],["2027-05-01",17,15,34],["2027-05-01",4,16,34],["2027-05-01",6,14,34],["2027-05-01",19,2,34],["2027-05-01",13,3,34],["2027-05-01",9,8,34],["2027-05-01",12,5,34],["2027-05-01",0,18,34],["2027-05-01",7,1,34],["2027-05-01",10,11,34],["2027-05-08",13,12,35],["2027-05-08",11,0,35],["2027-05-08",9,10,35],["2027-05-08",16,7,35],["2027-05-08",3,1,35],["2027-05-08",15,6,35],["2027-05-08",4,17,35],["2027-05-08",18,5,35],["2027-05-08",8,19,35],["2027-05-08",2,14,35],["2027-05-15",19,9,36],["2027-05-15",14,11,36],["2027-05-15",7,4,36],["2027-05-15",1,15,36],["2027-05-15",5,8,36],["2027-05-15",6,18,36],["2027-05-15",17,2,36],["2027-05-15",12,3,36],["2027-05-15",10,13,36],["2027-05-15",0,16,36],["2027-05-23",3,19,37],["2027-05-23",15,7,37],["2027-05-23",18,14,37],["2027-05-23",11,17,37],["2027-05-23",4,12,37],["2027-05-23",16,10,37],["2027-05-23",2,5,37],["2027-05-23",9,6,37],["2027-05-23",8,0,37],["2027-05-23",13,1,37],["2027-05-30",10,8,38],["2027-05-30",0,4,38],["2027-05-30",12,2,38],["2027-05-30",6,16,38],["2027-05-30",1,18,38],["2027-05-30",19,15,38],["2027-05-30",14,9,38],["2027-05-30",17,13,38],["2027-05-30",5,3,38],["2027-05-30",7,11,38]];
+
+function buildRealPLSchedule(preserve=true){
+  const oldByKey={};
+  const oldLeague=Array.isArray(career.leagueSchedule)?career.leagueSchedule.flat():[];
+  oldLeague.forEach(g=>{
+    const key=g.home+"-"+g.away;
+    oldByKey[key]={played:!!g.played,score:g.score||'',result:g.result||''};
+  });
+  const oldUser=[];
+  (career.fixtures||[]).forEach(f=>oldUser.push({op:f.op,home:f.home,played:!!f.played,score:f.score||'',result:f.result||''}));
+  const rounds=Array.from({length:38},()=>[]);
+  REAL_PL_FIXTURES_2627.forEach(([date,home,away,gw])=>{
+    const prior=preserve?oldByKey[home+"-"+away]:null;
+    rounds[gw-1].push({home,away,played:!!prior?.played,score:prior?.score||'',result:prior?.result||'',date});
+  });
+  career.leagueSchedule=rounds;
+  const oldUserMap={};
+  oldUser.forEach(f=>{const key=f.op+"-"+(f.home?1:0); if(!oldUserMap[key])oldUserMap[key]=[];oldUserMap[key].push(f);});
+  career.fixtures=[];
+  rounds.forEach((games,round)=>games.forEach(g=>{
+    if(g.home===career.club||g.away===career.club){
+      const op=g.home===career.club?g.away:g.home;
+      const home=g.home===career.club;
+      let played=!!g.played,score=g.score||'',result=g.result||'';
+      if(preserve){
+        const q=oldUserMap[op+"-"+(home?1:0)];
+        if(q&&q.length){const prior=q.shift();played=prior.played;score=prior.score;result=prior.result;}
+      }
+      g.played=played;g.score=score;g.result=result;
+      career.fixtures.push({op,home,played,score,result,round,date:g.date});
+    }
+  }));
+  career.matchday=Math.min(38,(career.fixtures.filter(f=>f.played).length)+1);
+}
 function makeFixtures(){
+ if(DOMESTIC_LEAGUE_NAME==='Premier League' && career.season===2026){
+   buildRealPLSchedule(false);
+   return;
+ }
  const ids=DOMESTIC_CLUB_IDS.slice();
  let arr=ids.slice();
  if(arr.length%2) arr.push(null);
@@ -610,7 +649,11 @@ function nextSeason(){
  career.seasonComplete=false;
  career.champions={qualified:earnedCL,phase:[],played:0,pts:0,wins:0,draws:0,losses:0,gf:0,ga:0,rank:null,knockout:null,eliminated:false};
  if(currentLeague()==="LaLiga"){career.copaDelRey=createCopaDelRey();career.faCup=null;}else{career.faCup=createFACup();career.copaDelRey=null;}
- if(earnedCL){const pool=easierUCLDraw();career.champions.phase=pool.map((op,i)=>({op,home:i%2===0,played:false}));}
+ if(earnedCL){
+   const pool=easierUCLDraw();
+   const uclBase=new Date(Date.UTC((career.season||2026),7,1));
+   career.champions.phase=pool.map((op,i)=>({op,home:i%2===0,played:false,date:addDays(uclBase,45+i*16).toISOString().slice(0,10)}));
+ }
  makeFixtures();
  ensureScheduleDates();
  career.inbox.push(`Season ${career.season} begins. Prize money: $${prize}m. Your squad carries over.`);
@@ -640,16 +683,77 @@ function home(){
  activateLeague(selected);
  return `<main class="wrap"><section class="hero"><div style="font-size:54px">⚽</div><h1>Football Career Mode</h1><p class="muted">Choose your domestic league first, then choose the club you want to manage.</p></section>
  <div class="card" style="margin-bottom:16px"><h2>1. Choose your league</h2><div class="actions">
- <button data-league="Premier League" class="${selected==="Premier League"?"":"secondary"}">🏴 Premier League</button>
- <button data-league="LaLiga" class="${selected==="LaLiga"?"":"secondary"}">🇪🇸 LaLiga</button>
+ <a class="startLink" style="display:inline-block;width:auto" href="#league-premier">🏴 Premier League</a>
+ <a class="startLink" style="display:inline-block;width:auto" href="#league-laliga">🇪🇸 LaLiga</a>
  </div></div>
- <div class="card"><h2>2. Choose your club · ${selected}</h2><p class="muted">${selected==="LaLiga"?"20 clubs · 38 matches · Copa del Rey · Champions League when qualified":"20 clubs · 38 matches · FA Cup · Champions League when qualified"}</p><div class="grid">${CLUBS.map((c,i)=>`<article class="card club"><div><div class="badge">${c.badge}</div><h3>${c.name}</h3><div class="muted">Strength ${strength(i)} · Budget $${c.budget}m</div></div><button type="button" data-start="${i}" onclick="startCareer(${i});return false;">Start Career</button></article>`).join("")}</div></div></main>`;
+ <div id="startError" class="notice bad" style="display:none;margin:12px 0"></div>
+ <div class="card"><h2>2. Choose your club · ${selected}</h2><p class="muted">${selected==="LaLiga"?"20 clubs · 38 matches · Copa del Rey · Champions League when qualified":"20 clubs · 38 matches · FA Cup · Champions League when qualified"}</p><div class="grid">${CLUBS.map((c,i)=>`<article class="card club"><div><div class="badge">${c.badge}</div><h3>${c.name}</h3><div class="muted">Strength ${strength(i)} · Budget $${c.budget}m</div></div><a class="startLink" data-start-link href="#start-career-${i}" onclick="window.__startCareer(${i});return false;">Start Career</a></article>`).join("")}</div></div></main>`;
 }
+function hasPendingScheduledMatches(){
+ if(!career)return false;
+ try{return scheduleEvents().some(e=>!e.played&&e.date);}catch(e){return false;}
+}
+function seasonFullyComplete(){return !!career && career.seasonComplete && !hasPendingScheduledMatches();}
+
+function simulateEntireSeason(){
+ if(!career||seasonFullyComplete())return;
+ if(match&&!match.ended){alert('Finish the current match before simulating the rest of the season.');return;}
+ let guard=0,simulated=0;
+ try{
+   while(guard++<140){
+     ensureScheduleDates();
+     const pending=scheduleEvents().filter(e=>!e.played&&e.date).sort((a,b)=>{
+       const d=String(a.date).localeCompare(String(b.date));
+       if(d!==0)return d;
+       const rank={league:1,cup:2,ucl:3};
+       return (rank[a.type]||9)-(rank[b.type]||9);
+     });
+     const e=pending[0];
+     if(!e)break;
+     if(e.type==='league'){
+       const f=nextFixture();
+       if(!f || f!==e.fixture)break;
+       simulateNext();
+       simulated++;
+     }else if(e.type==='cup'){
+       if(currentLeague()==='LaLiga'){
+         const before=getUserCopaMatch();
+         if(!before)break;
+         simulateCopaMatch();
+       }else{
+         const before=getUserFACupMatch();
+         if(!before)break;
+         simulateFACupMatch();
+       }
+       simulated++;
+     }else if(e.type==='ucl'){
+       const q=career.champions;
+       if(!q?.qualified||q.eliminated||q.phase[q.played]!==e.fixture)break;
+       simulateUCL();
+       simulated++;
+     }else break;
+     if(career.seasonComplete && !scheduleEvents().some(x=>!x.played&&x.date))break;
+   }
+   maybeQualify();
+   ensureScheduleDates();
+   save();
+   career.inbox.unshift(`Entire season simulated: ${simulated} scheduled matches processed.`);
+   save();
+   page='dashboard';
+   render();
+ }catch(err){
+   console.error('simulateEntireSeason error:',err);
+   alert('The season simulation stopped because of an unexpected error. Your completed results were saved.');
+   save();page='dashboard';render();
+ }
+}
+
 function dashboard(){
  const c=CLUBS[career.club], f=nextFixture(), op=f?CLUBS[f.op]:null;
  return layout(`<section class="card" style="margin-bottom:16px"><div class="actions" style="justify-content:space-between;align-items:center"><div><div class="muted">${DOMESTIC_LEAGUE_NAME.toUpperCase()} · SEASON ${career.season} · MATCH ${Math.min(career.matchday,career.fixtures.length)}/${career.fixtures.length}</div><h1 style="margin:6px 0">${c.badge} ${c.name}</h1><div class="muted">Club strength ${strength(career.club)} · Squad OVR ${avg()}</div></div><div style="text-align:center"><div style="font-size:38px;font-weight:900">${career.points}</div><div class="muted">POINTS</div></div></div></section>
  <div class="stats"><div class="stat"><span class="muted">Record</span><b>${career.wins}-${career.draws}-${career.losses}</b></div><div class="stat"><span class="muted">Goals</span><b>${career.gf}-${career.ga}</b></div><div class="stat"><span class="muted">Squad OVR</span><b>${avg()}</b></div><div class="stat"><span class="muted">Budget</span><b>$${career.cash}m</b></div></div>
- <div class="two" style="margin-top:16px"><div class="card"><div class="muted">NEXT MATCH</div><h2>${op?`${f.home?"🏠":"✈️"} ${op.name}`:"Season complete"}</h2>${op?`<p class="muted" style="margin-top:9px">Open <b>Schedule</b> to tap this game and choose whether to play or simulate it.</p><div class="actions"><button data-go="schedule">📅 Open Schedule</button></div>`:`<div class="actions"><button data-next-season>➡️ Next Season</button></div>`}</div>
+ <div class="card" style="margin-top:16px"><div class="actions" style="justify-content:space-between;align-items:center"><div><h3 style="margin:0 0 5px">Season Simulation</h3><div class="muted">Simulate every remaining scheduled match in the correct chronological order.</div></div>${seasonFullyComplete()?`<span class="pill">Season Complete</span>`:`<button type="button" data-sim-season>⏩ Simulate Entire Season</button>`}</div></div>
+ <div class="two" style="margin-top:16px"><div class="card"><div class="muted">NEXT MATCH</div><h2>${op?`${f.home?"🏠":"✈️"} ${op.name}`:"Season complete"}</h2>${op?`<p class="muted" style="margin-top:9px">Open <b>Schedule</b> to tap this game and choose whether to play or simulate it.</p><div class="actions"><button data-go="schedule">📅 Open Schedule</button></div>`:`${seasonFullyComplete()?`<div class="actions"><button data-next-season>➡️ Next Season</button></div>`:`<div class="notice">League complete. Use <b>Simulate Entire Season</b> to finish any remaining cup or Champions League matches.</div>`}`}</div>
  <div class="card"><h2>Manager Inbox</h2>${career.inbox.slice(-5).reverse().map(x=>`<div class="notice">${esc(x)}</div>`).join("")}</div></div>`);
 }
 function squad(){
@@ -701,6 +805,18 @@ function scheduleChip(e,i){
 }
 function scheduleEventCanAct(e){
  if(!e||e.played)return false;
+ // Only the earliest unplayed user fixture in the whole schedule may be acted on.
+ // This prevents skipping a scheduled match just because it belongs to another competition.
+ const all=scheduleEvents();
+ const pending=all.filter(x=>!x.played&&x.date);
+ pending.sort((a,b)=>{
+   const d=String(a.date).localeCompare(String(b.date));
+   if(d!==0)return d;
+   // Keep a stable competition order when two user fixtures share the same date.
+   const rank={league:1,cup:2,ucl:3};
+   return (rank[a.type]||9)-(rank[b.type]||9);
+ });
+ if(pending[0]!==e)return false;
  if(e.type==='league')return e.fixture===nextFixture();
  if(e.type==='cup'){const cp=domesticCup();const active=currentLeague()==='LaLiga'?getUserCopaMatch():getUserFACupMatch();return !!cp&&!cp.eliminated&&active===e.fixture;}
  if(e.type==='ucl'){const q=career.champions;return !!q?.qualified&&!q.eliminated&&q.phase[q.played]===e.fixture;}
@@ -755,7 +871,7 @@ function schedule(){
  const recent=filtered.filter(e=>e.played).slice(-5).reverse();
  const comps=['All',DOMESTIC_LEAGUE_NAME,domesticCupName(),'Champions League'].filter((v,i,a)=>a.indexOf(v)===i);
  return layout(`<div class="scheduleShell">
-  <section class="scheduleCard"><div class="scheduleHead"><div><h2>📅 Schedule</h2><div class="muted">${esc(DOMESTIC_LEAGUE_NAME)} · Season ${career.season} · Career calendar</div></div><div class="scheduleFilter"><select data-schedule-comp>${comps.map(c=>`<option ${wanted===c?'selected':''}>${esc(c)}</option>`).join('')}</select><div class="monthNav"><button class="secondary" data-schedule-prev>‹</button><b style="min-width:150px;text-align:center">${esc(monthTitle(cur))}</b><button class="secondary" data-schedule-next>›</button></div></div></div>
+  <section class="scheduleCard"><div class="scheduleHead"><div><h2>📅 Schedule</h2><div class="muted">${esc(DOMESTIC_LEAGUE_NAME)} · Season ${career.season} · Career calendar${DOMESTIC_LEAGUE_NAME==='Premier League'&&CLUBS[career.club]?.name==='Arsenal'&&career.season===2026?' · ✅ Real-life Arsenal 2026/27 fixture list':''}</div></div><div class="scheduleFilter"><select data-schedule-comp>${comps.map(c=>`<option ${wanted===c?'selected':''}>${esc(c)}</option>`).join('')}</select><div class="monthNav"><button class="secondary" data-schedule-prev>‹</button><b style="min-width:150px;text-align:center">${esc(monthTitle(cur))}</b><button class="secondary" data-schedule-next>›</button></div></div></div>
    <div class="calWeek"><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div></div><div class="calGrid">${cells.join('')}</div></section>
   <aside class="scheduleSide"><div class="scheduleCard"><div class="scheduleHead"><div><h2 style="font-size:18px">Upcoming</h2><div class="muted">Tap a match to choose Play or Simulate</div></div></div><div class="upcomingList">${upcoming.length?upcoming.map(e=>`<div class="upcomingItem scheduleUpcomingClickable" data-schedule-open="${events.indexOf(e)}" role="button" tabindex="0"><div class="date">${fmtDate(e.date)} · ${esc(e.comp)}</div><div class="teams">${e.home?'🏠':'✈️'} ${esc(CLUBS[career.club].name)} ${e.home?'vs':'at'} ${esc(e.opponent)}</div><div class="meta">${esc(String(e.round))} · Tap to open match options</div></div>`).join(''):'<div class="muted">No upcoming matches.</div>'}</div></div>
   <div class="scheduleCard"><div class="scheduleHead"><div><h2 style="font-size:18px">Recent Results</h2><div class="muted">Latest completed fixtures</div></div></div><div class="upcomingList">${recent.length?recent.map(e=>`<div class="upcomingItem"><div class="date">${fmtDate(e.date)} · ${esc(e.comp)}</div><div class="teams">${e.home?'🏠':'✈️'} ${esc(CLUBS[career.club].name)} ${e.home?'vs':'at'} ${esc(e.opponent)}</div><div class="meta">${esc(e.score||'Completed')}</div></div>`).join(''):'<div class="muted">No results yet.</div>'}</div></div></aside>
@@ -866,8 +982,9 @@ function maybeQualify(){
    if(pos<=4 && !career.champions.qualified){
      career.champions.qualified=true;
      const pool=easierUCLDraw();
-     career.champions.phase=pool.map((op,i)=>({op,home:i%2===0,played:false}));
-     career.inbox.push(`Champions League secured — you finished ${pos}${pos===1?'st':pos===2?'nd':pos===3?'rd':'th'}!`);
+     const uclBase=new Date(Date.UTC((career.season||2026)+1,7,1));
+     career.champions.phase=pool.map((op,i)=>({op,home:i%2===0,played:false,date:addDays(uclBase,45+i*16).toISOString().slice(0,10)}));
+     career.inbox.push(`Champions League secured — you finished ${pos}${pos===1?'st':pos===2?'nd':pos===3?'rd':'th'}! Your ${career.season+1} Champions League fixtures are now scheduled.`);
    } else career.inbox.push(`Season complete — you finished ${pos}${pos===1?'st':pos===2?'nd':pos===3?'rd':'th'}.`);
    save();
  }
@@ -1044,6 +1161,23 @@ function ensureLineup(){
  if(!Array.isArray(career.soldPlayers))career.soldPlayers=[];
  const sold=new Set(career.soldPlayers.map(n=>String(n).trim().toLowerCase()));
  career.players=(career.players||[]).filter(p=>p&&p.name&&!sold.has(String(p.name).trim().toLowerCase()));
+
+ // Preserve a lineup that the user has explicitly edited in the Tactics menu.
+ // The old code rebuilt the XI on every render, which instantly undid bench->starter changes.
+ if(career.tactics.lineupLocked && Array.isArray(career.tactics.lineup)){
+   const available=new Set(career.players.map(p=>p.name));
+   const clean=[]; const seen=new Set();
+   for(const n of career.tactics.lineup){
+     const name=String(n||'').trim();
+     if(name && available.has(name) && !seen.has(name)){clean.push(name);seen.add(name);}
+   }
+   if(clean.length===11){
+     career.tactics.lineup=clean;
+     return;
+   }
+   career.tactics.lineupLocked=false;
+ }
+
  const lineup=buildStrictLineup();
  career.tactics.lineup=lineup.filter(Boolean).map(p=>p.name);
 }
@@ -1927,10 +2061,20 @@ function tactics(){
  };
  const positions=spots[formation]||spots['4-3-3'];
  const names=[...(career.players||[])].filter(p=>p && p.name);
- const strictTacticalLineup=buildStrictLineup();
- const lineup=strictTacticalLineup.filter(Boolean);
- t.lineup=lineup.map(p=>p.name);
- const selectedNames=new Set(t.lineup);
+ let lineup=[];
+ if(t.lineupLocked && Array.isArray(t.lineup) && t.lineup.length===11){
+   const byName=new Map(names.map(p=>[p.name,p]));
+   lineup=t.lineup.map(n=>byName.get(n)||null);
+   if(lineup.filter(Boolean).length!==11){
+     t.lineupLocked=false;
+   }
+ }
+ if(!t.lineupLocked){
+   const strictTacticalLineup=buildStrictLineup();
+   lineup=strictTacticalLineup.filter(Boolean);
+   t.lineup=lineup.map(p=>p.name);
+ }
+ const selectedNames=new Set((t.lineup||[]).map(String));
  const roleNames=['GK','CB','LB/RB','DM/CM','AM','LW/RW','ST'];
  const roleOptions=['Defend','Support','Build-Up','Attack','Balanced','Versatile'];
  const breakdown={
@@ -1952,7 +2096,7 @@ function tactics(){
  }).join('');
  return layout(`<div class="tacticsHeader"><div><h2>⚙️ Tactics & Tactical Vision</h2><p class="muted">A tactical-board view for managing your shape, roles, and tactical approach.</p></div><span class="pill">ACTIVE TACTIC</span></div>
  <div class="tacticsShell">
-  <div class="card pitchCard"><div class="pitchTitle"><b>${formation}</b><span>${t.vision||'Standard'} · ${t.buildUp||'Balanced'} · ${t.defApproach||'Balanced'}</span></div><div class="tacticalPitch"><div class="pitchHalf"></div><div class="pitchMid"></div><div class="pitchCircle"></div><div class="box left"></div><div class="box right"></div>${pitch}</div><p class="muted small">Starting XI: ${t.lineup.map(esc).join(' · ')}</p><h3>Substitute Bench</h3><div class="benchGrid">${names.filter(p=>!selectedNames.has(p.name)).map(p=>`<div class="benchItem"><span><b>${esc(p.name)}</b><br><span class="muted">${p.pos} · ${p.ov} OVR</span></span><button class="secondary" data-start-player="${esc(p.name)}">Start</button></div>`).join('')||'<div class="muted">No substitutes available.</div>'}</div><p class="muted small">Use Start to put a bench player into the XI. Players not selected here stay on the bench.</p></div>
+  <div class="card pitchCard"><div class="pitchTitle"><b>${formation}</b><span>${t.vision||'Standard'} · ${t.buildUp||'Balanced'} · ${t.defApproach||'Balanced'}</span></div><div class="tacticalPitch"><div class="pitchHalf"></div><div class="pitchMid"></div><div class="pitchCircle"></div><div class="box left"></div><div class="box right"></div>${pitch}</div><p class="muted small">Starting XI: ${t.lineup.map(esc).join(' · ')}</p><h3>Substitute Bench</h3><div class="benchGrid">${names.filter(p=>!selectedNames.has(p.name)).map(p=>`<div class="benchItem"><span><b>${esc(p.name)}</b><br><span class="muted">${p.pos} · ${p.ov} OVR</span></span><button type="button" class="secondary" data-start-player="${esc(p.name)}">Start</button></div>`).join('')||'<div class="muted">No substitutes available.</div>'}</div><p class="muted small">Use Start to put a bench player into the XI. Players not selected here stay on the bench.</p></div>
   <div class="card tacticPanel"><h3>Tactical Vision</h3>
    <label>Formation${opts('formation',['4-3-3','4-2-3-1','4-4-2','3-5-2','5-3-2','3-4-2-1'])}</label>
    <label>Vision${opts('vision',['Standard','Possession','Wing Play','Counter Attack','High Pressing','Park The Bus','Kick & Rush'])}</label>
@@ -1963,6 +2107,58 @@ function tactics(){
   </div>
   <div class="card radarCard"><h3>Tactical Breakdown</h3><div class="radar"><svg viewBox="0 0 100 100"><polygon points="50,12 83,31 83,69 50,88 17,69 17,31" class="radarGrid"></polygon><polygon points="50,25 72,37 72,63 50,75 28,63 28,37" class="radarGrid"></polygon><polygon points="${points}" class="radarFill"></polygon><polyline points="${points} ${points.split(' ')[0]}" class="radarLine"></polyline></svg>${axes}</div><div class="breakGrid">${Object.entries(breakdown).map(([k,v])=>`<div><span>${k}</span><b>${v}</b><i><em style="width:${v}%"></em></i></div>`).join('')}</div></div>
  </div>`);
+}
+
+function startBenchPlayer(name){
+  if(!career||!career.tactics)return;
+  const incomingName=String(name||'').trim();
+  if(!incomingName)return;
+  ensureLineup();
+  const players=career.players||[];
+  const incoming=players.find(p=>String(p?.name||'').trim()===incomingName);
+  if(!incoming)return;
+
+  const lineup=Array.isArray(career.tactics.lineup)?career.tactics.lineup.slice(0,11):[];
+  if(lineup.length!==11)return;
+  if(lineup.includes(incomingName))return;
+
+  // Prefer replacing a starter in the same position/role. If there is no
+  // reasonable positional match, replace the lowest-rated non-GK starter.
+  const incomingPos=String(incoming.pos||'').toUpperCase();
+  const compatible=(starterName)=>{
+    const p=players.find(x=>x.name===starterName);
+    const pos=String(p?.pos||'').toUpperCase();
+    if(!pos)return false;
+    if(incomingPos==='GK')return pos==='GK';
+    if(['LB','LWB'].includes(incomingPos))return ['LB','LWB','CB'].includes(pos);
+    if(['RB','RWB'].includes(incomingPos))return ['RB','RWB','CB'].includes(pos);
+    if(['CB'].includes(incomingPos))return ['CB','LB','RB','LWB','RWB'].includes(pos);
+    if(['DM','CM'].includes(incomingPos))return ['DM','CM','AM','CAM'].includes(pos);
+    if(['AM','CAM'].includes(incomingPos))return ['AM','CAM','CM','LW','RW'].includes(pos);
+    if(['LM','LW'].includes(incomingPos))return ['LM','LW','AM','CAM'].includes(pos);
+    if(['RM','RW'].includes(incomingPos))return ['RM','RW','AM','CAM'].includes(pos);
+    if(['ST','FWD'].includes(incomingPos))return ['ST','FWD','LW','RW','AM','CAM'].includes(pos);
+    return pos===incomingPos;
+  };
+  let replaceIndex=lineup.findIndex(compatible);
+  if(replaceIndex<0 || replaceIndex===0 && incomingPos!=='GK'){
+    replaceIndex=-1;
+    let lowest=Infinity;
+    for(let i=1;i<lineup.length;i++){
+      const p=players.find(x=>x.name===lineup[i]);
+      const ov=Number(p?.ov)||0;
+      if(ov<lowest){lowest=ov;replaceIndex=i;}
+    }
+  }
+  if(replaceIndex<0)replaceIndex=10;
+
+  const replaced=lineup[replaceIndex];
+  lineup[replaceIndex]=incomingName;
+  career.tactics.lineup=lineup;
+  career.tactics.lineupLocked=true;
+  career.inbox.unshift(`${incomingName} added to the starting XI${replaced?`; ${replaced} moved to the bench`:'.'}`);
+  save();
+  render();
 }
 
 function sellPlayer(i){
@@ -2022,7 +2218,7 @@ function trainAll(){
 }
 function matchView(){
  const me=CLUBS[career.club],op={name:match.opponentName,short:match.opponentShort};
- return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v14.8</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
+ return layout(`<div class="card"><div class="matchTop"><div><div class="muted">${match.competition} · 3D LIVE MATCH · v17.1</div><h2 style="margin:5px 0">${me.name} vs ${op.name}</h2></div><div class="matchClock">${Math.min(90,Math.floor(match.time))}'</div></div><div class="match3d"><div class="matchscore" id="matchScore">${me.short} ${match.hs} - ${match.as} ${op.short}</div><div class="muted" id="matchStatus" style="text-align:center;margin:5px 0 14px">Possession ${Math.round(match.pos)}%</div><div id="pitch3d" class="pitch3d"></div><div class="mobileControls" aria-label="Mobile match controls"><div class="joystickZone" id="mobileJoystick"><div class="joystickBase"></div><div class="joystickKnob" id="joystickKnob"></div></div><div class="actionZone"><button type="button" class="mobilePass" id="mobilePass">PASS<span class="label">Hold for power</span></button><button type="button" class="mobileShoot" id="mobileShoot">SHOOT<span class="label">Hold for power</span></button></div></div><div class="matchControls"><button data-action="pass">PASS<br><small>Hold J</small></button><button data-action="shoot">SHOOT<br><small>K</small></button><button data-action="tackle">TACKLE<br><small>L</small></button><button class="secondary" data-action="switch">SWITCH<br><small>R / Q</small></button><button class="secondary" data-action="boost">SPRINT<br><small>SPACE</small></button><button class="danger" data-forfeit>FORFEIT</button></div><div class="subControls"><select id="subOut"></select><select id="subIn"></select><button class="secondary" data-substitute>SUBSTITUTE</button></div><p class="matchHint">True 3D camera · Longer pitch · WASD / arrows move · R or Q switches teammates · hold J / PASS for more power · hold K / SHOOT for more power · L tackles · Space sprints.</p></div><div class="two" style="margin-top:16px"><div class="card"><h3>Match Events</h3><div id="log" class="log"></div></div><div class="card"><h3>Controls</h3><div class="keys"><div class="key">WASD / Arrows<br>Move</div><div class="key">J<br>Hold to power pass</div><div class="key">K<br>Hold to power shot</div><div class="key">L<br>Tackle</div><div class="key">R / Q<br>Switch teammate</div><div class="key">Space<br>Sprint</div></div></div></div></div>`);
 }
 function initMobileControls(){
  const wrap=document.querySelector('.mobileControls'),zone=document.getElementById('mobileJoystick'),knob=document.getElementById('joystickKnob'),pass=document.getElementById('mobilePass'),shoot=document.getElementById('mobileShoot');
@@ -2354,6 +2550,7 @@ function bind(){
  });
  document.querySelectorAll("[data-new]").forEach(b=>b.onclick=newCareer);
  document.querySelectorAll("[data-next-season]").forEach(b=>b.onclick=nextSeason);
+ document.querySelectorAll("[data-sim-season]").forEach(b=>{b.type='button';b.onclick=simulateEntireSeason;});
  document.querySelectorAll('[data-schedule-prev]').forEach(b=>b.onclick=()=>{const d=new Date(`${window.scheduleMonth}-01T12:00:00Z`);d.setUTCMonth(d.getUTCMonth()-1);window.scheduleMonth=monthKey(d);render();});
  document.querySelectorAll('[data-schedule-next]').forEach(b=>b.onclick=()=>{const d=new Date(`${window.scheduleMonth}-01T12:00:00Z`);d.setUTCMonth(d.getUTCMonth()+1);window.scheduleMonth=monthKey(d);render();});
  document.querySelectorAll('[data-schedule-comp]').forEach(s=>s.onchange=()=>{window.scheduleComp=s.value;render();});
@@ -2364,7 +2561,14 @@ function bind(){
  document.querySelectorAll("[data-trainall]").forEach(b=>b.onclick=trainAll);
  document.querySelectorAll("[data-train]").forEach(b=>b.onclick=()=>trainPlayer(Number(b.dataset.train)));
  document.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>sellPlayer(Number(b.dataset.sell)));
- document.querySelectorAll('[data-start-player]').forEach(b=>b.onclick=()=>{ensureLineup();const name=b.dataset.startPlayer;const idx=career.tactics.lineup.length-1;const replaced=career.tactics.lineup[idx];if(!career.tactics.lineup.includes(name)){career.tactics.lineup[idx]=name;career.inbox.unshift(`${name} added to the starting XI; ${replaced||'a player'} moved to the bench.`);}save();render();});
+ document.querySelectorAll('[data-start-player]').forEach(b=>{
+   b.type='button';
+   b.onclick=(e)=>{
+     e.preventDefault();
+     e.stopPropagation();
+     startBenchPlayer(b.dataset.startPlayer);
+   };
+ });
  if(page==='match'&&match){const out=document.getElementById('subOut'),inn=document.getElementById('subIn');if(out&&inn){out.innerHTML=match.players.slice(0,11).map((p,i)=>`<option value="${i}">${i+1}. ${esc(p.name)} (${p.ov})</option>`).join('');inn.innerHTML=(match.bench||[]).map(n=>{const p=career.players.find(x=>x.name===n);return `<option value="${esc(n)}">${esc(n)} (${p?.ov||70})</option>`}).join('');document.querySelector('[data-substitute]')?.addEventListener('click',()=>substituteDuringMatch(Number(out.value),inn.value));}}
 
  document.querySelectorAll("[data-bid]").forEach(b=>{
@@ -2414,11 +2618,55 @@ document.addEventListener('click',function(e){
  render();
 },true);
 
+window.__startCareer=function(i){
+  const idx=Number(i);
+  try{
+    activateLeague(window.selectedLeague||"Premier League");
+    if(!Number.isInteger(idx)||idx<0||idx>=CLUBS.length) throw new Error("Invalid club index");
+    startCareer(idx);
+  }catch(err){
+    console.error("Start Career failed",err);
+    const el=document.getElementById("startError");
+    if(el){el.textContent="Start Career failed: "+(err&&err.message?err.message:"unknown error");el.style.display="block";}
+  }
+};
+
+function startCareerFromHash(){
+  try{
+    const m=String(location.hash||"").match(/^#start-career-(\d+)$/);
+    if(!m || career) return false;
+    window.__startCareer(Number(m[1]));
+    return true;
+  }catch(err){
+    console.error("Hash Start Career failed",err);
+    return false;
+  }
+}
+
+window.addEventListener("hashchange",function(){
+  const h=String(location.hash||"");
+  if(h==="#league-premier"){ history.replaceState(null,"",location.pathname+location.search); window.selectedLeague="Premier League"; render(); return; }
+  if(h==="#league-laliga"){ history.replaceState(null,"",location.pathname+location.search); window.selectedLeague="LaLiga"; render(); return; }
+  startCareerFromHash();
+});
+
 function bootGame(){
   try{
     career=load();
+    /* Preview-safe first launch: never require the Preview environment to execute
+       the club-selection click just to enter Career Mode. A first-time Preview
+       session starts with Arsenal; New Career still returns to the selector. */
+    if(!career && !String(location.hash||'').match(/^#start-career-\d+$/)){
+      window.selectedLeague='Premier League';
+      activateLeague('Premier League');
+      startCareer(0);
+      return;
+    }
     if(career){ activateLeague(career.league||"Premier League"); window.selectedLeague=DOMESTIC_LEAGUE_NAME; }
     if(career && (!CLUBS[career.club] || !Array.isArray(career.players) || !Array.isArray(career.fixtures))){career=null;}
+    if(career && DOMESTIC_LEAGUE_NAME==='Premier League' && career.season===2026){
+      try{buildRealPLSchedule(true);}catch(e){console.warn('Real Premier League schedule repair skipped',e)}
+    }
     if(career){
       if(!career.tactics || typeof career.tactics!=="object") career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};
       try{ensureLineup()}catch(e){career.tactics={formation:"4-3-3",vision:"Standard",buildUp:"Balanced",defApproach:"Balanced",lineHeight:"Medium",lineup:[]};ensureLineup();}
@@ -2447,6 +2695,8 @@ function bootGame(){
   }
 }
 bootGame();
+startCareerFromHash();
+
 </script>
 </body>
 </html>
