@@ -450,28 +450,53 @@ for(const [club,names] of Object.entries(FULL_SQUADS)){
   }
 }
 function playerNameKey(name){
-  return String(name||'').normalize('NFKC').replace(/\s+/g,' ').trim().toLowerCase();
+  let key=String(name||'').normalize('NFKC').replace(/\s+/g,' ').trim().toLowerCase();
+  const aliases={
+    'mbappe':'kylian mbappe',
+    'mpabbe':'kylian mbappe',
+    'kylian mpabbe':'kylian mbappe',
+    'klyian mbappe':'kylian mbappe',
+    'klyian mpabbe':'kylian mbappe',
+    'vini':'vinicius jr',
+    'vinicius':'vinicius jr'
+  };
+  return aliases[key]||key;
+}
+function canonicalPlayerName(name){
+  const key=playerNameKey(name);
+  if(typeof PLAYER_POOL!=='undefined'){
+    const official=PLAYER_POOL.find(x=>playerNameKey(x[0])===key);
+    if(official)return official[0];
+  }
+  return String(name||'').normalize('NFKC').replace(/\s+/g,' ').trim();
 }
 function dedupeCareerPlayers(){
   if(!career)return;
-  const seen=new Set();
+
   const sold=new Set((career.soldPlayers||[]).map(playerNameKey));
+  const seen=new Set();
   const clean=[];
+
   for(const p of (career.players||[])){
     if(!p||!p.name)continue;
-    const name=String(p.name).normalize('NFKC').replace(/\s+/g,' ').trim();
+
+    const name=canonicalPlayerName(p.name);
     const key=playerNameKey(name);
+
     if(!key||sold.has(key)||seen.has(key))continue;
+
     seen.add(key);
     clean.push({...p,name});
   }
+
   career.players=clean;
 
   if(career.tactics&&Array.isArray(career.tactics.lineup)){
     const available=new Set(clean.map(p=>playerNameKey(p.name)));
     const lineSeen=new Set();
+
     career.tactics.lineup=career.tactics.lineup
-      .map(n=>String(n||'').normalize('NFKC').replace(/\s+/g,' ').trim())
+      .map(canonicalPlayerName)
       .filter(n=>{
         const key=playerNameKey(n);
         if(!key||!available.has(key)||lineSeen.has(key))return false;
@@ -484,6 +509,7 @@ function dedupeCareerPlayers(){
     }
   }
 }
+
 function _fullSquadRepair(){
   if(!career)return;
   const clubName=CLUBS[career.club]?.name;
@@ -915,9 +941,10 @@ function normalizeMarketText(value){
  return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
 }
 function transfers(){
- const owned=new Set(career.players.map(p=>p.name));
+ dedupeCareerPlayers();
+ const owned=new Set(career.players.map(p=>playerNameKey(p.name)));
  const open=transferWindowOpen();
- const market=PLAYER_POOL.map((x,i)=>({i,name:x[0],pos:x[1],ov:x[2],value:x[3],owner:x[4],league:x[6]||clubLeague(x[4]),asking:getTransferAsking(i)})).filter(x=>!owned.has(x.name));
+ const market=PLAYER_POOL.map((x,i)=>({i,name:x[0],pos:x[1],ov:x[2],value:x[3],owner:x[4],league:x[6]||clubLeague(x[4]),asking:getTransferAsking(i)})).filter(x=>!owned.has(playerNameKey(x.name)));
  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>Transfer Market</h2><p class="muted">Browse a large transfer market with players from multiple leagues.</p></div><span class="pill">Budget $${career.cash}m</span></div>
  <div class="notice ${open?'good':'draw'}" style="margin:14px 0"><b>${open?'Transfer window open':'Transfer window closed'}</b> — ${open?`Transfers and player sales are available in ${transferWindowName()}.`:'You can only transfer players or sell players in January, May, June, July, and August.'}</div>
  <div class="actions" style="margin:14px 0"><input id="marketSearch" data-market-search placeholder="Search players... e.g. Doue" ${open?'':'disabled'} style="flex:1;min-width:220px;background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:11px" value="${esc(window.marketQuery||'')}"><select id="marketPos" ${open?'':'disabled'} style="background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:11px"><option value="">All positions</option>${['GK','CB','LB','RB','DM','CM','AM','LW','RW','FWD'].map(x=>`<option ${window.marketPos===x?'selected':''}>${x}</option>`).join('')}</select><button type="button" data-market-filter ${open?'':'disabled'}>Search</button><button type="button" class="secondary" data-market-clear>Clear</button></div>
@@ -1166,22 +1193,33 @@ function ensureLineup(){
  if(!career)return;
  if(!career.tactics)career.tactics={formation:'4-3-3'};
  if(!Array.isArray(career.soldPlayers))career.soldPlayers=[];
+
  dedupeCareerPlayers();
- const lineup=Array.isArray(career.tactics.lineup)?career.tactics.lineup:[];
- const available=new Map((career.players||[]).map(p=>[playerNameKey(p.name),p]));
- const clean=[];const seen=new Set();
- for(const n of lineup){
+
+ const available=new Map((career.players||[]).map(p=>[playerNameKey(p.name),canonicalPlayerName(p.name)]));
+ const clean=[];
+ const seen=new Set();
+
+ for(const n of (career.tactics.lineup||[])){
    const key=playerNameKey(n);
-   if(key&&!seen.has(key)&&available.has(key)){seen.add(key);clean.push(available.get(key).name);}
- }
- if(clean.length<11){
-   const fill=buildStrictLineup();
-   for(const p of fill){
-     if(clean.length>=11)break;
-     const key=playerNameKey(p?.name);
-     if(p&&key&&!seen.has(key)){seen.add(key);clean.push(p.name);}
+   if(key&&!seen.has(key)&&available.has(key)){
+     seen.add(key);
+     clean.push(available.get(key));
    }
  }
+
+ if(clean.length<11){
+   const generated=buildStrictLineup();
+   for(const p of generated){
+     if(clean.length>=11)break;
+     const key=playerNameKey(p?.name);
+     if(p&&key&&!seen.has(key)){
+       seen.add(key);
+       clean.push(canonicalPlayerName(p.name));
+     }
+   }
+ }
+
  career.tactics.lineup=clean.slice(0,11);
  career.tactics.lineupLocked=career.tactics.lineup.length===11;
 }
@@ -2082,7 +2120,7 @@ function tactics(){
    lineup=strictTacticalLineup.filter(Boolean);
    t.lineup=lineup.map(p=>p.name);
  }
- const selectedNames=new Set((t.lineup||[]).map(String));
+ const selectedNames=new Set((t.lineup||[]).map(playerNameKey));
  const roleNames=['GK','CB','LB/RB','DM/CM','AM','LW/RW','ST'];
  const roleOptions=['Defend','Support','Build-Up','Attack','Balanced','Versatile'];
  const breakdown={
@@ -2104,7 +2142,7 @@ function tactics(){
  }).join('');
  return layout(`<div class="tacticsHeader"><div><h2>⚙️ Tactics & Tactical Vision</h2><p class="muted">A tactical-board view for managing your shape, roles, and tactical approach.</p></div><span class="pill">ACTIVE TACTIC</span></div>
  <div class="tacticsShell">
-  <div class="card pitchCard"><div class="pitchTitle"><b>${formation}</b><span>${t.vision||'Standard'} · ${t.buildUp||'Balanced'} · ${t.defApproach||'Balanced'}</span></div><div class="tacticalPitch"><div class="pitchHalf"></div><div class="pitchMid"></div><div class="pitchCircle"></div><div class="box left"></div><div class="box right"></div>${pitch}</div><p class="muted small">Starting XI: ${t.lineup.map(esc).join(' · ')}</p><h3>Substitute Bench</h3><div class="benchGrid">${names.filter(p=>!selectedNames.has(p.name)).map(p=>`<div class="benchItem"><span><b>${esc(p.name)}</b><br><span class="muted">${p.pos} · ${p.ov} OVR</span></span><button type="button" class="secondary" data-start-player="${esc(p.name)}">Start</button></div>`).join('')||'<div class="muted">No substitutes available.</div>'}</div><p class="muted small">Use Start to put a bench player into the XI. Players not selected here stay on the bench.</p></div>
+  <div class="card pitchCard"><div class="pitchTitle"><b>${formation}</b><span>${t.vision||'Standard'} · ${t.buildUp||'Balanced'} · ${t.defApproach||'Balanced'}</span></div><div class="tacticalPitch"><div class="pitchHalf"></div><div class="pitchMid"></div><div class="pitchCircle"></div><div class="box left"></div><div class="box right"></div>${pitch}</div><p class="muted small">Starting XI: ${t.lineup.map(esc).join(' · ')}</p><h3>Substitute Bench</h3><div class="benchGrid">${names.filter(p=>!selectedNames.has(playerNameKey(p.name))).map(p=>`<div class="benchItem"><span><b>${esc(p.name)}</b><br><span class="muted">${p.pos} · ${p.ov} OVR</span></span><button type="button" class="secondary" data-start-player="${esc(p.name)}">Start</button></div>`).join('')||'<div class="muted">No substitutes available.</div>'}</div><p class="muted small">Use Start to put a bench player into the XI. Players not selected here stay on the bench.</p></div>
   <div class="card tacticPanel"><h3>Tactical Vision</h3>
    <label>Formation${opts('formation',['4-3-3','4-2-3-1','4-4-2','3-5-2','5-3-2','3-4-2-1'])}</label>
    <label>Vision${opts('vision',['Standard','Possession','Wing Play','Counter Attack','High Pressing','Park The Bus','Kick & Rush'])}</label>
@@ -2170,7 +2208,7 @@ function sellPlayer(i){
  if(!transferWindowOpen()){alert('Player sales are only allowed in January, May, June, July, and August.');return;}
  if(!career||!Array.isArray(career.players))return;
  const p=career.players[i];if(!p)return;
- const name=String(p.name||'').normalize('NFKC').replace(/\s+/g,' ').trim();
+ const name=canonicalPlayerName(p.name);
  const soldKey=playerNameKey(name);if(!soldKey)return;
  if(!Array.isArray(career.soldPlayers))career.soldPlayers=[];
  if(career.soldPlayers.some(n=>playerNameKey(n)===soldKey))return;
