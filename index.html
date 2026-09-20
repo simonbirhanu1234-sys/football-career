@@ -487,25 +487,37 @@ function dedupeCareerPlayers(){
 function _fullSquadRepair(){
   if(!career)return;
   const clubName=CLUBS[career.club]?.name;
-  const sold=new Set((career.soldPlayers||[]).map(n=>String(n).trim().toLowerCase()));
-  const base=PLAYER_POOL.filter(x=>x[4]===clubName);
-  const current=new Map((career.players||[]).filter(p=>p&&p.name).map(p=>[String(p.name).toLowerCase(),p]));
+  const sold=new Set((career.soldPlayers||[]).map(playerNameKey));
+  const base=[];
+  const baseSeen=new Set();
+  for(const x of PLAYER_POOL){
+    if(x[4]!==clubName)continue;
+    const key=playerNameKey(x[0]);
+    if(!key||baseSeen.has(key)||sold.has(key))continue;
+    baseSeen.add(key);
+    base.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])});
+  }
+  const current=new Map();
+  for(const p of (career.players||[])){
+    if(!p||!p.name)continue;
+    const key=playerNameKey(p.name);
+    if(!key||sold.has(key)||current.has(key))continue;
+    current.set(key,{...p,name:String(p.name).normalize('NFKC').replace(/\s+/g,' ').trim()});
+  }
   const merged=[];
-  for(const x of base){
-    const key=String(x[0]).toLowerCase();
-    if(sold.has(key)) continue;
-    if(current.has(key)) merged.push(current.get(key));
-    else {
-      const h=_stableNum(x[0],clubName);
-      merged.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],clubName)});
-    }
+  const seen=new Set();
+  for(const p of base){
+    const key=playerNameKey(p.name);
+    if(seen.has(key))continue;
+    seen.add(key);
+    merged.push(current.get(key)||p);
   }
   for(const p of current.values()){
-    if(!base.some(x=>String(x[0]).toLowerCase()===String(p.name).toLowerCase())&&!sold.has(String(p.name).toLowerCase())) merged.push(p);
+    const key=playerNameKey(p.name);
+    if(!seen.has(key)){seen.add(key);merged.push(p);}
   }
   career.players=merged;
 }
-
 
 /* v14.8 — LaLiga squad pool. These are real-player names used for playable
    2026/27 LaLiga careers and the enlarged transfer market. */
@@ -926,20 +938,19 @@ function bidForPlayer(i,offerValue){
    if(offer>career.cash){alert('That offer is above your $'+career.cash+'m budget.');return;}
    if(offer<asking){alert('Bid rejected. The seller wants at least $'+asking+'m.');return;}
    career.cash-=offer;
-   if(Array.isArray(career.soldPlayers)){
-     career.soldPlayers=career.soldPlayers.filter(n=>playerNameKey(n)!==key);
-   }
+   if(!Array.isArray(career.soldPlayers))career.soldPlayers=[];
+   // Clear the temporary sold marker so the player can stay in the squad.
+   career.soldPlayers=career.soldPlayers.filter(n=>playerNameKey(n)!==key);
+   // Remove any stale duplicate copy before adding the transfer.
    career.players=(career.players||[]).filter(p=>playerNameKey(p?.name)!==key);
    career.players.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])});
    career.inbox.unshift('Transfer completed: '+x[0]+' joined for $'+offer+'m.');
    if(career.transferAsking)delete career.transferAsking[i];
+   dedupeCareerPlayers();
    ensureLineup();
    save();
    render();
- }catch(err){
-   console.error('Bid error:',err);
-   alert('The bid could not be completed. Please try again.');
- }
+ }catch(err){console.error('Bid error:',err);alert('The bid could not be completed. Please try again.');}
 }
 function easierUCLDraw(){
  const available=UCL_CLUBS.map((_,i)=>i);
@@ -1112,35 +1123,36 @@ function chooseBestForSlot(players,slot,used){
 }
 function buildStrictLineup(){
  const formation=formationSpots();
- const players=(career.players||[]).filter(p=>p&&p.name);
+ const players=[];
+ const playerSeen=new Set();
+ for(const p of (career.players||[])){
+   const key=playerNameKey(p?.name);
+   if(p&&p.name&&key&&!playerSeen.has(key)){playerSeen.add(key);players.push(p);}
+ }
  const result=new Array(formation.length).fill(null);
  const used=new Set();
  const pick=(slot,preferredName=null)=>{
-   const exactPreferred=preferredName?players.find(p=>p.name===preferredName&&!used.has(p.name)&&playerPositionFit(p,slot)>=95):null;
-   if(exactPreferred){used.add(exactPreferred.name);return exactPreferred;}
-   const candidates=players.filter(p=>!used.has(p.name)&&String(p.pos||'').toUpperCase()!=='GK'&&playerPositionFit(p,slot)>0);
+   const prefKey=preferredName?playerNameKey(preferredName):'';
+   const exactPreferred=prefKey?players.find(p=>playerNameKey(p.name)===prefKey&&!used.has(playerNameKey(p.name))&&playerPositionFit(p,slot)>=95):null;
+   if(exactPreferred){used.add(playerNameKey(exactPreferred.name));return exactPreferred;}
+   const candidates=players.filter(p=>!used.has(playerNameKey(p.name))&&String(p.pos||'').toUpperCase()!=='GK'&&playerPositionFit(p,slot)>0);
    candidates.sort((a,b)=>playerPositionFit(b,slot)-playerPositionFit(a,slot)||b.ov-a.ov);
    const chosen=candidates[0]||null;
-   if(chosen)used.add(chosen.name);
+   if(chosen)used.add(playerNameKey(chosen.name));
    return chosen;
  };
- const gks=players.filter(p=>String(p.pos||'').toUpperCase()==='GK'&&!used.has(p.name));
- const preferredGK=career.club===0?gks.find(p=>p.name==='David Raya'):null;
+ const gks=players.filter(p=>String(p.pos||'').toUpperCase()==='GK'&&!used.has(playerNameKey(p.name)));
+ const preferredGK=career.club===0?gks.find(p=>playerNameKey(p.name)==='david raya'):null;
  const gk=preferredGK||gks.sort((a,b)=>b.ov-a.ov)[0]||null;
- result[0]=gk;if(gk)used.add(gk.name);
+ result[0]=gk;if(gk)used.add(playerNameKey(gk.name));
  const current=Array.isArray(career.tactics?.lineup)?career.tactics.lineup:[];
- // Assign every formation slot independently. This prevents players from shifting
- // into the wrong position when one slot has no exact match.
  for(let i=1;i<formation.length;i++){
-   const slot=formation[i][2];
-   result[i]=pick(slot,current[i]||null);
+   result[i]=pick(formation[i][2],current[i]||null);
  }
- // Final fallback only fills an empty slot with a non-GK player; never move a GK
- // into an outfield position and never change the already assigned slot indices.
  for(let i=1;i<formation.length;i++){
    if(result[i])continue;
-   const fallback=players.filter(p=>!used.has(p.name)&&String(p.pos||'').toUpperCase()!=='GK').sort((a,b)=>b.ov-a.ov)[0]||null;
-   if(fallback){used.add(fallback.name);result[i]=fallback;}
+   const fallback=players.filter(p=>!used.has(playerNameKey(p.name))&&String(p.pos||'').toUpperCase()!=='GK').sort((a,b)=>b.ov-a.ov)[0]||null;
+   if(fallback){used.add(playerNameKey(fallback.name));result[i]=fallback;}
  }
  return result;
 }
@@ -1155,20 +1167,23 @@ function ensureLineup(){
  if(!career.tactics)career.tactics={formation:'4-3-3'};
  if(!Array.isArray(career.soldPlayers))career.soldPlayers=[];
  dedupeCareerPlayers();
- if(career.tactics.lineupLocked&&Array.isArray(career.tactics.lineup)){
-   const available=new Set(career.players.map(p=>playerNameKey(p.name)));
-   const clean=[];const seen=new Set();
-   for(const n of career.tactics.lineup){
-     const name=String(n||'').normalize('NFKC').replace(/\s+/g,' ').trim();
-     const key=playerNameKey(name);
-     if(name&&available.has(key)&&!seen.has(key)){clean.push(name);seen.add(key);}
-   }
-   if(clean.length===11){career.tactics.lineup=clean;return;}
-   career.tactics.lineupLocked=false;
+ const lineup=Array.isArray(career.tactics.lineup)?career.tactics.lineup:[];
+ const available=new Map((career.players||[]).map(p=>[playerNameKey(p.name),p]));
+ const clean=[];const seen=new Set();
+ for(const n of lineup){
+   const key=playerNameKey(n);
+   if(key&&!seen.has(key)&&available.has(key)){seen.add(key);clean.push(available.get(key).name);}
  }
- const lineup=buildStrictLineup();
- career.tactics.lineup=lineup.filter(Boolean).map(p=>p.name);
- career.tactics.lineupLocked=true;
+ if(clean.length<11){
+   const fill=buildStrictLineup();
+   for(const p of fill){
+     if(clean.length>=11)break;
+     const key=playerNameKey(p?.name);
+     if(p&&key&&!seen.has(key)){seen.add(key);clean.push(p.name);}
+   }
+ }
+ career.tactics.lineup=clean.slice(0,11);
+ career.tactics.lineupLocked=career.tactics.lineup.length===11;
 }
 function autoSelectClosest(){
  if(!match||match.ended)return;
@@ -2103,52 +2118,53 @@ function tactics(){
 }
 
 function startBenchPlayer(name){
-  if(!career||!career.tactics)return;
-  const incomingName=String(name||'').normalize('NFKC').replace(/\s+/g,' ').trim();
-  if(!incomingName)return;
-  ensureLineup();
-  const players=career.players||[];
-  const incomingKey=playerNameKey(incomingName);
-  const incoming=players.find(p=>playerNameKey(p?.name)===incomingKey);
-  if(!incoming)return;
-  let lineup=Array.isArray(career.tactics.lineup)?career.tactics.lineup.map(n=>String(n||'').normalize('NFKC').replace(/\s+/g,' ').trim()).filter(Boolean):[];
-  const unique=[];const usedKeys=new Set();
-  for(const n of lineup){const key=playerNameKey(n);if(!usedKeys.has(key)){usedKeys.add(key);unique.push(n);}}
-  if(unique.length!==11){career.tactics.lineupLocked=false;ensureLineup();return;}
-  if(usedKeys.has(incomingKey))return;
-  const incomingPos=String(incoming.pos||'').toUpperCase();
-  const compatible=starterName=>{
-    const p=players.find(x=>playerNameKey(x.name)===playerNameKey(starterName));
-    const pos=String(p?.pos||'').toUpperCase();
-    if(!pos)return false;
-    if(incomingPos==='GK')return pos==='GK';
-    if(['LB','LWB'].includes(incomingPos))return ['LB','LWB','CB'].includes(pos);
-    if(['RB','RWB'].includes(incomingPos))return ['RB','RWB','CB'].includes(pos);
-    if(incomingPos==='CB')return ['CB','LB','RB','LWB','RWB'].includes(pos);
-    if(['DM','CM'].includes(incomingPos))return ['DM','CM','AM','CAM'].includes(pos);
-    if(['AM','CAM'].includes(incomingPos))return ['AM','CAM','CM','LW','RW'].includes(pos);
-    if(['LM','LW'].includes(incomingPos))return ['LM','LW','AM','CAM'].includes(pos);
-    if(['RM','RW'].includes(incomingPos))return ['RM','RW','AM','CAM'].includes(pos);
-    if(['ST','FWD'].includes(incomingPos))return ['ST','FWD','LW','RW','AM','CAM'].includes(pos);
-    return pos===incomingPos;
-  };
-  let replaceIndex=unique.findIndex(compatible);
-  if(replaceIndex<0||(replaceIndex===0&&incomingPos!=='GK')){
-    replaceIndex=-1;let lowest=Infinity;
-    for(let i=1;i<unique.length;i++){
-      const p=players.find(x=>playerNameKey(x.name)===playerNameKey(unique[i]));
-      const ov=Number(p?.ov)||0;
-      if(ov<lowest){lowest=ov;replaceIndex=i;}
-    }
-  }
-  if(replaceIndex<0)replaceIndex=10;
-  const replaced=unique[replaceIndex];
-  unique[replaceIndex]=incomingName;
-  career.tactics.lineup=unique;
-  career.tactics.lineupLocked=true;
-  career.inbox.unshift(incomingName+' added to the starting XI'+(replaced?'; '+replaced+' moved to the bench.':'.'));
-  save();
-  render();
+ if(!career||!career.tactics)return;
+ const incomingKey=playerNameKey(name);
+ if(!incomingKey)return;
+ dedupeCareerPlayers();
+ ensureLineup();
+ const incoming=(career.players||[]).find(p=>playerNameKey(p.name)===incomingKey);
+ if(!incoming)return;
+ let lineup=(career.tactics.lineup||[]).map(n=>String(n||'').trim()).filter(Boolean);
+ const seen=new Set();
+ lineup=lineup.filter(n=>{const key=playerNameKey(n);if(seen.has(key))return false;seen.add(key);return true;});
+ if(seen.has(incomingKey))return;
+ if(lineup.length<11){ensureLineup();lineup=career.tactics.lineup.slice();}
+ if(lineup.length!==11)return;
+ const incomingPos=String(incoming.pos||'').toUpperCase();
+ const compatible=starterName=>{
+   const p=(career.players||[]).find(x=>playerNameKey(x.name)===playerNameKey(starterName));
+   const pos=String(p?.pos||'').toUpperCase();
+   if(incomingPos==='GK')return pos==='GK';
+   if(['LB','LWB'].includes(incomingPos))return ['LB','LWB','CB'].includes(pos);
+   if(['RB','RWB'].includes(incomingPos))return ['RB','RWB','CB'].includes(pos);
+   if(incomingPos==='CB')return ['CB','LB','RB','LWB','RWB'].includes(pos);
+   if(['DM','CM'].includes(incomingPos))return ['DM','CM','AM','CAM'].includes(pos);
+   if(['AM','CAM'].includes(incomingPos))return ['AM','CAM','CM','LW','RW'].includes(pos);
+   if(['LM','LW'].includes(incomingPos))return ['LM','LW','AM','CAM'].includes(pos);
+   if(['RM','RW'].includes(incomingPos))return ['RM','RW','AM','CAM'].includes(pos);
+   if(['ST','FWD'].includes(incomingPos))return ['ST','FWD','LW','RW','AM','CAM'].includes(pos);
+   return pos===incomingPos;
+ };
+ let replaceIndex=lineup.findIndex(compatible);
+ if(replaceIndex<0||replaceIndex===0&&incomingPos!=='GK'){
+   replaceIndex=1;let lowest=Infinity;
+   for(let i=1;i<lineup.length;i++){
+     const p=(career.players||[]).find(x=>playerNameKey(x.name)===playerNameKey(lineup[i]));
+     const ov=Number(p?.ov)||0;
+     if(ov<lowest){lowest=ov;replaceIndex=i;}
+   }
+ }
+ const replaced=lineup[replaceIndex];
+ lineup[replaceIndex]=incoming.name;
+ const final=[];const finalSeen=new Set();
+ for(const n of lineup){const key=playerNameKey(n);if(key&&!finalSeen.has(key)){finalSeen.add(key);final.push(n);}}
+ if(final.length!==11)return;
+ career.tactics.lineup=final;
+ career.tactics.lineupLocked=true;
+ career.inbox.unshift(incoming.name+' added to the starting XI'+(replaced?'; '+replaced+' moved to the bench.':'.'));
+ save();
+ render();
 }
 function sellPlayer(i){
  if(!transferWindowOpen()){alert('Player sales are only allowed in January, May, June, July, and August.');return;}
@@ -2162,17 +2178,7 @@ function sellPlayer(i){
  career.cash+=price;
  career.soldPlayers.push(name);
  career.players=career.players.filter(player=>playerNameKey(player?.name)!==soldKey);
- if(career.tactics&&Array.isArray(career.tactics.lineup)){
-   career.tactics.lineup=career.tactics.lineup.filter(n=>playerNameKey(n)!==soldKey);
-   career.tactics.lineupLocked=false;
- }
- if(match){
-   if(Array.isArray(match.bench))match.bench=match.bench.filter(n=>playerNameKey(n)!==soldKey);
-   if(Array.isArray(match.players)){
-     const mi=match.players.findIndex(x=>x.team===0&&playerNameKey(x.name)===soldKey);
-     if(mi>=0){match.players.splice(mi,1);if(match.control>=mi)match.control=Math.max(0,match.control-1);}
-   }
- }
+ if(career.tactics&&Array.isArray(career.tactics.lineup)){career.tactics.lineup=career.tactics.lineup.filter(n=>playerNameKey(n)!==soldKey);career.tactics.lineupLocked=false;}
  career.inbox.unshift(name+' sold for $'+price+'m and left the club. They remain available on the transfer market.');
  ensureLineup();
  save();
