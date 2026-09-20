@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Football Career Mode — v17.2</title>
+<title>Football Career Mode — v14.18</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07110c;color:#f2fff7;font-family:Arial,Helvetica,sans-serif}
 button,select{font:inherit}button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
@@ -705,70 +705,11 @@ function home(){
  <div id="startError" class="notice bad" style="display:none;margin:12px 0"></div>
  <div class="card"><h2>2. Choose your club · ${selected}</h2><p class="muted">${selected==="LaLiga"?"20 clubs · 38 matches · Copa del Rey · Champions League when qualified":"20 clubs · 38 matches · FA Cup · Champions League when qualified"}</p><div class="grid">${CLUBS.map((c,i)=>`<article class="card club"><div><div class="badge">${c.badge}</div><h3>${c.name}</h3><div class="muted">Strength ${strength(i)} · Budget $${c.budget}m</div></div><a class="startLink" data-start-link href="#start-career-${i}" onclick="window.__startCareer(${i});return false;">Start Career</a></article>`).join("")}</div></div></main>`;
 }
-function hasPendingScheduledMatches(){
- if(!career)return false;
- try{return scheduleEvents().some(e=>!e.played&&e.date);}catch(e){return false;}
-}
-function seasonFullyComplete(){return !!career && career.seasonComplete && !hasPendingScheduledMatches();}
-
-function simulateEntireSeason(){
- if(!career||seasonFullyComplete())return;
- if(match&&!match.ended){alert('Finish the current match before simulating the rest of the season.');return;}
- let guard=0,simulated=0;
- try{
-   while(guard++<140){
-     ensureScheduleDates();
-     const pending=scheduleEvents().filter(e=>!e.played&&e.date).sort((a,b)=>{
-       const d=String(a.date).localeCompare(String(b.date));
-       if(d!==0)return d;
-       const rank={league:1,cup:2,ucl:3};
-       return (rank[a.type]||9)-(rank[b.type]||9);
-     });
-     const e=pending[0];
-     if(!e)break;
-     if(e.type==='league'){
-       const f=nextFixture();
-       if(!f || f!==e.fixture)break;
-       simulateNext();
-       simulated++;
-     }else if(e.type==='cup'){
-       if(currentLeague()==='LaLiga'){
-         const before=getUserCopaMatch();
-         if(!before)break;
-         simulateCopaMatch();
-       }else{
-         const before=getUserFACupMatch();
-         if(!before)break;
-         simulateFACupMatch();
-       }
-       simulated++;
-     }else if(e.type==='ucl'){
-       const q=career.champions;
-       if(!q?.qualified||q.eliminated||q.phase[q.played]!==e.fixture)break;
-       simulateUCL();
-       simulated++;
-     }else break;
-     if(career.seasonComplete && !scheduleEvents().some(x=>!x.played&&x.date))break;
-   }
-   maybeQualify();
-   ensureScheduleDates();
-   save();
-   career.inbox.unshift(`Entire season simulated: ${simulated} scheduled matches processed.`);
-   save();
-   page='dashboard';
-   render();
- }catch(err){
-   console.error('simulateEntireSeason error:',err);
-   alert('The season simulation stopped because of an unexpected error. Your completed results were saved.');
-   save();page='dashboard';render();
- }
-}
-
 function dashboard(){
  const c=CLUBS[career.club], f=nextFixture(), op=f?CLUBS[f.op]:null;
  return layout(`<section class="card" style="margin-bottom:16px"><div class="actions" style="justify-content:space-between;align-items:center"><div><div class="muted">${DOMESTIC_LEAGUE_NAME.toUpperCase()} · SEASON ${career.season} · MATCH ${Math.min(career.matchday,career.fixtures.length)}/${career.fixtures.length}</div><h1 style="margin:6px 0">${c.badge} ${c.name}</h1><div class="muted">Club strength ${strength(career.club)} · Squad OVR ${avg()}</div></div><div style="text-align:center"><div style="font-size:38px;font-weight:900">${career.points}</div><div class="muted">POINTS</div></div></div></section>
  <div class="stats"><div class="stat"><span class="muted">Record</span><b>${career.wins}-${career.draws}-${career.losses}</b></div><div class="stat"><span class="muted">Goals</span><b>${career.gf}-${career.ga}</b></div><div class="stat"><span class="muted">Squad OVR</span><b>${avg()}</b></div><div class="stat"><span class="muted">Budget</span><b>$${career.cash}m</b></div></div>
- <div class="two" style="margin-top:16px"><div class="card"><div class="muted">NEXT MATCH</div><h2>${op?`${f.home?"🏠":"✈️"} ${op.name}`:"Season complete"}</h2>${op?`<p class="muted" style="margin-top:9px">Open <b>Schedule</b> to tap this game and choose whether to play or simulate it.</p><div class="actions"><button data-go="schedule">📅 Open Schedule</button></div>`:`${seasonFullyComplete()?`<div class="actions"><button data-next-season>➡️ Next Season</button></div>`:`<div class="notice">League complete. Finish remaining cup or Champions League matches from <b>Schedule</b>.</div>`}`}</div>
+ <div class="two" style="margin-top:16px"><div class="card"><div class="muted">NEXT MATCH</div><h2>${op?`${f.home?"🏠":"✈️"} ${op.name}`:"Season complete"}</h2>${op?`<p class="muted" style="margin-top:9px">Open <b>Schedule</b> to tap this game and choose whether to play or simulate it.</p><div class="actions"><button data-go="schedule">📅 Open Schedule</button></div>`:`${career.seasonComplete?`<div class="actions"><button data-next-season>➡️ Next Season</button></div>`:`<div class="notice">Finish the next scheduled match from <b>Schedule</b>.</div>`}`}</div>
  <div class="card"><h2>Manager Inbox</h2>${career.inbox.slice(-5).reverse().map(x=>`<div class="notice">${esc(x)}</div>`).join("")}</div></div>`);
 }
 function squad(){
@@ -995,7 +936,8 @@ function maybeQualify(){
    const pos=rows().findIndex(r=>r.i===career.club)+1;
    if(pos<=4 && !career.champions.qualified){
      career.champions.qualified=true;
-     const pool=easierUCLDraw();     const uclBase=new Date(Date.UTC((career.season||2026)+1,7,1));
+     const pool=easierUCLDraw();
+     const uclBase=new Date(Date.UTC((career.season||2026)+1,7,1));
      career.champions.phase=pool.map((op,i)=>({op,home:i%2===0,played:false,date:addDays(uclBase,45+i*16).toISOString().slice(0,10)}));
      career.inbox.push(`Champions League secured — you finished ${pos}${pos===1?'st':pos===2?'nd':pos===3?'rd':'th'}! Your ${career.season+1} Champions League fixtures are now scheduled.`);
    } else career.inbox.push(`Season complete — you finished ${pos}${pos===1?'st':pos===2?'nd':pos===3?'rd':'th'}.`);
@@ -1994,7 +1936,8 @@ function drawHuman3D(p,i){
  if(isKeeper){c.font=`900 ${Math.max(9,Math.min(15,size*.58))}px Arial`;c.fillStyle='#ffe45c';c.fillText('GK',head.x,head.y+size*.82);}
 }
 
-function drawBall3D(){ const w=worldFromPitch(match.ball.x,match.ball.y);const ground=project3D(w.x,.06,w.z),b=project3D(w.x,.48,w.z);if(!b||!ground)return;const c=match3d.ctx,r=Math.max(3,Math.min(10,85/b.depth));
+function drawBall3D(){
+ const w=worldFromPitch(match.ball.x,match.ball.y);const ground=project3D(w.x,.06,w.z),b=project3D(w.x,.48,w.z);if(!b||!ground)return;const c=match3d.ctx,r=Math.max(3,Math.min(10,85/b.depth));
  c.save();c.globalAlpha=.24;c.fillStyle='#000';c.beginPath();c.ellipse(ground.x,ground.y,r*1.25,r*.42,0,0,Math.PI*2);c.fill();c.restore();
  const g=c.createRadialGradient(b.x-r*.35,b.y-r*.45,r*.2,b.x,b.y,r);g.addColorStop(0,'#fff');g.addColorStop(1,'#d9e0e6');c.fillStyle=g;c.beginPath();c.arc(b.x,b.y,r,0,Math.PI*2);c.fill();c.strokeStyle='#1b1b1b';c.lineWidth=1;c.stroke();
  c.fillStyle='#252525';for(let i=0;i<5;i++){const a=(performance.now()/130+i*1.256);c.beginPath();c.arc(b.x+Math.cos(a)*r*.45,b.y+Math.sin(a)*r*.45,r*.11,0,Math.PI*2);c.fill();}
