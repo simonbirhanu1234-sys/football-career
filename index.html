@@ -689,70 +689,11 @@ function home(){
  <div id="startError" class="notice bad" style="display:none;margin:12px 0"></div>
  <div class="card"><h2>2. Choose your club · ${selected}</h2><p class="muted">${selected==="LaLiga"?"20 clubs · 38 matches · Copa del Rey · Champions League when qualified":"20 clubs · 38 matches · FA Cup · Champions League when qualified"}</p><div class="grid">${CLUBS.map((c,i)=>`<article class="card club"><div><div class="badge">${c.badge}</div><h3>${c.name}</h3><div class="muted">Strength ${strength(i)} · Budget $${c.budget}m</div></div><a class="startLink" data-start-link href="#start-career-${i}" onclick="window.__startCareer(${i});return false;">Start Career</a></article>`).join("")}</div></div></main>`;
 }
-function hasPendingScheduledMatches(){
- if(!career)return false;
- try{return scheduleEvents().some(e=>!e.played&&e.date);}catch(e){return false;}
-}
-function seasonFullyComplete(){return !!career && career.seasonComplete && !hasPendingScheduledMatches();}
-
-function simulateEntireSeason(){
- if(!career||seasonFullyComplete())return;
- if(match&&!match.ended){alert('Finish the current match before simulating the rest of the season.');return;}
- let guard=0,simulated=0;
- try{
-   while(guard++<140){
-     ensureScheduleDates();
-     const pending=scheduleEvents().filter(e=>!e.played&&e.date).sort((a,b)=>{
-       const d=String(a.date).localeCompare(String(b.date));
-       if(d!==0)return d;
-       const rank={league:1,cup:2,ucl:3};
-       return (rank[a.type]||9)-(rank[b.type]||9);
-     });
-     const e=pending[0];
-     if(!e)break;
-     if(e.type==='league'){
-       const f=nextFixture();
-       if(!f || f!==e.fixture)break;
-       simulateNext();
-       simulated++;
-     }else if(e.type==='cup'){
-       if(currentLeague()==='LaLiga'){
-         const before=getUserCopaMatch();
-         if(!before)break;
-         simulateCopaMatch();
-       }else{
-         const before=getUserFACupMatch();
-         if(!before)break;
-         simulateFACupMatch();
-       }
-       simulated++;
-     }else if(e.type==='ucl'){
-       const q=career.champions;
-       if(!q?.qualified||q.eliminated||q.phase[q.played]!==e.fixture)break;
-       simulateUCL();
-       simulated++;
-     }else break;
-     if(career.seasonComplete && !scheduleEvents().some(x=>!x.played&&x.date))break;
-   }
-   maybeQualify();
-   ensureScheduleDates();
-   save();
-   career.inbox.unshift(`Entire season simulated: ${simulated} scheduled matches processed.`);
-   save();
-   page='dashboard';
-   render();
- }catch(err){
-   console.error('simulateEntireSeason error:',err);
-   alert('The season simulation stopped because of an unexpected error. Your completed results were saved.');
-   save();page='dashboard';render();
- }
-}
-
 function dashboard(){
  const c=CLUBS[career.club], f=nextFixture(), op=f?CLUBS[f.op]:null;
  return layout(`<section class="card" style="margin-bottom:16px"><div class="actions" style="justify-content:space-between;align-items:center"><div><div class="muted">${DOMESTIC_LEAGUE_NAME.toUpperCase()} · SEASON ${career.season} · MATCH ${Math.min(career.matchday,career.fixtures.length)}/${career.fixtures.length}</div><h1 style="margin:6px 0">${c.badge} ${c.name}</h1><div class="muted">Club strength ${strength(career.club)} · Squad OVR ${avg()}</div></div><div style="text-align:center"><div style="font-size:38px;font-weight:900">${career.points}</div><div class="muted">POINTS</div></div></div></section>
  <div class="stats"><div class="stat"><span class="muted">Record</span><b>${career.wins}-${career.draws}-${career.losses}</b></div><div class="stat"><span class="muted">Goals</span><b>${career.gf}-${career.ga}</b></div><div class="stat"><span class="muted">Squad OVR</span><b>${avg()}</b></div><div class="stat"><span class="muted">Budget</span><b>$${career.cash}m</b></div></div>
- <div class="card" style="margin-top:16px"><div class="actions" style="justify-content:space-between;align-items:center"><div><h3 style="margin:0 0 5px">Season Simulation</h3><div class="muted">Simulate every remaining scheduled match in the correct chronological order.</div></div>${seasonFullyComplete()?`<span class="pill">Season Complete</span>`:`<button type="button" data-sim-season>⏩ Simulate Entire Season</button>`}</div></div>
+
  <div class="two" style="margin-top:16px"><div class="card"><div class="muted">NEXT MATCH</div><h2>${op?`${f.home?"🏠":"✈️"} ${op.name}`:"Season complete"}</h2>${op?`<p class="muted" style="margin-top:9px">Open <b>Schedule</b> to tap this game and choose whether to play or simulate it.</p><div class="actions"><button data-go="schedule">📅 Open Schedule</button></div>`:`${seasonFullyComplete()?`<div class="actions"><button data-next-season>➡️ Next Season</button></div>`:`<div class="notice">League complete. Use <b>Simulate Entire Season</b> to finish any remaining cup or Champions League matches.</div>`}`}</div>
  <div class="card"><h2>Manager Inbox</h2>${career.inbox.slice(-5).reverse().map(x=>`<div class="notice">${esc(x)}</div>`).join("")}</div></div>`);
 }
@@ -2550,7 +2491,6 @@ function bind(){
  });
  document.querySelectorAll("[data-new]").forEach(b=>b.onclick=newCareer);
  document.querySelectorAll("[data-next-season]").forEach(b=>b.onclick=nextSeason);
- document.querySelectorAll("[data-sim-season]").forEach(b=>{b.type='button';b.onclick=simulateEntireSeason;});
  document.querySelectorAll('[data-schedule-prev]').forEach(b=>b.onclick=()=>{const d=new Date(`${window.scheduleMonth}-01T12:00:00Z`);d.setUTCMonth(d.getUTCMonth()-1);window.scheduleMonth=monthKey(d);render();});
  document.querySelectorAll('[data-schedule-next]').forEach(b=>b.onclick=()=>{const d=new Date(`${window.scheduleMonth}-01T12:00:00Z`);d.setUTCMonth(d.getUTCMonth()+1);window.scheduleMonth=monthKey(d);render();});
  document.querySelectorAll('[data-schedule-comp]').forEach(s=>s.onchange=()=>{window.scheduleComp=s.value;render();});
