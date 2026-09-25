@@ -511,6 +511,10 @@ for(const [club,arr] of Object.entries(LALIGA_SQUAD_SEEDS)){
   });
 }
 
+// Finalize the player database after every pool expansion. This second pass is necessary
+// because the multi-league and LaLiga expansions run after the original pool is created.
+dedupePlayerPool();
+
 let career=null, page="home", match=null, keys={};
 
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
@@ -870,9 +874,17 @@ function normalizeMarketText(value){
  return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
 }
 function transfers(){
- const owned=new Set(career.players.map(p=>p.name));
+ dedupePlayerPool();
+ const owned=new Set((career.players||[]).map(p=>playerIdentity(p.name)));
  const open=transferWindowOpen();
- const market=PLAYER_POOL.map((x,i)=>({i,name:x[0],pos:x[1],ov:x[2],value:x[3],owner:x[4],league:x[6]||clubLeague(x[4]),asking:getTransferAsking(i)})).filter(x=>!owned.has(x.name));
+ const market=[];
+ const seen=new Set();
+ PLAYER_POOL.forEach((x,i)=>{
+   const key=playerIdentity(x[0]);
+   if(seen.has(key) || owned.has(key)) return;
+   seen.add(key);
+   market.push({i,name:x[0],pos:x[1],ov:x[2],value:x[3],owner:x[4],league:x[6]||clubLeague(x[4]),asking:getTransferAsking(i)});
+ });
  return layout(`<div class="card"><div class="actions" style="justify-content:space-between"><div><h2>Transfer Market</h2><p class="muted">Browse a large transfer market with players from multiple leagues.</p></div><span class="pill">Budget $${career.cash}m</span></div>
  <div class="notice ${open?'good':'draw'}" style="margin:14px 0"><b>${open?'Transfer window open':'Transfer window closed'}</b> — ${open?`Transfers and player sales are available in ${transferWindowName()}.`:'You can only transfer players or sell players in January, May, June, July, and August.'}</div>
  <div class="actions" style="margin:14px 0"><input id="marketSearch" data-market-search placeholder="Search players... e.g. Doue" ${open?'':'disabled'} style="flex:1;min-width:220px;background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:11px" value="${esc(window.marketQuery||'')}"><select id="marketPos" ${open?'':'disabled'} style="background:#08150e;color:#effff5;border:1px solid #31513e;border-radius:8px;padding:11px"><option value="">All positions</option>${['GK','CB','LB','RB','DM','CM','AM','LW','RW','FWD'].map(x=>`<option ${window.marketPos===x?'selected':''}>${x}</option>`).join('')}</select><button type="button" data-market-filter ${open?'':'disabled'}>Search</button><button type="button" class="secondary" data-market-clear>Clear</button></div>
@@ -885,15 +897,15 @@ function bidForPlayer(i,offerValue){
  try {
  const x=PLAYER_POOL[i];
  if(!x)return;
- const owned=new Set(career.players.map(p=>p.name));
- if(owned.has(x[0])){alert('You already own this player.');return;}
+ const owned=new Set((career.players||[]).map(p=>playerIdentity(p.name)));
+ if(owned.has(playerIdentity(x[0]))){alert('You already own this player.');return;}
  const asking=getTransferAsking(i);
  const offer=Math.round(Number(offerValue));
  if(!Number.isFinite(offer)||offer<1){alert('Enter a valid offer.');return;}
  if(offer>career.cash){alert(`That offer is above your $${career.cash}m budget.`);return;}
  if(offer<asking){alert(`Bid rejected. The seller wants at least $${asking}m.`);return;}
  career.cash-=offer;
- career.players.push({name:x[0],pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])});
+ career.players.push({name:officialPlayerName(x[0]),pos:x[1],ov:x[2],value:x[3],morale:80,age:playerAgeFromDob(x[5],career?.season||2026)??stableAgeEstimate(x[0],x[2],x[1],x[4])});
  career.inbox.unshift(`Transfer completed: ${x[0]} joined for $${offer}m.`);
  if(career.transferAsking)delete career.transferAsking[i];
  save(); render();
@@ -2080,7 +2092,7 @@ function repairCareerSquad(){
   }
   career.players=merged.filter(p=>!sold.has(String(p.name).trim().toLowerCase()));
   if(career.tactics&&Array.isArray(career.tactics.lineup)) career.tactics.lineup=career.tactics.lineup.filter(n=>!sold.has(String(n).trim().toLowerCase()));
-  career._squadRepairVersion=9;
+  career._squadRepairVersion=10;
   save();
 }
 const normalizeTacticalSquad=repairCareerSquad;
