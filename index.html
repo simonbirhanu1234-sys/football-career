@@ -450,6 +450,7 @@ for(const [club,names] of Object.entries(FULL_SQUADS)){
   }
 }
 function _fullSquadRepair(){
+  dedupePlayerPool();
   if(!career)return;
   const clubName=CLUBS[career.club]?.name;
   const sold=new Set((career.soldPlayers||[]).map(n=>String(n).trim().toLowerCase()));
@@ -527,6 +528,7 @@ function strength(i){
  const c=CLUBS[i]; return Math.round((c.atk+c.mid+c.def)/3)
 }
 function startingSquad(clubName){
+ dedupePlayerPool();
  const preferred=PLAYER_POOL.filter(x=>x[4]===clubName);
  const seen=new Set();
  return preferred.filter(x=>{
@@ -1091,7 +1093,40 @@ function officialPlayerName(name){
  const found=pool.find(x=>playerIdentity(x[0])===key);
  return found?found[0]:String(name||'').normalize('NFKC').replace(/\s+/g,' ').trim();
 }
+
+// Remove duplicate player records from the global database before any squad or transfer
+// screen can build from it. The preferred club map resolves players that were accidentally
+// inserted under two clubs by earlier pool expansions.
+function dedupePlayerPool(){
+ if(typeof PLAYER_POOL==='undefined' || !Array.isArray(PLAYER_POOL)) return;
+ const preferredClub={
+   'martin zubimendi':'Arsenal',
+   'florian wirtz':'Liverpool',
+   'alexander isak':'Liverpool',
+   'benjamin sesko':'Manchester United',
+   'ayase ueda':'Feyenoord',
+   'ismael saibari':'PSV Eindhoven',
+   'jorrel hato':'Chelsea'
+ };
+ const groups=new Map();
+ for(const p of PLAYER_POOL){
+   if(!p||!p[0]) continue;
+   const key=playerIdentity(p[0]);
+   if(!groups.has(key)) groups.set(key,[]);
+   groups.get(key).push(p);
+ }
+ const clean=[];
+ for(const [key,group] of groups){
+   const pref=preferredClub[key];
+   const chosen=(pref ? group.find(p=>p[4]===pref) : null) || group[0];
+   clean.push(chosen);
+ }
+ PLAYER_POOL.splice(0,PLAYER_POOL.length,...clean);
+}
+
+dedupePlayerPool();
 function normalizePlayerData(){
+ dedupePlayerPool();
  if(!career)return;
  const seen=new Set();
  career.players=(career.players||[]).map(p=>{
@@ -2045,7 +2080,7 @@ function repairCareerSquad(){
   }
   career.players=merged.filter(p=>!sold.has(String(p.name).trim().toLowerCase()));
   if(career.tactics&&Array.isArray(career.tactics.lineup)) career.tactics.lineup=career.tactics.lineup.filter(n=>!sold.has(String(n).trim().toLowerCase()));
-  career._squadRepairVersion=7;
+  career._squadRepairVersion=9;
   save();
 }
 const normalizeTacticalSquad=repairCareerSquad;
